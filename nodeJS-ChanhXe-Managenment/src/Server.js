@@ -40,11 +40,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-//api user
-const userRoute = require("./routers/userRouters.js");
+// //api user
+// const userRoute = require("./routers/userRouters.js");
 
-app.use("/", userRoute);
+// app.use("/", userRoute);
 //
+
+const donHangRoute = require("./routers/donHangRouter.js");
 
 // Socket.IO logic
 const userSockets = {}; // Lưu trữ socket.id của từng user theo userId
