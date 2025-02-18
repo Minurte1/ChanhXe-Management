@@ -47,7 +47,7 @@ app.use(bodyParser.json());
 //
 
 const donHangRoute = require("./routers/donHangRouter.js");
-
+app.use("/", donHangRoute);
 // Socket.IO logic
 const userSockets = {}; // Lưu trữ socket.id của từng user theo userId
 
