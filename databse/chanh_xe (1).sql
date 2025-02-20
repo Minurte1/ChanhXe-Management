@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th2 19, 2025 lúc 02:50 PM
+-- Thời gian đã tạo: Th2 20, 2025 lúc 06:51 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -149,8 +149,52 @@ CREATE TABLE `nguoi_dung` (
   `trang_thai` enum('hoat_dong','tam_ngung','ngung_hoat_dong') NOT NULL DEFAULT 'hoat_dong',
   `id_nguoi_cap_nhat` int(11) NOT NULL,
   `ngay_cap_nhat` datetime NOT NULL,
+  `ngay_tao` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `phan_cong_dia_diem_nguoi_dung`
+--
+
+CREATE TABLE `phan_cong_dia_diem_nguoi_dung` (
+  `id` int(11) NOT NULL,
+  `id_ben` int(11) NOT NULL,
+  `id_nguoi_dung` int(11) NOT NULL,
+  `id_nguoi_cap_nhat` int(11) NOT NULL,
   `ngay_tao` datetime NOT NULL,
-  `id_ben_xe` int(11) NOT NULL
+  `ngay_cap_nhat` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `phan_cong_dia_diem_tai_xe`
+--
+
+CREATE TABLE `phan_cong_dia_diem_tai_xe` (
+  `id` int(11) NOT NULL,
+  `id_ben` int(11) NOT NULL,
+  `id_tai_xe` int(11) NOT NULL,
+  `id_nguoi_cap_nhat` int(11) NOT NULL,
+  `ngay_tao` datetime NOT NULL,
+  `ngay_cap_nhat` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `phan_cong_dia_diem_xe`
+--
+
+CREATE TABLE `phan_cong_dia_diem_xe` (
+  `id` int(11) NOT NULL,
+  `id_ben` int(11) NOT NULL,
+  `id_xe` int(11) NOT NULL,
+  `id_nguoi_cap_nhat` int(11) NOT NULL,
+  `ngay_tao` datetime NOT NULL,
+  `ngay_cap_nhat` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -165,8 +209,7 @@ CREATE TABLE `tai_xe` (
   `bang_lai` varchar(50) NOT NULL,
   `id_nguoi_cap_nhat` int(11) NOT NULL,
   `ngay_cap_nhat` datetime NOT NULL,
-  `ngay_tao` datetime NOT NULL,
-  `id_ben_xe` int(11) NOT NULL
+  `ngay_tao` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -183,8 +226,7 @@ CREATE TABLE `xe` (
   `trang_thai` enum('hoat_dong','bao_tri','ngung_hoat_dong') NOT NULL DEFAULT 'hoat_dong',
   `id_nguoi_cap_nhat` int(11) NOT NULL,
   `ngay_cap_nhat` datetime NOT NULL,
-  `ngay_tao` datetime NOT NULL,
-  `id_ben_xe` int(11) NOT NULL
+  `ngay_tao` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -246,6 +288,27 @@ ALTER TABLE `nguoi_dung`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `so_dien_thoai` (`so_dien_thoai`),
   ADD UNIQUE KEY `email` (`email`);
+
+--
+-- Chỉ mục cho bảng `phan_cong_dia_diem_nguoi_dung`
+--
+ALTER TABLE `phan_cong_dia_diem_nguoi_dung`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_nguoi_dung` (`id_nguoi_dung`);
+
+--
+-- Chỉ mục cho bảng `phan_cong_dia_diem_tai_xe`
+--
+ALTER TABLE `phan_cong_dia_diem_tai_xe`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_tai_xe` (`id_tai_xe`);
+
+--
+-- Chỉ mục cho bảng `phan_cong_dia_diem_xe`
+--
+ALTER TABLE `phan_cong_dia_diem_xe`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_xe` (`id_xe`);
 
 --
 -- Chỉ mục cho bảng `tai_xe`
@@ -338,6 +401,24 @@ ALTER TABLE `don_hang`
 ALTER TABLE `don_hang_chuyen_xe`
   ADD CONSTRAINT `don_hang_chuyen_xe_ibfk_1` FOREIGN KEY (`don_hang_chuyen_xe_id`) REFERENCES `chuyen_xe` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `don_hang_chuyen_xe_ibfk_2` FOREIGN KEY (`don_hang_id`) REFERENCES `don_hang` (`id`) ON DELETE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `phan_cong_dia_diem_nguoi_dung`
+--
+ALTER TABLE `phan_cong_dia_diem_nguoi_dung`
+  ADD CONSTRAINT `phan_cong_dia_diem_nguoi_dung_ibfk_1` FOREIGN KEY (`id_nguoi_dung`) REFERENCES `nguoi_dung` (`id`) ON DELETE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `phan_cong_dia_diem_tai_xe`
+--
+ALTER TABLE `phan_cong_dia_diem_tai_xe`
+  ADD CONSTRAINT `phan_cong_dia_diem_tai_xe_ibfk_1` FOREIGN KEY (`id_tai_xe`) REFERENCES `tai_xe` (`id`) ON DELETE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `phan_cong_dia_diem_xe`
+--
+ALTER TABLE `phan_cong_dia_diem_xe`
+  ADD CONSTRAINT `phan_cong_dia_diem_xe_ibfk_1` FOREIGN KEY (`id_xe`) REFERENCES `xe` (`id`) ON DELETE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `tai_xe`
