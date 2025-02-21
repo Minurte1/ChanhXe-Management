@@ -571,6 +571,7 @@ const loginUser = async (req, res) => {
     });
   }
 };
+
 const verifyAdmin = async (req, res) => {
   const { token } = req.body;
   console.log("token", token);

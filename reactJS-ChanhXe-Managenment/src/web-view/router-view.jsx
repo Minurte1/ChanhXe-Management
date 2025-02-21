@@ -1,12 +1,17 @@
 import { useRoutes, Navigate } from "react-router-dom";
 
 import MainPage from "./page/page";
+import AuthForm from "../page/AuthForm";
 
 const RouterView = () => {
   const element = useRoutes([
     {
       path: "/",
       element: <MainPage />,
+    },
+    {
+      path: "/login",
+      element: <AuthForm />,
     },
 
     {

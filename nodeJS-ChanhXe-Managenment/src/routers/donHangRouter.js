@@ -8,7 +8,7 @@ const {
   updateOrder,
   deleteOrder,
 } = require("../controllers/donHangController");
-const { checkUserJWT } = require("../../middleware/JWTaction");
+// const { checkUserJWT } = require("../../middleware/JWTaction");
 
 router.get("/orders", getAllOrders);
 router.get("/orders/:id", getOrderById);

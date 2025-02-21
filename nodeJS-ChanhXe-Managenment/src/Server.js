@@ -41,9 +41,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // //api user
-// const userRoute = require("./routers/userRouters.js");
+const userRoute = require("./routers/userRouters.js");
 
-// app.use("/", userRoute);
+app.use("/", userRoute);
 //
 
 const donHangRoute = require("./routers/donHangRouter.js");
