@@ -29,10 +29,10 @@ const getUserById = async (req, res) => {
 // Thêm mới người dùng
 const createUser = async (req, res) => {
   try {
-    const { ho_ten, so_dien_thoai, email, mat_khau, vai_tro, trang_thai } = req.body;
+    const { ho_ten, so_dien_thoai, email, mat_khau, vai_tro, trang_thai, id_nguoi_cap_nhat, ngay_cap_nhat, ngay_tao } = req.body;
     const [result] = await pool.query(
-      `INSERT INTO nguoi_dung (ho_ten, so_dien_thoai, email, mat_khau, vai_tro, trang_thai) VALUES (?, ?, ?, ?, ?, ?)`,
-      [ho_ten, so_dien_thoai, email, mat_khau, vai_tro, trang_thai]
+      `INSERT INTO nguoi_dung (ho_ten, so_dien_thoai, email, mat_khau, vai_tro, trang_thai, id_nguoi_cap_nhat, ngay_cap_nhat, ngay_tao) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [ho_ten, so_dien_thoai, email, mat_khau, vai_tro, trang_thai, id_nguoi_cap_nhat, ngay_cap_nhat, ngay_tao]
     );
     return res.status(201).json({ EM: "Tạo người dùng thành công", EC: 1, DT: { id: result.insertId } });
   } catch (error) {
@@ -78,4 +78,136 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { getAllUsers, getUserById, createUser, updateUser, deleteUser };
+const loginUserGoogle = async (req, res) => {
+  const { email, ho_ten } = req.body;
+  console.log("req.body loginUserGoogle", req.body);
+
+  if (!email) {
+    return res.status(401).json({
+      EM: "Email is missing",
+      EC: 401,
+      DT: [],
+    });
+  }
+
+  try {
+    // Kiểm tra người dùng đã tồn tại chưa
+    const [rows] = await pool.query("SELECT * FROM nguoi_dung WHERE email = ?", [email]);
+
+    if (rows.length > 0) {
+      const user = rows[0];
+
+      // Kiểm tra nếu tài khoản bị khóa
+      if (user.trang_thai === "ngung_hoat_dong") {
+        return res.status(403).json({
+          EM: "Tài khoản bị khóa, không thể đăng nhập",
+          EC: 0,
+          DT: "Account is disabled",
+        });
+      }
+
+      // Tạo token
+      const token = jwt.sign(
+        {
+          id: user.id,
+          email: user.email,
+          ho_ten: user.ho_ten,
+          so_dien_thoai: user.so_dien_thoai,
+          vai_tro: user.vai_tro,
+          trang_thai: user.trang_thai,
+          id_nguoi_cap_nhat: user.id_nguoi_cap_nhat,
+          ngay_tao: user.ngay_tao,
+          ngay_cap_nhat: user.ngay_cap_nhat,
+        },
+        JWT_SECRET,
+        { expiresIn: "5h" }
+      );
+
+      return res.status(200).json({
+        EM: "Login successful",
+        EC: 200,
+        DT: {
+          accessToken: token,
+          userInfo: {
+            id: user.id,
+            email: user.email,
+            ho_ten: user.ho_ten,
+            so_dien_thoai: user.so_dien_thoai,
+            vai_tro: user.vai_tro,
+            trang_thai: user.trang_thai,
+            id_nguoi_cap_nhat: user.id_nguoi_cap_nhat,
+            ngay_tao: user.ngay_tao,
+            ngay_cap_nhat: user.ngay_cap_nhat,
+          },
+        },
+      });
+    } else {
+      // Nếu người dùng chưa tồn tại, tạo mới
+      const vai_tro_mac_dinh = "nhan_vien_kho";
+      const trang_thai_mac_dinh = "hoat_dong";
+      const id_nguoi_cap_nhat = null; // Chưa ai cập nhật nên để NULL
+
+      const [insertResult] = await pool.query(
+        "INSERT INTO nguoi_dung (email, ho_ten, vai_tro, trang_thai, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat) VALUES (?, ?, ?, ?, ?, NOW(), NOW())",
+        [email, ho_ten, vai_tro_mac_dinh, trang_thai_mac_dinh, id_nguoi_cap_nhat]
+      );
+
+      // Lấy thông tin user vừa tạo
+      const [newUserRows] = await pool.query("SELECT * FROM nguoi_dung WHERE email = ?", [email]);
+      const newUser = newUserRows[0];
+
+      // Tạo token cho user mới
+      const token = jwt.sign(
+        {
+          id: newUser.id,
+          email: newUser.email,
+          ho_ten: newUser.ho_ten,
+          so_dien_thoai: newUser.so_dien_thoai,
+          vai_tro: newUser.vai_tro,
+          trang_thai: newUser.trang_thai,
+          id_nguoi_cap_nhat: newUser.id_nguoi_cap_nhat,
+          ngay_tao: newUser.ngay_tao,
+          ngay_cap_nhat: newUser.ngay_cap_nhat,
+        },
+        JWT_SECRET,
+        { expiresIn: "5h" }
+      );
+
+      return res.status(200).json({
+        EM: "New user created and logged in successfully",
+        EC: 200,
+        DT: {
+          accessToken: token,
+          userInfo: {
+            id: newUser.id,
+            email: newUser.email,
+            ho_ten: newUser.ho_ten,
+            so_dien_thoai: newUser.so_dien_thoai,
+            vai_tro: newUser.vai_tro,
+            trang_thai: newUser.trang_thai,
+            id_nguoi_cap_nhat: newUser.id_nguoi_cap_nhat,
+            ngay_tao: newUser.ngay_tao,
+            ngay_cap_nhat: newUser.ngay_cap_nhat,
+          },
+        },
+      });
+    }
+  } catch (error) {
+    console.error("Error in loginUserGoogle:", error);
+    return res.status(500).json({
+      EM: `Error: ${error.message}`,
+      EC: 500,
+      DT: [],
+    });
+  }
+};
+
+module.exports = { 
+  getAllUsers, 
+  getUserById, 
+  createUser, 
+  updateUser, 
+  deleteUser,
+  
+  loginUserGoogle
+};
