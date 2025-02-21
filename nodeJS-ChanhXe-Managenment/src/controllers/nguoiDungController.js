@@ -202,6 +202,102 @@ const loginUserGoogle = async (req, res) => {
   }
 };
 
+const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({
+      EM: "Email và mật khẩu không được để trống",
+      EC: 0,
+      DT: [],
+    });
+  }
+
+  try {
+    // Kiểm tra xem người dùng có tồn tại trong cơ sở dữ liệu không
+    const [rows] = await pool.query(
+      "SELECT * FROM nguoi_dung WHERE email = ?",
+      [email]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        EM: "Người dùng không tồn tại",
+        EC: 0,
+        DT: [],
+      });
+    }
+
+    const user = rows[0];
+
+    // Kiểm tra nếu tài khoản bị khóa
+    if (user.trang_thai === "ngung_hoat_dong") {
+      return res.status(403).json({
+        EM: "Tài khoản đã ngừng hoạt động, không thể đăng nhập",
+        EC: 0,
+        DT: "Account is disabled",
+      });
+    }
+
+    // Kiểm tra mật khẩu
+    const isPasswordValid = await bcrypt.compare(password, user.mat_khau);
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        EM: "Mật khẩu không đúng",
+        EC: 0,
+        DT: [],
+      });
+    }
+
+    // Xác định vai trò mặc định nếu chưa có
+    const userRole = user.vai_tro || "nhan_vien_kho";
+
+    // Tạo JWT token
+    const token = jwt.sign(
+      {
+        id: user.id,
+        email: user.email,
+        ho_ten: user.ho_ten,
+        so_dien_thoai: user.so_dien_thoai,
+        vai_tro: userRole,
+        trang_thai: user.trang_thai,
+        id_nguoi_cap_nhat: user.id_nguoi_cap_nhat,
+        ngay_cap_nhat: user.ngay_cap_nhat,
+        ngay_tao: user.ngay_tao,
+      },
+      JWT_SECRET,
+      { expiresIn: "5h" }
+    );
+
+    // Trả về token và thông tin người dùng
+    return res.status(200).json({
+      EM: "Đăng nhập thành công",
+      EC: 1,
+      DT: {
+        accessToken: token,
+        userInfo: {
+          id: user.id,
+          email: user.email,
+          ho_ten: user.ho_ten,
+          so_dien_thoai: user.so_dien_thoai,
+          vai_tro: userRole,
+          trang_thai: user.trang_thai,
+          id_nguoi_cap_nhat: user.id_nguoi_cap_nhat,
+          ngay_cap_nhat: user.ngay_cap_nhat,
+          ngay_tao: user.ngay_tao,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Error in loginUser:", error);
+    return res.status(500).json({
+      EM: `Lỗi: ${error.message}`,
+      EC: -1,
+      DT: [],
+    });
+  }
+};
+
 module.exports = { 
   getAllUsers, 
   getUserById, 
@@ -209,5 +305,6 @@ module.exports = {
   updateUser, 
   deleteUser,
   
-  loginUserGoogle
+  loginUserGoogle,
+  loginUser 
 };
