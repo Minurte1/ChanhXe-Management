@@ -249,9 +249,6 @@ const loginUser = async (req, res) => {
       });
     }
 
-    // Xác định vai trò mặc định nếu chưa có
-    const userRole = user.vai_tro || "nhan_vien_kho";
-
     // Tạo JWT token
     const token = jwt.sign(
       {
@@ -259,7 +256,7 @@ const loginUser = async (req, res) => {
         email: user.email,
         ho_ten: user.ho_ten,
         so_dien_thoai: user.so_dien_thoai,
-        vai_tro: userRole,
+        vai_tro: user.vai_tro,
         trang_thai: user.trang_thai,
         id_nguoi_cap_nhat: user.id_nguoi_cap_nhat,
         ngay_cap_nhat: user.ngay_cap_nhat,
@@ -280,7 +277,7 @@ const loginUser = async (req, res) => {
           email: user.email,
           ho_ten: user.ho_ten,
           so_dien_thoai: user.so_dien_thoai,
-          vai_tro: userRole,
+          vai_tro: user.vai_tro,
           trang_thai: user.trang_thai,
           id_nguoi_cap_nhat: user.id_nguoi_cap_nhat,
           ngay_cap_nhat: user.ngay_cap_nhat,
@@ -298,6 +295,68 @@ const loginUser = async (req, res) => {
   }
 };
 
+const logoutUser = (req, res) => {
+  res.clearCookie("accessToken");
+  return res.status(200).json({ message: "Đăng xuất thành công" });
+};
+
+const verifyAdmin = async(req, res) => {
+  const { token } = req.body;
+  console.log("token", token);
+  if (!token) {
+    return res.status(401).json({
+      EM: "Token is missing",
+      EC: 401,
+      DT: { isAdmin: false },
+    });
+  }
+
+  try {
+    // Giải mã token
+    const decoded = jwt.verify(token, JWT_SECRET);
+
+    const id = decoded.id;
+    console.log("id", decoded);
+    // Truy vấn để lấy thông tin user từ database
+    const [rows] = await pool.query(
+      "SELECT vai_tro FROM nguoi_dung WHERE id = ?",
+      [id]
+    );
+
+    if (rows.length > 0) {
+      const user = rows[0];
+
+      // Kiểm tra vai trò của người dùng
+      if (user.vai_tro === "admin") {
+        return res.status(200).json({
+          EM: "User is admin",
+          EC: 200,
+          DT: { isAdmin: true }, // Người dùng là admin
+        });
+      } else {
+        return res.status(403).json({
+          EM: "User is not admin",
+          EC: 403,
+          DT: { isAdmin: false }, // Người dùng không phải admin
+        });
+      }
+    } else {
+      return res.status(404).json({
+        EM: "User not found",
+        EC: 404,
+        DT: { isAdmin: false }, // Người dùng không tìm thấy
+      });
+    }
+  } catch (error) {
+    console.error("Error decoding token or querying database:", error);
+    return res.status(401).json({
+      EM: `Invalid token: ${error.message}`, // Thông báo lỗi token không hợp lệ
+      EC: 401,
+      DT: { isAdmin: false }, // Token không hợp lệ, trả về false
+    });
+  }
+};
+
 module.exports = { 
   getAllUsers, 
   getUserById, 
@@ -306,5 +365,7 @@ module.exports = {
   deleteUser,
   
   loginUserGoogle,
-  loginUser 
+  loginUser,
+  logoutUser,
+  verifyAdmin 
 };

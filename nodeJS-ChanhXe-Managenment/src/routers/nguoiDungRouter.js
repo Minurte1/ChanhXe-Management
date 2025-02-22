@@ -9,7 +9,9 @@ const {
   deleteUser,
 
   loginUserGoogle,
-  loginUser
+  loginUser,
+  logoutUser,
+  verifyAdmin
 } = require("../controllers/nguoiDungController");
 
 router.get("/users", getAllUsers);
@@ -20,5 +22,7 @@ router.delete("/users/:id", deleteUser);
 
 router.post("/login/google", loginUserGoogle);
 router.post("/login", loginUser);
+router.post("/logout", logoutUser);
+router.post("/verify-admin", verifyAdmin);
 
 module.exports = router;

@@ -854,6 +854,7 @@ const sendOtp = async (req, res) => {
     });
   }
 };
+
 const checkOtp = async (req, res) => {
   const { email, otp } = req.body;
 
