@@ -11,9 +11,7 @@ import "primeicons/primeicons.css"; // CSS của icon
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <GoogleOAuthProvider
-    clientId={`980511465818-uerpms9v83cjgcbpld0iggdhpvm8eld4.apps.googleusercontent.com`}
-  >
+  <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
     <Provider store={store}>
       <App />
     </Provider>

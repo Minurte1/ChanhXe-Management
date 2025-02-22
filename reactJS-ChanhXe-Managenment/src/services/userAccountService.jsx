@@ -85,6 +85,7 @@ export const deleteUserById = async (userId) => {
     return false;
   }
 };
+
 export const verifyAdmin = async (accessToken) => {
   if (!accessToken) {
     return false;
@@ -99,7 +100,7 @@ export const verifyAdmin = async (accessToken) => {
     );
 
     // Kết quả phản hồi từ backend
-
+    console.log("response.data admin ", response.data);
     if (response.data.DT.isAdmin) {
       // console.log("User is admin");
       return true;

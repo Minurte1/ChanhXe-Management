@@ -1,5 +1,14 @@
 const pool = require("../config/database"); // Kết nối cơ sở dữ liệu
+const jwt = require("jsonwebtoken");
+const JWT_SECRET = process.env.JWT_SECRET;
+const fs = require("fs");
+const path = require("path");
+const dayjs = require("dayjs");
 
+const bcrypt = require("bcrypt");
+const nodemailer = require("nodemailer");
+const crypto = require("crypto");
+const otpStorage = new Map();
 // Lấy tất cả người dùng
 const getAllUsers = async (req, res) => {
   try {
@@ -68,13 +77,11 @@ const createUser = async (req, res) => {
         ngay_tao,
       ]
     );
-    return res
-      .status(201)
-      .json({
-        EM: "Tạo người dùng thành công",
-        EC: 1,
-        DT: { id: result.insertId },
-      });
+    return res.status(201).json({
+      EM: "Tạo người dùng thành công",
+      EC: 1,
+      DT: { id: result.insertId },
+    });
   } catch (error) {
     console.error("Error in createUser:", error);
     return res
@@ -546,11 +553,12 @@ const registerUser = async (req, res) => {
     so_dien_thoai,
     trang_thai = "hoat_dong", // Mặc định người dùng ở trạng thái "hoat_dong"
     id_nguoi_cap_nhat = null, // Mặc định không có người cập nhật
-  } = req.body.formData;
-
+  } = req.body;
+  console.log("req.body", req.body);
   const EMAIL = email;
   const HO_TEN = ho_ten;
   const SO_DIEN_THOAI = so_dien_thoai;
+  const idNguoiCapNhat = id_nguoi_cap_nhat ?? 0;
 
   // Mã hóa mật khẩu trước khi lưu vào database
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -592,7 +600,7 @@ const registerUser = async (req, res) => {
         hashedPassword,
         vai_tro,
         trang_thai,
-        id_nguoi_cap_nhat,
+        idNguoiCapNhat,
       ]
     );
 

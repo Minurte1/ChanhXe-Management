@@ -42,8 +42,9 @@ app.use(bodyParser.json());
 
 // //api user
 const userRoute = require("./routers/userRouters.js");
-
-app.use("/", userRoute);
+const nguoiDungRoute = require("./routers/nguoiDungRouter.js");
+// app.use("/", userRoute);
+app.use("/", nguoiDungRoute);
 //
 
 const donHangRoute = require("./routers/donHangRouter.js");

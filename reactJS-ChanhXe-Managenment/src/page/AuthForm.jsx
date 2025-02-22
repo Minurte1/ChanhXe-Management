@@ -4,45 +4,45 @@ import { Password } from "primereact/password";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { GoogleLogin, useGoogleLogin } from "@react-oauth/google";
-import axios from "axios";
 
 import { useNavigate } from "react-router-dom";
 import "./style/authForm.scss";
 import { useDispatch } from "react-redux";
-import Cookies from "js-cookie";
 import { login } from "../redux/authSlice";
 import logoGG from "../public/asset/google.png";
+import {
+  checkOtp,
+  fetchGoogleUserInfo,
+  loginWithGoogle,
+  sendOtp,
+  servicesLoginUser,
+  servicesRegisterUser,
+} from "../services/googleAuthService";
+import { enqueueSnackbar } from "notistack";
 const AuthForm = () => {
   const [isRegister, setIsRegister] = useState(false); // Chuyển đổi giữa đăng nhập/đăng ký
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     otp: "",
+    name: "",
+    phone: "",
   });
+  const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false); // Kiểm tra đã gửi OTP chưa
   const [otpDialog, setOtpDialog] = useState(false); // Hiển thị Dialog nhập OTP
   const [user, setUser] = useState(null);
-  const [tokenGoogle, setTokenGoogle] = useState(null);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const loginGoogle = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
-      setTokenGoogle(tokenResponse.access_token);
-
-      // Lấy thông tin người dùng từ Google API
       try {
-        const userInfo = await axios.get(
-          "https://www.googleapis.com/oauth2/v3/userinfo",
-          {
-            headers: {
-              Authorization: `Bearer ${tokenResponse.access_token}`,
-            },
-          }
-        );
-
-        setUser(userInfo.data);
+        const userInfo = await fetchGoogleUserInfo(tokenResponse.access_token);
+        setUser(userInfo);
       } catch (error) {
-        console.error("Error fetching user info:", error);
+        console.error("Lỗi lấy thông tin Google:", error);
       }
     },
     onError: (error) => {
@@ -52,36 +52,24 @@ const AuthForm = () => {
 
   useEffect(() => {
     if (user) {
-      const fetchData = async () => {
+      const handleLogin = async () => {
         try {
-          const response = await axios.post(
-            `${process.env.REACT_APP_URL_SERVER}/login/google`,
-            { email: user.email, HO_TEN: user.name }
-          );
-
-          if (response.data.EC === 200) {
-            localStorage.setItem("THEMES", response.data.DT.userInfo.THEMES);
-            Cookies.remove("accessToken");
-            const accessToken = response.data.DT.accessToken;
-            Cookies.set("accessToken", accessToken, { expires: 7 });
-            sessionStorage.setItem("userPicture", user.picture);
+          const loginData = await loginWithGoogle(user);
+          if (loginData) {
             dispatch(
               login({
-                accessToken,
-                userInfo: response.data.DT.userInfo, // Thông tin người dùng
+                accessToken: loginData.accessToken,
+                userInfo: loginData.userInfo,
               })
             );
-
-            // loginIs();
-            navigate("/");
-          } else {
+            navigate("/admin");
           }
         } catch (error) {
-          console.error("Đã xảy ra lỗi:", error);
+          console.error("Lỗi khi đăng nhập:", error);
         }
       };
 
-      fetchData();
+      handleLogin();
     }
   }, [user, navigate, dispatch]);
 
@@ -91,21 +79,102 @@ const AuthForm = () => {
   };
 
   // Xử lý gửi OTP
-  const handleSendOtp = () => {
-    setOtpSent(true);
-    setOtpDialog(true); // Mở dialog nhập OTP
+  const handleSendOtp = async () => {
+    const { email } = formData;
+    if (!email) {
+      enqueueSnackbar("Vui lòng nhập email!", { variant: "info" });
+      return;
+    } else {
+      const response = await sendOtp(email);
+
+      if (response.EC === 1) {
+        enqueueSnackbar("Đã gửi mã OTP!", { variant: "success" });
+        setOtpSent(true);
+        setOtpDialog(true); // Mở dialog nhập OTP
+      } else {
+        enqueueSnackbar("Có lỗi xảy ra!", { variant: "info" });
+      }
+    }
   };
 
-  // Xử lý đăng nhập hoặc đăng ký
-  const handleSubmit = () => {
-    if (isRegister) {
-      if (!otpSent) {
-        alert("Vui lòng nhập OTP!");
-      } else {
-        alert("Đăng ký thành công!");
-      }
+  const handleCheckOtp = async () => {
+    const { email, otp, name, phone } = formData;
+    if (!email || !otp || !name || !phone) {
+      enqueueSnackbar("Vui lòng nhập đầy đủ thông tin", { variant: "info" });
+      return;
     } else {
-      alert("Đăng nhập thành công!");
+      const response = await checkOtp(email, otp);
+      if (response) {
+        if (response.EC === 1) {
+          enqueueSnackbar(response.EM, { variant: "success" });
+          setOtpSent(true);
+          setIsRegister(true);
+          setOtpDialog(false); // Đóng
+          registerUser(formData);
+        } else {
+          enqueueSnackbar(response.EM, { variant: "info" });
+        }
+      }
+    }
+  };
+
+  const registerUser = async (formData) => {
+    setLoading(true);
+    try {
+      const data = await servicesRegisterUser(formData); // Gọi API từ service
+
+      if (data.EC === 1) {
+        alert(data.EM);
+        setIsRegister(false);
+        setFormData(null);
+      } else {
+        setFormData(null);
+        alert(data.EM);
+      }
+    } catch (error) {
+      enqueueSnackbar("Có lỗi xảy ra!", { variant: "info" });
+    } finally {
+      setLoading(false);
+    }
+  };
+  const loginUser = async () => {
+    setLoading(true);
+    if (!formData.email || !formData.password) {
+      enqueueSnackbar("Vui lòng nhập đầy đủ thông tin", { variant: "info" });
+      return;
+    }
+    try {
+      const data = await servicesLoginUser(formData); // Gọi API từ service
+
+      if (data.EC === 1) {
+        enqueueSnackbar(data.EM, { variant: "success" });
+        navigate("/admin");
+        setIsRegister(false);
+      } else {
+        enqueueSnackbar(data.EM, { variant: "info" });
+      }
+    } catch (error) {
+      enqueueSnackbar("Có lỗi xảy ra!", { variant: "info" });
+    } finally {
+      setLoading(false);
+    }
+  };
+  // Xử lý đăng nhập hoặc đăng ký
+  const handleSubmit = async () => {
+    setLoading(true); // Bắt đầu hiệu ứng loading
+    try {
+      if (isRegister) {
+        if (!otpSent) {
+          setOtpDialog(true);
+          await handleSendOtp();
+        } else {
+          await registerUser(formData);
+        }
+      } else {
+        loginUser();
+      }
+    } finally {
+      setLoading(false); // Tắt loading khi xong
     }
   };
 
@@ -113,7 +182,6 @@ const AuthForm = () => {
     <div className="auth-Form">
       <div className="auth-container">
         <h2>{isRegister ? "Đăng Ký" : "Đăng Nhập"}</h2>
-
         <div className="p-field">
           <label>Email</label>
           <InputText
@@ -123,7 +191,29 @@ const AuthForm = () => {
             className="p-inputtext-lg w-full"
           />
         </div>
-
+        {isRegister && (
+          <>
+            {" "}
+            <div className="p-field">
+              <label>Họ tên</label>
+              <InputText
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="p-inputtext-lg w-full"
+              />
+            </div>{" "}
+            <div className="p-field">
+              <label>Số điện thoại</label>
+              <InputText
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                className="p-inputtext-lg w-full"
+              />
+            </div>
+          </>
+        )}
         <div className="p-field">
           <label>Mật khẩu</label>
           <Password
@@ -136,21 +226,21 @@ const AuthForm = () => {
           />
         </div>
 
-        {isRegister && (
-          <Button
-            label="Gửi OTP"
-            icon="pi pi-send"
-            onClick={handleSendOtp}
-            className="p-button-sm p-button-outlined auth-button button-otp"
-          />
-        )}
-
         <Button
           label={isRegister ? "Đăng Ký" : "Đăng Nhập"}
           onClick={handleSubmit}
           className="p-button-lg auth-button"
-          // disabled
-        />
+          disabled={loading}
+        >
+          {loading ? (
+            <i className="pi pi-spin pi-spinner" />
+          ) : isRegister ? (
+            ""
+          ) : (
+            ""
+          )}
+        </Button>
+
         {!isRegister && (
           <div className="admin-login mt-2">
             <div>
@@ -163,7 +253,6 @@ const AuthForm = () => {
             </div>
           </div>
         )}
-
         <p>
           {isRegister ? "Đã có tài khoản?" : "Chưa có tài khoản?"}{" "}
           <span
@@ -173,7 +262,6 @@ const AuthForm = () => {
             {isRegister ? "Đăng nhập" : "Đăng ký"}
           </span>
         </p>
-
         <Dialog
           header="Nhập Mã OTP"
           visible={otpDialog}
@@ -195,7 +283,7 @@ const AuthForm = () => {
               label="Xác Nhận"
               className="p-button-sm otp-button"
               style={{ marginTop: "10px" }}
-              onClick={() => alert("Xác nhận thành công!")}
+              onClick={handleCheckOtp}
             />
           </div>
         </Dialog>
