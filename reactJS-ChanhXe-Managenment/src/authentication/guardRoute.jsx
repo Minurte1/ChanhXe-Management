@@ -2,6 +2,7 @@ import { Navigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { verifyAdmin } from "../services/userAccountService";
+import { enqueueSnackbar } from "notistack";
 
 const GuardRoute = ({ element: Element, ...rest }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -15,10 +16,13 @@ const GuardRoute = ({ element: Element, ...rest }) => {
           const isAdmin = await verifyAdmin(accessToken);
           setIsAuthenticated(isAdmin);
         } catch (error) {
-          console.error("Error verifying admin:", error);
+          // console.error("Error verifying admin:", error);
           setIsAuthenticated(false);
         }
       } else {
+        enqueueSnackbar("Bạn không có quyền truy cập vào trang này", {
+          variant: "info",
+        });
         setIsAuthenticated(false);
       }
       setLoading(false);
@@ -28,10 +32,10 @@ const GuardRoute = ({ element: Element, ...rest }) => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <></>;
   }
 
-  return isAuthenticated ? <Element {...rest} /> : <Navigate to="/login" />;
+  return isAuthenticated ? <Element {...rest} /> : <Navigate to="/" />;
 };
 
 export default GuardRoute;

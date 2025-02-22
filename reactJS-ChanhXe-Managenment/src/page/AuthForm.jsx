@@ -108,9 +108,10 @@ const AuthForm = () => {
         if (response.EC === 1) {
           enqueueSnackbar(response.EM, { variant: "success" });
           setOtpSent(true);
+
           setIsRegister(true);
           setOtpDialog(false); // Đóng
-          registerUser(formData);
+          registerUser();
         } else {
           enqueueSnackbar(response.EM, { variant: "info" });
         }
@@ -118,25 +119,29 @@ const AuthForm = () => {
     }
   };
 
-  const registerUser = async (formData) => {
+  const registerUser = async () => {
     setLoading(true);
+    const { email, name, phone, password } = formData;
+    if (!email || !password || !name || !phone) {
+      enqueueSnackbar("Vui lòng nhập đầy đủ thông tin", { variant: "info" });
+      return;
+    }
     try {
       const data = await servicesRegisterUser(formData); // Gọi API từ service
 
       if (data.EC === 1) {
-        alert(data.EM);
+        enqueueSnackbar(data.EM, { variant: "success" });
         setIsRegister(false);
-        setFormData(null);
       } else {
-        setFormData(null);
         alert(data.EM);
       }
     } catch (error) {
-      enqueueSnackbar("Có lỗi xảy ra!", { variant: "info" });
+      // enqueueSnackbar("Có lỗi xảy ra!", { variant: "info" });
     } finally {
       setLoading(false);
     }
   };
+  console.log("formData", formData);
   const loginUser = async () => {
     setLoading(true);
     if (!formData.email || !formData.password) {
@@ -149,12 +154,18 @@ const AuthForm = () => {
       if (data.EC === 1) {
         enqueueSnackbar(data.EM, { variant: "success" });
         navigate("/admin");
+        dispatch(
+          login({
+            accessToken: data.DT.accessToken,
+            userInfo: data.DT.userInfo,
+          })
+        );
         setIsRegister(false);
       } else {
         enqueueSnackbar(data.EM, { variant: "info" });
       }
     } catch (error) {
-      enqueueSnackbar("Có lỗi xảy ra!", { variant: "info" });
+      // enqueueSnackbar("Có lỗi xảy ra!", { variant: "info" });
     } finally {
       setLoading(false);
     }
@@ -186,7 +197,7 @@ const AuthForm = () => {
           <label>Email</label>
           <InputText
             name="email"
-            value={formData.email}
+            value={formData?.email}
             onChange={handleChange}
             className="p-inputtext-lg w-full"
           />
@@ -198,7 +209,7 @@ const AuthForm = () => {
               <label>Họ tên</label>
               <InputText
                 name="name"
-                value={formData.name}
+                value={formData?.name}
                 onChange={handleChange}
                 className="p-inputtext-lg w-full"
               />
@@ -207,7 +218,7 @@ const AuthForm = () => {
               <label>Số điện thoại</label>
               <InputText
                 name="phone"
-                value={formData.phone}
+                value={formData?.phone}
                 onChange={handleChange}
                 className="p-inputtext-lg w-full"
               />
@@ -218,7 +229,7 @@ const AuthForm = () => {
           <label>Mật khẩu</label>
           <Password
             name="password"
-            value={formData.password}
+            value={formData?.password}
             onChange={handleChange}
             className="w-full"
             feedback={false}
@@ -272,7 +283,7 @@ const AuthForm = () => {
             <label>Mã OTP</label>
             <InputText
               name="otp"
-              value={formData.otp}
+              value={formData?.otp}
               onChange={handleChange}
               className="w-full input-otp"
               style={{ marginLeft: "10px" }}

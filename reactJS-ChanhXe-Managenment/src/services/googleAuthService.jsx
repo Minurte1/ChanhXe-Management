@@ -20,11 +20,11 @@ export const loginWithGoogle = async (user) => {
   try {
     const response = await axios.post(
       `${process.env.REACT_APP_URL_SERVER}/login/google`,
-      { email: user.email, HO_TEN: user.name }
+      { email: user.email, ho_ten: user.name }
     );
 
     if (response.data.EC === 200) {
-      localStorage.setItem("THEMES", response.data.DT.userInfo.THEMES);
+      enqueueSnackbar(response.data.EM, { variant: "success" });
       Cookies.remove("accessToken");
       const accessToken = response.data.DT.accessToken;
       Cookies.set("accessToken", accessToken, { expires: 7 });

@@ -2,6 +2,7 @@ import { toast } from "react-toastify";
 import axiosInstance from "../authentication/axiosInstance";
 import Cookies from "js-cookie";
 import axios from "axios";
+import { enqueueSnackbar } from "notistack";
 const apiUrl = process.env.REACT_APP_URL_SERVER;
 
 // Login User
@@ -109,6 +110,9 @@ export const verifyAdmin = async (accessToken) => {
       return false;
     }
   } catch (error) {
+    enqueueSnackbar("Bạn không có quyền truy cập vào trang này", {
+      variant: "info",
+    });
     console.error("Error verifying admin:", error);
     return false;
   }

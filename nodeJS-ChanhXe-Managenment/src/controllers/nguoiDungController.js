@@ -218,16 +218,18 @@ const loginUserGoogle = async (req, res) => {
       // Nếu người dùng chưa tồn tại, tạo mới
       const vai_tro_mac_dinh = "nhan_vien_kho";
       const trang_thai_mac_dinh = "hoat_dong";
-      const id_nguoi_cap_nhat = null; // Chưa ai cập nhật nên để NULL
-
+      const id_nguoi_cap_nhat = 0; // Chưa ai cập nhật nên để NULL
+      const guiPassword = crypto.randomBytes(4).toString("hex");
+      const hashedPassword = await bcrypt.hash(guiPassword, 10);
       const [insertResult] = await pool.query(
-        "INSERT INTO nguoi_dung (email, ho_ten, vai_tro, trang_thai, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat) VALUES (?, ?, ?, ?, ?, NOW(), NOW())",
+        "INSERT INTO nguoi_dung (email, ho_ten, vai_tro, trang_thai, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat,mat_khau) VALUES (?, ?, ?, ?, ?, NOW(), NOW(),?)",
         [
           email,
           ho_ten,
           vai_tro_mac_dinh,
           trang_thai_mac_dinh,
           id_nguoi_cap_nhat,
+          hashedPassword,
         ]
       );
 
@@ -237,7 +239,14 @@ const loginUserGoogle = async (req, res) => {
         [email]
       );
       const newUser = newUserRows[0];
-
+      // Gửi email thông tin tài khoản
+      await sendAccountEmail(
+        email,
+        ho_ten,
+        guiPassword,
+        vai_tro_mac_dinh,
+        trang_thai_mac_dinh
+      );
       // Tạo token cho user mới
       const token = jwt.sign(
         {
@@ -256,7 +265,7 @@ const loginUserGoogle = async (req, res) => {
       );
 
       return res.status(200).json({
-        EM: "New user created and logged in successfully",
+        EM: "Tài khoản của bạn đã được tạo thành công, vui lòng kiểm tra email để lấy mật khẩu",
         EC: 200,
         DT: {
           accessToken: token,
@@ -283,7 +292,46 @@ const loginUserGoogle = async (req, res) => {
     });
   }
 };
+// 📨 Hàm gửi email thông tin tài khoản
+const sendAccountEmail = async (email, hoTen, password, vaiTro, trangThai) => {
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_OTP,
+      pass: process.env.PASSWORD_OTP,
+    },
+  });
 
+  const mailOptions = {
+    from: "quanlychanhxe@gmail.com",
+    to: email,
+    subject: "Quản Lý Chành Xe - Thông Tin Tài Khoản Của Bạn",
+    html: `
+      <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+        <h2 style="text-align: center; color: #007000;">Chào mừng bạn đến với Quản Lý Chành Xe!</h2>
+        <p>Xin chào <strong>${hoTen}</strong>,</p>
+        <p>Bạn đã đăng ký tài khoản thành công bằng Google. Dưới đây là thông tin tài khoản của bạn:</p>
+        <div style="background-color: #f9f9f9; padding: 15px; border-radius: 8px;">
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Mật khẩu tạm thời:</strong> <span style="color: red;">${password}</span></p>
+          <p><strong>Vai trò:</strong> ${vaiTro}</p>
+          <p><strong>Trạng thái:</strong> ${
+            trangThai === "hoat_dong" ? "Hoạt động" : "Bị khóa"
+          }</p>
+        </div>
+        <p>Vui lòng đăng nhập và đổi mật khẩu để đảm bảo an toàn.</p>
+        <p style="text-align: center; color: #888; font-size: 12px;">&copy; 2024 Quản Lý Chành Xe. All rights reserved.</p>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`📧 Email gửi thành công đến: ${email}`);
+  } catch (error) {
+    console.error("❌ Gửi email thất bại:", error);
+  }
+};
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
@@ -476,7 +524,7 @@ const sendOtp = async (req, res) => {
         </div>
         <div style="margin-top: 20px; text-align: center; color: #888; font-size: 12px;">
           <p>Nếu bạn không yêu cầu mã này, xin hãy bỏ qua email này.</p>
-          <p style="margin-top: 10px;">&copy; 2024 PhucShoe2. All rights reserved.</p>
+          <p style="margin-top: 10px;">&copy; 2024 quanlychanhxe@gmail.com. All rights reserved.</p>
         </div>
       </div>
     `,
@@ -559,12 +607,19 @@ const registerUser = async (req, res) => {
   const HO_TEN = ho_ten;
   const SO_DIEN_THOAI = so_dien_thoai;
   const idNguoiCapNhat = id_nguoi_cap_nhat ?? 0;
+  if (!password) {
+    return res.status(400).json({
+      EM: "Mật khẩu không được để trống",
+      EC: 0,
+      DT: [],
+    });
+  }
 
   // Mã hóa mật khẩu trước khi lưu vào database
   const hashedPassword = await bcrypt.hash(password, 10);
 
   // Kiểm tra xem có thiếu thông tin cần thiết không
-  if (!EMAIL || !hashedPassword || !HO_TEN || !SO_DIEN_THOAI) {
+  if (!EMAIL || !HO_TEN || !SO_DIEN_THOAI) {
     return res.status(400).json({
       EM: "Missing required fields",
       EC: 0,
