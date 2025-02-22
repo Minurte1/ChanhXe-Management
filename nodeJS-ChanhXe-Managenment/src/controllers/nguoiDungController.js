@@ -4,10 +4,14 @@ const pool = require("../config/database"); // Kết nối cơ sở dữ liệu
 const getAllUsers = async (req, res) => {
   try {
     const [rows] = await pool.query("SELECT * FROM nguoi_dung");
-    return res.status(200).json({ EM: "Lấy danh sách người dùng thành công", EC: 1, DT: rows });
+    return res
+      .status(200)
+      .json({ EM: "Lấy danh sách người dùng thành công", EC: 1, DT: rows });
   } catch (error) {
     console.error("Error in getAllUsers:", error);
-    return res.status(500).json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: [] });
+    return res
+      .status(500)
+      .json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: [] });
   }
 };
 
@@ -15,29 +19,67 @@ const getAllUsers = async (req, res) => {
 const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
-    const [rows] = await pool.query("SELECT * FROM nguoi_dung WHERE id = ?", [id]);
+    const [rows] = await pool.query("SELECT * FROM nguoi_dung WHERE id = ?", [
+      id,
+    ]);
     if (rows.length === 0) {
-      return res.status(404).json({ EM: "Không tìm thấy người dùng", EC: -1, DT: {} });
+      return res
+        .status(404)
+        .json({ EM: "Không tìm thấy người dùng", EC: -1, DT: {} });
     }
-    return res.status(200).json({ EM: "Lấy người dùng thành công", EC: 1, DT: rows[0] });
+    return res
+      .status(200)
+      .json({ EM: "Lấy người dùng thành công", EC: 1, DT: rows[0] });
   } catch (error) {
     console.error("Error in getUserById:", error);
-    return res.status(500).json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
+    return res
+      .status(500)
+      .json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
   }
 };
 
 // Thêm mới người dùng
 const createUser = async (req, res) => {
   try {
-    const { ho_ten, so_dien_thoai, email, mat_khau, vai_tro, trang_thai, id_nguoi_cap_nhat, ngay_cap_nhat, ngay_tao } = req.body;
+    const {
+      id,
+      ho_ten,
+      so_dien_thoai,
+      email,
+      mat_khau,
+      vai_tro,
+      trang_thai,
+      id_nguoi_cap_nhat,
+      ngay_cap_nhat,
+      ngay_tao,
+    } = req.body;
     const [result] = await pool.query(
       `INSERT INTO nguoi_dung (ho_ten, so_dien_thoai, email, mat_khau, vai_tro, trang_thai, id_nguoi_cap_nhat, ngay_cap_nhat, ngay_tao) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [ho_ten, so_dien_thoai, email, mat_khau, vai_tro, trang_thai, id_nguoi_cap_nhat, ngay_cap_nhat, ngay_tao]
+      [
+        id,
+        ho_ten,
+        so_dien_thoai,
+        email,
+        mat_khau,
+        vai_tro,
+        trang_thai,
+        id_nguoi_cap_nhat,
+        ngay_cap_nhat,
+        ngay_tao,
+      ]
     );
-    return res.status(201).json({ EM: "Tạo người dùng thành công", EC: 1, DT: { id: result.insertId } });
+    return res
+      .status(201)
+      .json({
+        EM: "Tạo người dùng thành công",
+        EC: 1,
+        DT: { id: result.insertId },
+      });
   } catch (error) {
     console.error("Error in createUser:", error);
-    return res.status(500).json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
+    return res
+      .status(500)
+      .json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
   }
 };
 
@@ -47,19 +89,32 @@ const updateUser = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
     if (Object.keys(updates).length === 0) {
-      return res.status(400).json({ EM: "Không có dữ liệu cập nhật", EC: -1, DT: {} });
+      return res
+        .status(400)
+        .json({ EM: "Không có dữ liệu cập nhật", EC: -1, DT: {} });
     }
-    const fields = Object.keys(updates).map((key) => `${key} = ?`).join(", ");
+    const fields = Object.keys(updates)
+      .map((key) => `${key} = ?`)
+      .join(", ");
     const values = Object.values(updates);
     values.push(id);
-    const [result] = await pool.query(`UPDATE nguoi_dung SET ${fields} WHERE id = ?`, values);
+    const [result] = await pool.query(
+      `UPDATE nguoi_dung SET ${fields} WHERE id = ?`,
+      values
+    );
     if (result.affectedRows === 0) {
-      return res.status(404).json({ EM: "Không tìm thấy người dùng để cập nhật", EC: -1, DT: {} });
+      return res
+        .status(404)
+        .json({ EM: "Không tìm thấy người dùng để cập nhật", EC: -1, DT: {} });
     }
-    return res.status(200).json({ EM: "Cập nhật người dùng thành công", EC: 1, DT: {} });
+    return res
+      .status(200)
+      .json({ EM: "Cập nhật người dùng thành công", EC: 1, DT: {} });
   } catch (error) {
     console.error("Error in updateUser:", error);
-    return res.status(500).json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
+    return res
+      .status(500)
+      .json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
   }
 };
 
@@ -67,14 +122,22 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const [result] = await pool.query("DELETE FROM nguoi_dung WHERE id = ?", [id]);
+    const [result] = await pool.query("DELETE FROM nguoi_dung WHERE id = ?", [
+      id,
+    ]);
     if (result.affectedRows === 0) {
-      return res.status(404).json({ EM: "Không tìm thấy người dùng để xóa", EC: -1, DT: {} });
+      return res
+        .status(404)
+        .json({ EM: "Không tìm thấy người dùng để xóa", EC: -1, DT: {} });
     }
-    return res.status(200).json({ EM: "Xóa người dùng thành công", EC: 1, DT: {} });
+    return res
+      .status(200)
+      .json({ EM: "Xóa người dùng thành công", EC: 1, DT: {} });
   } catch (error) {
     console.error("Error in deleteUser:", error);
-    return res.status(500).json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
+    return res
+      .status(500)
+      .json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
   }
 };
 
@@ -92,7 +155,10 @@ const loginUserGoogle = async (req, res) => {
 
   try {
     // Kiểm tra người dùng đã tồn tại chưa
-    const [rows] = await pool.query("SELECT * FROM nguoi_dung WHERE email = ?", [email]);
+    const [rows] = await pool.query(
+      "SELECT * FROM nguoi_dung WHERE email = ?",
+      [email]
+    );
 
     if (rows.length > 0) {
       const user = rows[0];
@@ -149,11 +215,20 @@ const loginUserGoogle = async (req, res) => {
 
       const [insertResult] = await pool.query(
         "INSERT INTO nguoi_dung (email, ho_ten, vai_tro, trang_thai, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat) VALUES (?, ?, ?, ?, ?, NOW(), NOW())",
-        [email, ho_ten, vai_tro_mac_dinh, trang_thai_mac_dinh, id_nguoi_cap_nhat]
+        [
+          email,
+          ho_ten,
+          vai_tro_mac_dinh,
+          trang_thai_mac_dinh,
+          id_nguoi_cap_nhat,
+        ]
       );
 
       // Lấy thông tin user vừa tạo
-      const [newUserRows] = await pool.query("SELECT * FROM nguoi_dung WHERE email = ?", [email]);
+      const [newUserRows] = await pool.query(
+        "SELECT * FROM nguoi_dung WHERE email = ?",
+        [email]
+      );
       const newUser = newUserRows[0];
 
       // Tạo token cho user mới
@@ -300,7 +375,7 @@ const logoutUser = (req, res) => {
   return res.status(200).json({ message: "Đăng xuất thành công" });
 };
 
-const verifyAdmin = async(req, res) => {
+const verifyAdmin = async (req, res) => {
   const { token } = req.body;
   console.log("token", token);
   if (!token) {
@@ -357,15 +432,201 @@ const verifyAdmin = async(req, res) => {
   }
 };
 
-module.exports = { 
-  getAllUsers, 
-  getUserById, 
-  createUser, 
-  updateUser, 
+const sendOtp = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) return res.status(400).json({ message: "Email is required" });
+
+  // Tạo OTP và thời gian hết hạn
+  const otp = crypto.randomInt(100000, 999999);
+  const expiresAt = Date.now() + 1 * 60 * 1000; // 1 phút
+
+  // Lưu OTP
+  otpStorage.set(email, { otp, expiresAt });
+  console.log("to email: ", email);
+  // Gửi email
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_OTP,
+      pass: process.env.PASSWORD_OTP,
+    },
+  });
+
+  const mailOptions = {
+    from: "quanlychanhxe@gmail.com",
+    to: email,
+    subject: "Quản Lý Chành Xe - Mã OTP Của Bạn",
+    html: `
+      <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+        <div style="text-align: center; padding: 10px 0;">
+          <h1 style="color: #007000; margin-bottom: 5px;">Dịch Vụ Quản Lý Chành Xe</h1>
+        </div>
+        <div style="padding: 20px; background-color: #f9f9f9; border-radius: 8px;">
+          <h2 style="color: #007000;">Your OTP Code</h2>
+          <p style="font-size: 18px; margin: 10px 0; font-weight: bold; color: #000;">${otp}</p>
+          <p style="font-size: 14px; color: #555;">Mã này sẽ hết hạn trong <strong>1 phút</strong>.</p>
+        </div>
+        <div style="margin-top: 20px; text-align: center; color: #888; font-size: 12px;">
+          <p>Nếu bạn không yêu cầu mã này, xin hãy bỏ qua email này.</p>
+          <p style="margin-top: 10px;">&copy; 2024 PhucShoe2. All rights reserved.</p>
+        </div>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    return res.status(200).json({
+      EM: "Gửi OTP thành công",
+      EC: 1,
+      DT: [],
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      EM: "Gửi OTP thất bại",
+      EC: -1,
+      DT: [],
+    });
+  }
+};
+
+const checkOtp = async (req, res) => {
+  const { email, otp } = req.body;
+
+  if (!email || !otp) {
+    return res.status(400).json({ message: "Email and OTP are required" });
+  }
+
+  // Kiểm tra OTP có tồn tại trong bộ nhớ
+  const storedOtp = otpStorage.get(email);
+
+  if (!storedOtp) {
+    return res.status(400).json({
+      EM: "OTP không tồn tại hoặc đã hết hạn",
+      EC: -1,
+      DT: [],
+    });
+  }
+
+  // Kiểm tra thời gian hết hạn của OTP
+  const currentTime = Date.now();
+  if (currentTime > storedOtp.expiresAt) {
+    otpStorage.delete(email); // Xóa OTP đã hết hạn
+    return res.status(400).json({
+      EM: "OTP đã hết hạn",
+      EC: -1,
+      DT: [],
+    });
+  }
+
+  // Kiểm tra OTP có đúng không
+  if (parseInt(otp) === storedOtp.otp) {
+    return res.status(200).json({
+      EM: "OTP hợp lệ",
+      EC: 1,
+      DT: [],
+    });
+  } else {
+    return res.status(400).json({
+      EM: "OTP không đúng",
+      EC: -1,
+      DT: [],
+    });
+  }
+};
+
+const registerUser = async (req, res) => {
+  const {
+    password,
+    email,
+    vai_tro = "nhan_vien_kho", // Giả sử mặc định là "nhan_vien_kho" nếu không có thông tin
+    ho_ten,
+    so_dien_thoai,
+    trang_thai = "hoat_dong", // Mặc định người dùng ở trạng thái "hoat_dong"
+    id_nguoi_cap_nhat = null, // Mặc định không có người cập nhật
+  } = req.body.formData;
+
+  const EMAIL = email;
+  const HO_TEN = ho_ten;
+  const SO_DIEN_THOAI = so_dien_thoai;
+
+  // Mã hóa mật khẩu trước khi lưu vào database
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // Kiểm tra xem có thiếu thông tin cần thiết không
+  if (!EMAIL || !hashedPassword || !HO_TEN || !SO_DIEN_THOAI) {
+    return res.status(400).json({
+      EM: "Missing required fields",
+      EC: 0,
+      DT: [],
+    });
+  }
+
+  try {
+    // Kiểm tra xem email đã tồn tại trong cơ sở dữ liệu chưa
+    const [existingUser] = await pool.query(
+      `SELECT * FROM nguoi_dung WHERE email = ?`,
+      [EMAIL]
+    );
+
+    if (existingUser.length > 0) {
+      return res.status(400).json({
+        EM: "Tài khoản email này đã được đăng ký",
+        EC: 0,
+        DT: [],
+      });
+    }
+
+    // Thực hiện đăng ký người dùng mới
+    const [result] = await pool.query(
+      `INSERT INTO nguoi_dung (
+        ho_ten, so_dien_thoai, email, mat_khau, vai_tro, trang_thai, 
+        id_nguoi_cap_nhat, ngay_cap_nhat, ngay_tao
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+      [
+        HO_TEN,
+        SO_DIEN_THOAI,
+        EMAIL,
+        hashedPassword,
+        vai_tro,
+        trang_thai,
+        id_nguoi_cap_nhat,
+      ]
+    );
+
+    return res.status(200).json({
+      EM: "Đăng ký tài khoản thành công",
+      EC: 1,
+      DT: {
+        id: result.insertId, // Trả về ID người dùng mới
+        email: EMAIL,
+        ho_ten: HO_TEN,
+      },
+    });
+  } catch (error) {
+    console.error("Error in register:", error);
+    return res.status(500).json({
+      EM: `Error: ${error.message}`,
+      EC: -1,
+      DT: [],
+    });
+  }
+};
+
+module.exports = {
+  getAllUsers,
+  getUserById,
+  createUser,
+  updateUser,
   deleteUser,
-  
+
   loginUserGoogle,
   loginUser,
   logoutUser,
-  verifyAdmin 
+  verifyAdmin,
+  checkOtp,
+  sendOtp,
+  registerUser,
 };

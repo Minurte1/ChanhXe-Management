@@ -11,7 +11,10 @@ const {
   loginUserGoogle,
   loginUser,
   logoutUser,
-  verifyAdmin
+  verifyAdmin,
+  sendOtp,
+  checkOtp,
+  registerUser,
 } = require("../controllers/nguoiDungController");
 
 router.get("/users", getAllUsers);
@@ -24,5 +27,8 @@ router.post("/login/google", loginUserGoogle);
 router.post("/login", loginUser);
 router.post("/logout", logoutUser);
 router.post("/verify-admin", verifyAdmin);
+router.post("/send-otp", sendOtp);
+router.post("/check-otp", checkOtp);
+router.post("/register", registerUser);
 
 module.exports = router;
