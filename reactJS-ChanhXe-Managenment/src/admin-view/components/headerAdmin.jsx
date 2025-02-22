@@ -62,13 +62,13 @@ const HeaderAdmin = () => {
       dispatch(logout());
 
       // Điều hướng về trang đăng nhập
-      navigate("/login");
+      navigate("/");
     } catch (error) {
       console.error("Error during logout:", error);
     }
   };
   return (
-    <AppBar position="static" sx={{ backgroundColor: "#8aad51" }}>
+    <AppBar position="static" sx={{ backgroundColor: "#252728" }}>
       <Toolbar>
         {/* Left section: Logo and other items */}
         <Box

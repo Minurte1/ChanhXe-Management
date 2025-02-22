@@ -38,11 +38,17 @@
         margin-bottom: 5px;
 
         &:hover {
-            background-color: #8aad51;
+            background-color: #424341;
+            color: #fff !important;
+
+            .p-menuitem-text {
+                color: #fff !important;
+            }
+
         }
 
         &.active {
-            background-color: #8aad51;
+            background-color: #424341;
         }
     }
 
@@ -50,7 +56,12 @@
         color: #1f1f1f;
         font-weight: bold;
         padding: 10px;
+
+
+
     }
+
+
 
     .p-submenu-list {
         padding-left: 20px;

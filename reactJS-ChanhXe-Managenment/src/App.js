@@ -30,11 +30,11 @@ function App() {
         <Router>
           <Routes>
             <Route path="/*" element={<MainLayout />} />
-            {/* <Route
+            <Route
               path="/admin/*"
               element={<GuardRoute element={AdminLayout} />}
-            />{" "} */}
-            <Route path="/admin/*" element={<AdminLayout />} />
+            />{" "}
+            {/* <Route path="/admin/*" element={<AdminLayout />} /> */}
             <Route path="/profile/*" element={<RouterUser />} />
             {/* <Route path="/admin/*" element={<RouterAdmin />} /> */}
           </Routes>
