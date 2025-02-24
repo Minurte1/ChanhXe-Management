@@ -30,10 +30,16 @@ const getDriverById = async (req, res) => {
 const createDriver = async (req, res) => {
   try {
     const { nguoi_dung_id, bang_lai } = req.body;
+    const id_nguoi_cap_nhat = req.user?.id;
+    if (!id_nguoi_cap_nhat) {
+      return res.status(403).json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
+    }
     const [result] = await pool.query(
-      `INSERT INTO tai_xe (nguoi_dung_id, bang_lai) VALUES (?, ?)`,
-      [nguoi_dung_id, bang_lai]
+      `INSERT INTO tai_xe (nguoi_dung_id, bang_lai, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat) 
+       VALUES (?, ?, ?, NOW(), NOW())`,
+      [nguoi_dung_id, bang_lai, id_nguoi_cap_nhat]
     );
+
     return res.status(201).json({ EM: "Tạo tài xế thành công", EC: 1, DT: { id: result.insertId } });
   } catch (error) {
     console.error("Error in createDriver:", error);
@@ -46,16 +52,26 @@ const updateDriver = async (req, res) => {
   try {
     const { id } = req.params;
     const updates = req.body;
+    const id_nguoi_cap_nhat = req.user?.id;
+    if (!id_nguoi_cap_nhat) {
+      return res.status(403).json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
+    }
     if (Object.keys(updates).length === 0) {
       return res.status(400).json({ EM: "Không có dữ liệu cập nhật", EC: -1, DT: {} });
     }
+
     const fields = Object.keys(updates).map((key) => `${key} = ?`).join(", ");
     const values = Object.values(updates);
-    values.push(id);
-    const [result] = await pool.query(`UPDATE tai_xe SET ${fields} WHERE id = ?`, values);
+
+    const updateQuery = `UPDATE tai_xe SET ${fields}, ngay_cap_nhat = NOW(), id_nguoi_cap_nhat = ? WHERE id = ?`;
+    values.push(id_nguoi_cap_nhat, id);
+
+    const [result] = await pool.query(updateQuery, values);
+
     if (result.affectedRows === 0) {
       return res.status(404).json({ EM: "Không tìm thấy tài xế để cập nhật", EC: -1, DT: {} });
     }
+
     return res.status(200).json({ EM: "Cập nhật tài xế thành công", EC: 1, DT: {} });
   } catch (error) {
     console.error("Error in updateDriver:", error);
@@ -78,4 +94,10 @@ const deleteDriver = async (req, res) => {
   }
 };
 
-module.exports = { getAllDrivers, getDriverById, createDriver, updateDriver, deleteDriver };
+module.exports = {
+  getAllDrivers,
+  getDriverById,
+  createDriver,
+  updateDriver,
+  deleteDriver,
+};
