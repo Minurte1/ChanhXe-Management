@@ -142,7 +142,7 @@ const AuthForm = () => {
       setLoading(false);
     }
   };
-  console.log("formData", formData);
+
   const loginUser = async () => {
     setLoading(true);
     if (!formData.email || !formData.password) {
@@ -151,8 +151,10 @@ const AuthForm = () => {
     }
     try {
       const data = await servicesLoginUser(formData); // Gọi API từ service
-      console.log("data", data.DT.userInfo.vai_tro);
+
       if (data.EC === 1) {
+        const test = spService.createSlug(data.DT.userInfo.vai_tro);
+        console.log(test);
         enqueueSnackbar(data.EM, { variant: "success" });
         navigate(`/${spService.createSlug(data.DT.userInfo.vai_tro)}`);
         dispatch(

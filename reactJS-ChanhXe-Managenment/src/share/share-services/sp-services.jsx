@@ -28,14 +28,9 @@ const spService = {
         icon: "pi pi-user",
         items: [
           {
-            label: "Báo cáo doanh thu cước",
+            label: "Danh Sách Nhân Viên",
             url: "/report/revenue",
             className: location.pathname === "/report/revenue" ? "active" : "",
-          },
-          {
-            label: "Báo cáo hàng ngày",
-            url: "/report/daily",
-            className: location.pathname === "/report/daily" ? "active" : "",
           },
         ],
       },
@@ -57,14 +52,96 @@ const spService = {
       },
     ];
   },
+
+  getNhanVienKhoMenuItems: (location) => {
+    return [
+      {
+        label: "Quản lý đơn hàng",
+        icon: "pi pi-box",
+        items: [
+          {
+            label: "Nhập đơn hàng",
+            url: "/orders/create",
+            className: location.pathname === "/orders/create" ? "active" : "",
+          },
+          {
+            label: "Cập nhật trạng thái đơn hàng",
+            url: "/orders/status",
+            className: location.pathname === "/orders/status" ? "active" : "",
+          },
+          {
+            label: "Tra cứu đơn hàng",
+            url: "/orders/search",
+            className: location.pathname === "/orders/search" ? "active" : "",
+          },
+        ],
+      },
+      {
+        label: "Quản lý xe",
+        icon: "pi pi-truck",
+        url: "/vehicles",
+        className: location.pathname === "/vehicles" ? "active" : "",
+      },
+    ];
+  },
+
+  getNhanVienDieuPhoiMenuItems: (location) => {
+    return [
+      {
+        label: "Quản lý điều phối",
+        icon: "pi pi-cog",
+        items: [
+          {
+            label: "Ghi nhận xe xuất bến",
+            url: "/dispatch/departure",
+            className:
+              location.pathname === "/dispatch/departure" ? "active" : "",
+          },
+          {
+            label: "Phân công tài xế",
+            url: "/dispatch/assign-driver",
+            className:
+              location.pathname === "/dispatch/assign-driver" ? "active" : "",
+          },
+          {
+            label: "Phân công xe vận chuyển",
+            url: "/dispatch/assign-vehicle",
+            className:
+              location.pathname === "/dispatch/assign-vehicle" ? "active" : "",
+          },
+          {
+            label: "Cập nhật trạng thái xe",
+            url: "/dispatch/vehicle-status",
+            className:
+              location.pathname === "/dispatch/vehicle-status" ? "active" : "",
+          },
+        ],
+      },
+    ];
+  },
+
+  getTaiXeMenuItems: (location) => {
+    return [
+      {
+        label: "Lịch trình vận chuyển",
+        icon: "pi pi-map",
+        url: "/driver/schedule",
+        className: location.pathname === "/driver/schedule" ? "active" : "",
+      },
+    ];
+  },
+
   createSlug: (input) => {
     input = input.trim();
-    let slug = input.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    slug = slug
+    let slug = input
+      .normalize("NFD") // Chuẩn hóa Unicode để loại bỏ dấu
+      .replace(/[\u0300-\u036f]/g, "") // Loại bỏ dấu tiếng Việt
       .toLowerCase()
-      .replace(/đ/g, "d")
-      .replace(/[^a-z0-9\s-]/g, "")
-      .replace(/\s+/g, "-");
+      .replace(/đ/g, "d") // Chuyển đ -> d
+      .replace(/_/g, "-") // Thay thế dấu gạch dưới thành gạch ngang
+      .replace(/[^a-z0-9\s-]/g, "") // Xóa ký tự đặc biệt (chỉ giữ chữ, số, khoảng trắng và gạch ngang)
+      .replace(/\s+/g, "-"); // Thay khoảng trắng thành gạch ngang
+
     return slug;
   },
 };

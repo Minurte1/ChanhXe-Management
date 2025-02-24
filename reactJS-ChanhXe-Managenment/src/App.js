@@ -76,36 +76,51 @@ const MainLayout = () => (
 );
 
 const RouterTaiXe = () => (
-  <Grid container style={{ height: "100vh" }}>
-    <Grid item xs={3} md={2.5}></Grid>
-    <Grid item xs={9} md={9}>
-      <Routes>
-        <Route path="/*" element={<RouteTaiXe />} />
-      </Routes>
+  <>
+    <HeaderAdmin />
+    <Grid container style={{ height: "100vh" }}>
+      <Grid item xs={3} md={2.5}>
+        <NavBarAdmin />
+      </Grid>
+      <Grid item xs={9} md={9}>
+        <Routes>
+          <Route path="/*" element={<RouteTaiXe />} />
+        </Routes>
+      </Grid>
     </Grid>
-  </Grid>
+  </>
 );
 
 const RouterNhanVienKho = () => (
-  <Grid container style={{ height: "100vh" }}>
-    <Grid item xs={3} md={2.5}></Grid>
-    <Grid item xs={9} md={9}>
-      <Routes>
-        <Route path="/*" element={<RouteNhanVienKho />} />
-      </Routes>
+  <>
+    <HeaderAdmin />
+    <Grid container style={{ height: "100vh" }}>
+      <Grid item xs={3} md={2.5}>
+        <NavBarAdmin />
+      </Grid>
+      <Grid item xs={9} md={9}>
+        <Routes>
+          <Route path="/*" element={<RouteNhanVienKho />} />
+        </Routes>
+      </Grid>
     </Grid>
-  </Grid>
+  </>
 );
 
 const RouterNhanVienDieuPhoi = () => (
-  <Grid container style={{ height: "100vh" }}>
-    <Grid item xs={3} md={2.5}></Grid>
-    <Grid item xs={9} md={9}>
-      <Routes>
-        <Route path="/*" element={<RouteNhanVienDieuPhoi />} />
-      </Routes>
+  <>
+    <HeaderAdmin />
+    <Grid container style={{ height: "100vh" }}>
+      <Grid item xs={3} md={2.5}>
+        <NavBarAdmin />
+      </Grid>
+      <Grid item xs={9} md={9}>
+        <Routes>
+          <Route path="/*" element={<RouteNhanVienDieuPhoi />} />
+        </Routes>
+      </Grid>
     </Grid>
-  </Grid>
+  </>
 );
 
 const AdminLayout = () => (
