@@ -46,11 +46,11 @@ const GuardRoute = ({ element: Element, allowedRoles }) => {
       </Box>
     );
 
-  if (!userRole || !allowedRoles.includes(userRole)) {
-    return <Navigate to="/" />;
+  if (userRole === "admin" || (userRole && allowedRoles.includes(userRole))) {
+    return <Element />;
   }
 
-  return <Element />;
+  return <Navigate to="/" />;
 };
 
 export default GuardRoute;

@@ -45,9 +45,13 @@ const userRoute = require("./routers/userRouters.js");
 const donHangRoute = require("./routers/donHangRouter.js");
 const nguoiDungRoute = require("./routers/nguoiDungRouter.js");
 const xeRoute = require("./routers/xeRouter.js");
+const diaDiemRoute = require("./routers/diaDiemRouter.js");
+const benXeRoute = require("./routers/benXeRouter.js");
 // app.use("/", userRoute);
 app.use("/", nguoiDungRoute);
 app.use("/", xeRoute);
+app.use("/", diaDiemRoute);
+app.use("/", benXeRoute);
 //
 
 app.use("/", donHangRoute);

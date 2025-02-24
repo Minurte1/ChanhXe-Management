@@ -54,13 +54,11 @@ const createLocation = async (req, res) => {
       [tinh, huyen, xa, id_nguoi_cap_nhat]
     );
 
-    return res
-      .status(201)
-      .json({
-        EM: "Tạo địa điểm thành công",
-        EC: 1,
-        DT: { id: result.insertId },
-      });
+    return res.status(201).json({
+      EM: "Tạo địa điểm thành công",
+      EC: 1,
+      DT: { id: result.insertId },
+    });
   } catch (error) {
     console.error("Error in createLocation:", error);
     return res

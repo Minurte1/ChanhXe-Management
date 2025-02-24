@@ -10,11 +10,31 @@ import spService from "../../share/share-services/sp-services";
 import { ReduxExportServices } from "../../redux/redux-services/services-redux-export";
 
 const getMenuItems = (role, location) => {
+  const path = location.pathname;
+
+  // Nếu là admin, cho phép lấy menu theo đường dẫn
+  if (role === "admin") {
+    if (path.startsWith("/tai-xe"))
+      return spService.getTaiXeMenuItems(location);
+    if (path.startsWith("/nhan-vien-kho"))
+      return spService.getNhanVienKhoMenuItems(location);
+    if (path.startsWith("/nhan-vien-dieu-phoi"))
+      return spService.getNhanVienDieuPhoiMenuItems(location);
+    return spService.getAdminMenuItems(location); // Mặc định admin thấy menu admin
+  }
+
+  // Nếu không phải admin, chặn truy cập menu của role khác
+  if (path.startsWith("/admin")) return [];
+  if (path.startsWith("/tai-xe") && role !== "tai_xe" && role !== "tai_xe_phu")
+    return [];
+  if (path.startsWith("/nhan-vien-kho") && role !== "nhan_vien_kho") return [];
+  if (path.startsWith("/nhan-vien-dieu-phoi") && role !== "nhan_vien_dieu_phoi")
+    return [];
+
+  // Nếu không match route, lấy menu theo vai_tro
   switch (role) {
     case "nhan_vien_kho":
       return spService.getNhanVienKhoMenuItems(location);
-    case "admin":
-      return spService.getAdminMenuItems(location);
     case "nhan_vien_dieu_phoi":
       return spService.getNhanVienDieuPhoiMenuItems(location);
     case "tai_xe":

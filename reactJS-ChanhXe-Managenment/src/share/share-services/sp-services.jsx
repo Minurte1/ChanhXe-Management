@@ -52,6 +52,24 @@ const spService = {
         ],
       },
       {
+        label: "Danh sách bến xe",
+        icon: "pi pi-map",
+        items: [
+          {
+            label: "Danh sách bến xe",
+            url: "/admin/ben-xe/danh-sach",
+            className:
+              location.pathname === "/admin/ben-xe/danh-sach" ? "active" : "",
+          },
+          {
+            label: "Danh sách địa điểm",
+            url: "/admin/dia-diem/danh-sach",
+            className:
+              location.pathname === "/admin/dia-diem/danh-sach" ? "active" : "",
+          },
+        ],
+      },
+      {
         label: "Quản lý khách hàng",
         icon: "pi pi-users",
         items: [

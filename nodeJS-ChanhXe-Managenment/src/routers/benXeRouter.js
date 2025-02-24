@@ -11,10 +11,10 @@ const {
 
 const { checkUserJWT } = require("../middleware/JWTaction");
 
-router.get("/ben_xe", getAllBenXe);
-router.get("/ben_xe/:id", getBenXeById);
-router.post("/ben_xe", checkUserJWT, createBenXe);
-router.put("/ben_xe/:id", checkUserJWT, updateBenXe);
-router.delete("/ben_xe/:id", checkUserJWT, deleteBenXe);
+router.get("/ben-xe", getAllBenXe);
+router.get("/ben-xe/:id", getBenXeById);
+router.post("/ben-xe", checkUserJWT, createBenXe);
+router.put("/ben-xe/:id", checkUserJWT, updateBenXe);
+router.delete("/ben-xe/:id", checkUserJWT, deleteBenXe);
 
 module.exports = router;
