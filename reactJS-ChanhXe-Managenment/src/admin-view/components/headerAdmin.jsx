@@ -112,7 +112,7 @@ const HeaderAdmin = () => {
                   <AccountCircle />
                 )}
                 <Typography variant="body2" sx={{ ml: 2, color: "white" }}>
-                  {userInfo.TENNGUOIDUNG || "Người dùng"}
+                  {userInfo.ho_ten || "Người dùng"}
                 </Typography>
               </Button>
               {/* Menu các tùy chọn */}

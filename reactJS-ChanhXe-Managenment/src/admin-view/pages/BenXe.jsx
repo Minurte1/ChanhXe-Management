@@ -71,7 +71,7 @@ const BenXe = () => {
   return (
     <div>
       {" "}
-      <h1>Danh Sách Địa Điểm</h1>
+      <h1>Danh Sách Bến Xe</h1>
       <Toast ref={toast} />
       <Button
         label="Thêm Bến Xe"
