@@ -3,87 +3,88 @@ import axiosInstance from "../authentication/axiosInstance";
 import Cookies from "js-cookie";
 import axios from "axios";
 import { enqueueSnackbar } from "notistack";
-const apiUrl = process.env.REACT_APP_URL_SERVER;
+const BASE_URL = process.env.REACT_APP_URL_SERVER;
 
-// Login User
-export const login = async (account) => {
-  try {
-    const response = await axiosInstance.post(`${apiUrl}/users/login`, {
-      account,
-    });
-
-    if (response.data.EC === 200) {
-      Cookies.set("accessToken", response.data.DT.accessToken, {
-        expires: 7,
-        path: "",
-      });
-      return response.data.DT.vai_tro;
-    } else {
-      return response.data;
-    }
-  } catch (error) {
-    toast.error(error.response.data.EM);
-  }
-};
-
-// Get List of Users
+// Lấy danh sách tất cả người dùng
 export const getAllUsers = async () => {
   try {
-    const response = await axiosInstance.get(`${apiUrl}/users`);
-    if (response.data.EC === 200) {
-      return response.data.DT; // Returns the list of users
-    }
-    return [];
+    const response = await axiosInstance.get(`${BASE_URL}/users`);
+    return response.data;
   } catch (error) {
-    console.error("Error fetching the list of users:", error);
-    return [];
+    console.error("Error fetching users:", error);
+    enqueueSnackbar(
+      error.response?.data?.EM || "Lỗi khi lấy danh sách người dùng",
+      { variant: "error" }
+    );
+    throw error;
   }
 };
-
-// Create New User
-export const createUser = async (newUser) => {
+// Lấy thông tin người dùng theo ID
+export const getUserById = async (id) => {
   try {
-    const response = await axiosInstance.post(`${apiUrl}/users`, newUser);
-    if (response.data.EC === 201) {
-      return true; // User created successfully
-    }
-    return false;
+    const response = await axiosInstance.get(`${BASE_URL}/users/${id}`);
+    return response.data;
   } catch (error) {
-    console.error("Error creating new user:", error);
-    return false;
+    console.error("Error fetching user by ID:", error);
+    enqueueSnackbar(
+      error.response?.data?.EM || "Lỗi khi lấy thông tin người dùng",
+      { variant: "error" }
+    );
+    throw error;
   }
 };
 
-// Update User
-export const updateUserById = async (id, updatedUser) => {
+// Thêm mới người dùng
+export const createUser = async (userData) => {
+  try {
+    const response = await axiosInstance.post(`${BASE_URL}/users`, userData);
+    enqueueSnackbar(response.data.EM || "Thêm người dùng thành công", {
+      variant: "success",
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error creating user:", error);
+    enqueueSnackbar(error.response?.data?.EM || "Lỗi khi thêm người dùng", {
+      variant: "error",
+    });
+    throw error;
+  }
+};
+
+// Cập nhật thông tin người dùng
+export const updateUser = async (id, formData) => {
   try {
     const response = await axiosInstance.put(
-      `${apiUrl}/users/update/${id}`,
-      updatedUser
+      `${BASE_URL}/users/${id}`,
+      formData
     );
-    if (response.data.EC === 200) {
-      return true; // User updated successfully
-    }
-    return false;
+    enqueueSnackbar(response.data.EM || "Cập nhật người dùng thành công", {
+      variant: "success",
+    });
+    return response.data;
   } catch (error) {
     console.error("Error updating user:", error);
-    return false;
+    enqueueSnackbar(error.response?.data?.EM || "Lỗi khi cập nhật người dùng", {
+      variant: "error",
+    });
+    throw error;
   }
 };
 
-// Delete User
-export const deleteUserById = async (userId) => {
+// Xóa người dùng
+export const deleteUser = async (id) => {
   try {
-    const response = await axiosInstance.delete(
-      `${apiUrl}/users/delete/${userId}`
-    );
-    if (response.data.EC === 200) {
-      return true; // User deleted successfully
-    }
-    return false;
+    const response = await axiosInstance.delete(`${BASE_URL}/users/${id}`);
+    enqueueSnackbar(response.data.EM || "Xóa người dùng thành công", {
+      variant: "success",
+    });
+    return response.data;
   } catch (error) {
     console.error("Error deleting user:", error);
-    return false;
+    enqueueSnackbar(error.response?.data?.EM || "Lỗi khi xóa người dùng", {
+      variant: "error",
+    });
+    throw error;
   }
 };
 
@@ -93,7 +94,7 @@ export const verifyAdmin = async (accessToken) => {
   }
 
   try {
-    const response = await axios.post(
+    const response = await axiosInstance.post(
       `${process.env.REACT_APP_URL_SERVER}/verify-admin`,
       { token: accessToken }
     );

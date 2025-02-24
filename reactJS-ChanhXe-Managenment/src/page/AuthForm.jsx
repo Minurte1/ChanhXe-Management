@@ -269,12 +269,12 @@ const AuthForm = () => {
         )} */}
         <p>
           {isRegister ? "Đã có tài khoản?" : "Chưa có tài khoản?"}{" "}
-          <span
+          {/* <span
             onClick={() => setIsRegister(!isRegister)}
             className="toggle-text"
           >
             {isRegister ? "Đăng nhập" : "Đăng ký"}
-          </span>
+          </span> */}
         </p>
         <Dialog
           header="Nhập Mã OTP"

@@ -4,22 +4,24 @@ const spService = {
       {
         label: "Thống kê cơ bản",
         icon: "pi pi-chart-bar",
-        url: "/admin",
-        className: location.pathname === "/admin" ? "active" : "",
+        url: "/",
+        className: location.pathname === "/" ? "active" : "",
       },
       {
         label: "Báo cáo doanh thu",
         icon: "pi pi-dollar",
         items: [
           {
-            label: "Báo cáo doanh thu cước",
-            url: "/report/revenue",
-            className: location.pathname === "/report/revenue" ? "active" : "",
+            label: "Báo cáo doanh thu",
+            url: "/bao-cao/doanh-thu",
+            className:
+              location.pathname === "/bao-cao/doanh-thu" ? "active" : "",
           },
           {
             label: "Báo cáo hàng ngày",
-            url: "/report/daily",
-            className: location.pathname === "/report/daily" ? "active" : "",
+            url: "/bao-cao/hang-ngay",
+            className:
+              location.pathname === "/bao-cao/hang-ngay" ? "active" : "",
           },
         ],
       },
@@ -28,9 +30,10 @@ const spService = {
         icon: "pi pi-user",
         items: [
           {
-            label: "Danh Sách Nhân Viên",
-            url: "/report/revenue",
-            className: location.pathname === "/report/revenue" ? "active" : "",
+            label: "Danh sách nhân viên",
+            url: "/admin/nhan-vien/danh-sach",
+            className:
+              location.pathname === "/nhan-vien/danh-sach" ? "active" : "",
           },
         ],
       },
@@ -40,13 +43,14 @@ const spService = {
         items: [
           {
             label: "Danh sách khách hàng",
-            url: "/customer/list",
-            className: location.pathname === "/customer/list" ? "active" : "",
+            url: "/khach-hang/danh-sach",
+            className:
+              location.pathname === "/khach-hang/danh-sach" ? "active" : "",
           },
           {
             label: "Thêm khách hàng mới",
-            url: "/customer/create",
-            className: location.pathname === "/customer/create" ? "active" : "",
+            url: "/khach-hang/them",
+            className: location.pathname === "/khach-hang/them" ? "active" : "",
           },
         ],
       },

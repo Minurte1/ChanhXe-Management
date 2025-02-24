@@ -50,22 +50,35 @@ const getUserById = async (req, res) => {
 // Thêm mới người dùng
 const createUser = async (req, res) => {
   try {
-    const {
-      id,
-      ho_ten,
-      so_dien_thoai,
-      email,
-      mat_khau,
-      vai_tro,
-      trang_thai,
-      id_nguoi_cap_nhat,
-      ngay_cap_nhat,
-      ngay_tao,
-    } = req.body;
+    const id_nguoi_cap_nhat = req.user?.id;
+    if (!id_nguoi_cap_nhat) {
+      return res
+        .status(403)
+        .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
+    }
+
+    const { ho_ten, so_dien_thoai, email, mat_khau, vai_tro, trang_thai } =
+      req.body;
+
+    // Kiểm tra xem số điện thoại đã tồn tại chưa
+    const [existingUser] = await pool.query(
+      `SELECT id FROM nguoi_dung WHERE so_dien_thoai = ? LIMIT 1`,
+      [so_dien_thoai]
+    );
+
+    if (existingUser.length > 0) {
+      return res.status(400).json({
+        EM: "Số điện thoại đã tồn tại",
+        EC: -1,
+        DT: {},
+      });
+    }
+
+    // Nếu chưa tồn tại, tiến hành thêm mới
     const [result] = await pool.query(
-      `INSERT INTO nguoi_dung (ho_ten, so_dien_thoai, email, mat_khau, vai_tro, trang_thai, id_nguoi_cap_nhat, ngay_cap_nhat, ngay_tao) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO nguoi_dung (ho_ten, so_dien_thoai, email, mat_khau, vai_tro, trang_thai, id_nguoi_cap_nhat, ngay_cap_nhat, ngay_tao) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
       [
-        id,
         ho_ten,
         so_dien_thoai,
         email,
@@ -73,10 +86,9 @@ const createUser = async (req, res) => {
         vai_tro,
         trang_thai,
         id_nguoi_cap_nhat,
-        ngay_cap_nhat,
-        ngay_tao,
       ]
     );
+
     return res.status(201).json({
       EM: "Tạo người dùng thành công",
       EC: 1,
@@ -94,26 +106,51 @@ const createUser = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const updates = req.body;
+    console.log("id", id);
+
+    let updates = req.body;
+
     if (Object.keys(updates).length === 0) {
       return res
         .status(400)
         .json({ EM: "Không có dữ liệu cập nhật", EC: -1, DT: {} });
     }
+
+    // Lấy `id_nguoi_cap_nhat` từ cookies
+    const id_nguoi_cap_nhat = req.user?.id;
+    if (!id_nguoi_cap_nhat) {
+      return res
+        .status(403)
+        .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
+    }
+    // Kiểm tra nếu có `mat_khau`, băm trước khi cập nhật
+    if (updates.mat_khau) {
+      const saltRounds = 10;
+      updates.mat_khau = await bcrypt.hash(updates.mat_khau, saltRounds);
+    }
+
+    // Bổ sung `id_nguoi_cap_nhat` và `ngay_cap_nhat`
+    updates.id_nguoi_cap_nhat = id_nguoi_cap_nhat;
+    updates.ngay_cap_nhat = new Date(); // Hoặc sử dụng `NOW()` trong SQL
+
+    // Chuẩn bị query
     const fields = Object.keys(updates)
       .map((key) => `${key} = ?`)
       .join(", ");
     const values = Object.values(updates);
     values.push(id);
+
     const [result] = await pool.query(
-      `UPDATE nguoi_dung SET ${fields} WHERE id = ?`,
+      `UPDATE nguoi_dung SET ${fields}, ngay_cap_nhat = NOW() WHERE id = ?`,
       values
     );
+
     if (result.affectedRows === 0) {
       return res
         .status(404)
         .json({ EM: "Không tìm thấy người dùng để cập nhật", EC: -1, DT: {} });
     }
+
     return res
       .status(200)
       .json({ EM: "Cập nhật người dùng thành công", EC: 1, DT: {} });
@@ -124,7 +161,6 @@ const updateUser = async (req, res) => {
       .json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
   }
 };
-
 // Xóa người dùng
 const deleteUser = async (req, res) => {
   try {

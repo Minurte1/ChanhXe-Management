@@ -3,7 +3,7 @@ var jwt = require("jsonwebtoken");
 
 const nonSercurePaths = ["/", "/register", "/login", "/logout"];
 const createJWT = (payload) => {
-  let key = "phucfixne";
+  let key = process.env.JWT_SECRET;
   let token;
   try {
     token = jwt.sign(payload, key, { expiresIn: 300000 });
@@ -15,7 +15,7 @@ const createJWT = (payload) => {
 };
 //--
 const verifyToken = (token) => {
-  let key = "phucfixne";
+  let key = process.env.JWT_SECRET;
   let decoded = null;
   try {
     decoded = jwt.verify(token, key);
@@ -38,6 +38,7 @@ const extractToken = (req) => {
 const checkUserJWT = (req, res, next) => {
   if (nonSercurePaths.includes(req.path)) return next();
   let cookie = req.cookies;
+
   let tokenFromHeader = extractToken(req);
 
   if ((cookie && cookie.jwt) || tokenFromHeader) {

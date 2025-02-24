@@ -89,13 +89,7 @@ const HeaderAdmin = () => {
               color: "white",
               textDecoration: "none",
             }}
-          >
-            <img
-              src={`https://image.cocoonvietnam.com/uploads/vegan_society_41cc2b390a.svg`}
-              alt=""
-              style={{ width: "40px", marginTop: "10px" }}
-            />
-          </Typography>
+          ></Typography>
         </Box>
 
         {/* Middle section: Phone number */}

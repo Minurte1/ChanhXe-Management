@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 import { SnackbarProvider } from "notistack";
 import "./App.css";
 
@@ -9,7 +10,7 @@ import RouterAdmin from "./admin-view/router-admin";
 import NavBarAdmin from "./admin-view/components/navBarAdmin";
 import HeaderAdmin from "./admin-view/components/headerAdmin";
 
-import { Grid } from "@mui/material";
+import { Grid, useMediaQuery } from "@mui/material";
 import RouteTaiXe from "./tai-xe-view/router-tai-xe";
 import RouteNhanVienDieuPhoi from "./nhan-vien-dieu-phoi-view/router-nhan-vien-dieu-phoi";
 import RouteNhanVienKho from "./nhan-vien-kho-view/router-nhan-vien-kho";
@@ -75,68 +76,79 @@ const MainLayout = () => (
   </Routes>
 );
 
-const RouterTaiXe = () => (
-  <>
-    <HeaderAdmin />
-    <Grid container style={{ height: "100vh" }}>
-      <Grid item xs={3} md={2.5}>
-        <NavBarAdmin />
-      </Grid>
-      <Grid item xs={9} md={9}>
-        <Routes>
-          <Route path="/*" element={<RouteTaiXe />} />
-        </Routes>
-      </Grid>
-    </Grid>
-  </>
-);
+const AdminLayout = () => {
+  return (
+    <>
+      <HeaderAdmin />
+      <Grid container style={{ height: "100vh" }}>
+        <Grid item xs={3} md={2.5}>
+          <NavBarAdmin />
+        </Grid>
 
-const RouterNhanVienKho = () => (
-  <>
-    <HeaderAdmin />
-    <Grid container style={{ height: "100vh" }}>
-      <Grid item xs={3} md={2.5}>
-        <NavBarAdmin />
+        <Grid item xs={12} md={9}>
+          <Routes>
+            <Route path="/*" element={<RouterAdmin />} />
+          </Routes>
+        </Grid>
       </Grid>
-      <Grid item xs={9} md={9}>
-        <Routes>
-          <Route path="/*" element={<RouteNhanVienKho />} />
-        </Routes>
-      </Grid>
-    </Grid>
-  </>
-);
+    </>
+  );
+};
 
-const RouterNhanVienDieuPhoi = () => (
-  <>
-    <HeaderAdmin />
-    <Grid container style={{ height: "100vh" }}>
-      <Grid item xs={3} md={2.5}>
-        <NavBarAdmin />
-      </Grid>
-      <Grid item xs={9} md={9}>
-        <Routes>
-          <Route path="/*" element={<RouteNhanVienDieuPhoi />} />
-        </Routes>
-      </Grid>
-    </Grid>
-  </>
-);
+const RouterTaiXe = () => {
+  return (
+    <>
+      <HeaderAdmin />
+      <Grid container style={{ height: "100vh" }}>
+        <Grid item xs={3} md={2.5}>
+          <NavBarAdmin />
+        </Grid>
 
-const AdminLayout = () => (
-  <>
-    <HeaderAdmin />
-    <Grid container style={{ height: "100vh" }}>
-      <Grid item xs={3} md={2.5}>
-        <NavBarAdmin />
+        <Grid item xs={12} md={9}>
+          <Routes>
+            <Route path="/*" element={<RouteTaiXe />} />
+          </Routes>
+        </Grid>
       </Grid>
-      <Grid item xs={9} md={9}>
-        <Routes>
-          <Route path="/*" element={<RouterAdmin />} />
-        </Routes>
-      </Grid>
-    </Grid>
-  </>
-);
+    </>
+  );
+};
 
+const RouterNhanVienKho = () => {
+  return (
+    <>
+      <HeaderAdmin />
+      <Grid container style={{ height: "100vh" }}>
+        <Grid item xs={3} md={2.5}>
+          <NavBarAdmin />
+        </Grid>
+
+        <Grid item xs={12} md={9}>
+          <Routes>
+            <Route path="/*" element={<RouteNhanVienKho />} />
+          </Routes>
+        </Grid>
+      </Grid>
+    </>
+  );
+};
+
+const RouterNhanVienDieuPhoi = () => {
+  return (
+    <>
+      <HeaderAdmin />
+      <Grid container style={{ height: "100vh" }}>
+        <Grid item xs={3} md={2.5}>
+          <NavBarAdmin />
+        </Grid>
+
+        <Grid item xs={12} md={9}>
+          <Routes>
+            <Route path="/*" element={<RouteNhanVienDieuPhoi />} />
+          </Routes>
+        </Grid>
+      </Grid>
+    </>
+  );
+};
 export default App;
