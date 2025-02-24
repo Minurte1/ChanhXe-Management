@@ -17,7 +17,7 @@ export const login = async (account) => {
         expires: 7,
         path: "",
       });
-      return response.data;
+      return response.data.DT.vai_tro;
     } else {
       return response.data;
     }
@@ -95,20 +95,12 @@ export const verifyAdmin = async (accessToken) => {
   try {
     const response = await axios.post(
       `${process.env.REACT_APP_URL_SERVER}/verify-admin`,
-      {
-        token: accessToken,
-      }
+      { token: accessToken }
     );
 
-    // Kết quả phản hồi từ backend
-    console.log("response.data admin ", response.data);
-    if (response.data.DT.isAdmin) {
-      // console.log("User is admin");
-      return true;
-    } else {
-      // console.log("User is not admin");
-      return false;
-    }
+    console.log("response.data admin:", response.data.DT.role);
+
+    return response.data.DT.role;
   } catch (error) {
     enqueueSnackbar("Bạn không có quyền truy cập vào trang này", {
       variant: "info",

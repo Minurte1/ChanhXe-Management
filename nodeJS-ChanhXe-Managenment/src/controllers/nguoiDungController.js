@@ -432,57 +432,42 @@ const logoutUser = (req, res) => {
 
 const verifyAdmin = async (req, res) => {
   const { token } = req.body;
-  console.log("token", token);
+
   if (!token) {
     return res.status(401).json({
       EM: "Token is missing",
       EC: 401,
-      DT: { isAdmin: false },
+      DT: { role: null },
     });
   }
 
   try {
-    // Giải mã token
     const decoded = jwt.verify(token, JWT_SECRET);
-
     const id = decoded.id;
-    console.log("id", decoded);
-    // Truy vấn để lấy thông tin user từ database
+
     const [rows] = await pool.query(
       "SELECT vai_tro FROM nguoi_dung WHERE id = ?",
       [id]
     );
 
     if (rows.length > 0) {
-      const user = rows[0];
-
-      // Kiểm tra vai trò của người dùng
-      if (user.vai_tro === "admin") {
-        return res.status(200).json({
-          EM: "User is admin",
-          EC: 200,
-          DT: { isAdmin: true }, // Người dùng là admin
-        });
-      } else {
-        return res.status(403).json({
-          EM: "User is not admin",
-          EC: 403,
-          DT: { isAdmin: false }, // Người dùng không phải admin
-        });
-      }
+      return res.status(200).json({
+        EM: "Role retrieved successfully",
+        EC: 200,
+        DT: { role: rows[0].vai_tro }, // Trả về vai trò
+      });
     } else {
       return res.status(404).json({
         EM: "User not found",
         EC: 404,
-        DT: { isAdmin: false }, // Người dùng không tìm thấy
+        DT: { role: null },
       });
     }
   } catch (error) {
-    console.error("Error decoding token or querying database:", error);
     return res.status(401).json({
-      EM: `Invalid token: ${error.message}`, // Thông báo lỗi token không hợp lệ
+      EM: `Invalid token: ${error.message}`,
       EC: 401,
-      DT: { isAdmin: false }, // Token không hợp lệ, trả về false
+      DT: { role: null },
     });
   }
 };

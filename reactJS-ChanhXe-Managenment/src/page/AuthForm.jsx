@@ -19,6 +19,7 @@ import {
   servicesRegisterUser,
 } from "../services/googleAuthService";
 import { enqueueSnackbar } from "notistack";
+import spService from "../share/share-services/sp-services";
 const AuthForm = () => {
   const [isRegister, setIsRegister] = useState(false); // Chuyển đổi giữa đăng nhập/đăng ký
   const [formData, setFormData] = useState({
@@ -150,10 +151,10 @@ const AuthForm = () => {
     }
     try {
       const data = await servicesLoginUser(formData); // Gọi API từ service
-
+      console.log("data", data.DT.userInfo.vai_tro);
       if (data.EC === 1) {
         enqueueSnackbar(data.EM, { variant: "success" });
-        navigate("/admin");
+        navigate(`/${spService.createSlug(data.DT.userInfo.vai_tro)}`);
         dispatch(
           login({
             accessToken: data.DT.accessToken,
@@ -252,7 +253,7 @@ const AuthForm = () => {
           )}
         </Button>
 
-        {!isRegister && (
+        {/* {!isRegister && (
           <div className="admin-login mt-2">
             <div>
               <button className="Button-gg" onClick={() => loginGoogle()}>
@@ -263,7 +264,7 @@ const AuthForm = () => {
               </button>
             </div>
           </div>
-        )}
+        )} */}
         <p>
           {isRegister ? "Đã có tài khoản?" : "Chưa có tài khoản?"}{" "}
           <span

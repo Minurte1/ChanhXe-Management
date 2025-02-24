@@ -1,0 +1,74 @@
+.navbar-admin {
+    width: 250px;
+    background-color: #fff;
+    padding: 30px 20px;
+    border-right: 1px solid #ddd;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+        width: 1px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #0d1117;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: #fff;
+    }
+
+    .navbar-title {
+        margin-bottom: 20px;
+        color: #1f1f1f;
+    }
+
+    .p-menuitem-link {
+        color: #1f1f1f;
+        border-radius: 12px;
+        padding: 10px;
+        margin-bottom: 5px;
+
+        &:hover {
+            background-color: #424341;
+            color: #fff !important;
+
+            .p-menuitem-text {
+                color: #fff !important;
+            }
+
+        }
+
+        &.active {
+            background-color: #424341;
+        }
+    }
+
+    .p-submenu-header {
+        color: #1f1f1f;
+        font-weight: bold;
+        padding: 10px;
+
+
+
+    }
+
+
+
+    .p-submenu-list {
+        padding-left: 20px;
+    }
+
+    .p-menu {
+        border: none !important;
+    }
+
+}

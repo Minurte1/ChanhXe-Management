@@ -3,39 +3,54 @@ import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { verifyAdmin } from "../services/userAccountService";
 import { enqueueSnackbar } from "notistack";
+import { CircularProgress, Box } from "@mui/material";
 
-const GuardRoute = ({ element: Element, ...rest }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+const GuardRoute = ({ element: Element, allowedRoles }) => {
+  const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const checkAdmin = async () => {
+    const checkUserRole = async () => {
       const accessToken = Cookies.get("accessToken");
-      if (accessToken) {
-        try {
-          const isAdmin = await verifyAdmin(accessToken);
-          setIsAuthenticated(isAdmin);
-        } catch (error) {
-          // console.error("Error verifying admin:", error);
-          setIsAuthenticated(false);
-        }
-      } else {
+      if (!accessToken) {
         enqueueSnackbar("Bạn không có quyền truy cập vào trang này", {
           variant: "info",
         });
-        setIsAuthenticated(false);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const role = await verifyAdmin(accessToken);
+        setUserRole(role);
+      } catch (error) {
+        setUserRole(null);
       }
       setLoading(false);
     };
 
-    checkAdmin();
+    checkUserRole();
   }, []);
 
-  if (loading) {
-    return <></>;
+  if (loading)
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+
+  if (!userRole || !allowedRoles.includes(userRole)) {
+    return <Navigate to="/" />;
   }
 
-  return isAuthenticated ? <Element {...rest} /> : <Navigate to="/" />;
+  return <Element />;
 };
 
 export default GuardRoute;
