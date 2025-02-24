@@ -12,7 +12,10 @@ const otpStorage = new Map();
 // Lấy tất cả người dùng
 const getAllUsers = async (req, res) => {
   try {
-    const [rows] = await pool.query("SELECT * FROM nguoi_dung");
+    const [rows] = await pool.query(
+      "SELECT * FROM nguoi_dung ORDER BY ngay_cap_nhat DESC"
+    );
+
     return res
       .status(200)
       .json({ EM: "Lấy danh sách người dùng thành công", EC: 1, DT: rows });
@@ -74,6 +77,10 @@ const createUser = async (req, res) => {
       });
     }
 
+    // Băm mật khẩu trước khi lưu
+    const saltRounds = 10; // Số vòng salt
+    const hashedPassword = await bcrypt.hash(mat_khau, saltRounds);
+
     // Nếu chưa tồn tại, tiến hành thêm mới
     const [result] = await pool.query(
       `INSERT INTO nguoi_dung (ho_ten, so_dien_thoai, email, mat_khau, vai_tro, trang_thai, id_nguoi_cap_nhat, ngay_cap_nhat, ngay_tao) 
@@ -82,7 +89,7 @@ const createUser = async (req, res) => {
         ho_ten,
         so_dien_thoai,
         email,
-        mat_khau,
+        hashedPassword, // Lưu mật khẩu đã băm
         vai_tro,
         trang_thai,
         id_nguoi_cap_nhat,

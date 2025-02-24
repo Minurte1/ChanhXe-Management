@@ -154,9 +154,14 @@ const AuthForm = () => {
 
       if (data.EC === 1) {
         const test = spService.createSlug(data.DT.userInfo.vai_tro);
-        console.log(test);
+        if (test === "tai-xe-phu") {
+          navigate("/tai-xe");
+        } else {
+          navigate(`/${spService.createSlug(data.DT.userInfo.vai_tro)}`);
+        }
+
         enqueueSnackbar(data.EM, { variant: "success" });
-        navigate(`/${spService.createSlug(data.DT.userInfo.vai_tro)}`);
+
         dispatch(
           login({
             accessToken: data.DT.accessToken,
