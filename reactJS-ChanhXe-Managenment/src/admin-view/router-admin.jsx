@@ -3,6 +3,7 @@ import TrangChuAdmin from "./pages/home-admin";
 //import BaoCaoDoanhThu from "./pages/bao-cao-doanh-thu";
 //import BaoCaoHangNgay from "./pages/bao-cao-hang-ngay";
 import DanhSachNhanVien from "./pages/DanhSachNhanVien";
+import DanhSachXe from "./pages/DanhSachXe";
 
 //import DanhSachKhachHang from "./pages/danh-sach-khach-hang";
 
@@ -23,6 +24,10 @@ const RouterAdmin = () => {
     {
       path: "/nhan-vien/danh-sach",
       element: <DanhSachNhanVien />,
+    },
+    {
+      path: "/xe/danh-sach",
+      element: <DanhSachXe />,
     },
     // {
     //   path: "/khach-hang/danh-sach",

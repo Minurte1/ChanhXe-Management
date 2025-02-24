@@ -33,7 +33,21 @@ const spService = {
             label: "Danh sách nhân viên",
             url: "/admin/nhan-vien/danh-sach",
             className:
-              location.pathname === "/nhan-vien/danh-sach" ? "active" : "",
+              location.pathname === "/admin/nhan-vien/danh-sach"
+                ? "active"
+                : "",
+          },
+        ],
+      },
+      {
+        label: "Danh sách các loại xe",
+        icon: "pi pi-car",
+        items: [
+          {
+            label: "Danh sách xe",
+            url: "/admin/xe/danh-sach",
+            className:
+              location.pathname === "/admin/xe/danh-sach" ? "active" : "",
           },
         ],
       },
@@ -46,11 +60,6 @@ const spService = {
             url: "/khach-hang/danh-sach",
             className:
               location.pathname === "/khach-hang/danh-sach" ? "active" : "",
-          },
-          {
-            label: "Thêm khách hàng mới",
-            url: "/khach-hang/them",
-            className: location.pathname === "/khach-hang/them" ? "active" : "",
           },
         ],
       },

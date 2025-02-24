@@ -1,0 +1,14 @@
+trong bang don_hang gồm : id, ma_van_don, ma_qr_code, nguoi_gui_id, nguoi_nhan_id,dia_chi_gui,dia_chi_nhan,loai_hang_hoa, trong_luong,kich_thuoc_,so_kien,gia_tri_hang,cuoc_phi,phi_bao_hiem,phu_phi, trang_thai, ben_don_hang_id
+
+trong bang ben_don_hang gồm : id, dia_chi, trangthai
+trong bang don_hang_cua_ben_chuyen_xe: id, don_hang_cua_ben_id, don_hang_chuyen_xe_id
+
+trong bang khach_hang gồm: id,ho_ten,_so_dien_thoai, dia_chi
+
+
+trong bang chuyen_xe gồm: id, xe_id,tai_xe,tai_xe_phu_id,
+
+
+trong bang xe gồm : id, bien_so,loai_xe,suc_chua,trang_thai,id_nguoi_cap_nhat,ngay_cap_nhat,ngay_tao
+trong bang nguoi_dung gom:  id, ho_ten,so_dien_thoai,email,mat_khau,vai_tro,trang_thai,id_nguoi_cap_nhat,ngay_cap_nhat,ngay_tao
+

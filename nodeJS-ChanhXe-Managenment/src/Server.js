@@ -42,12 +42,14 @@ app.use(bodyParser.json());
 
 // //api user
 const userRoute = require("./routers/userRouters.js");
+const donHangRoute = require("./routers/donHangRouter.js");
 const nguoiDungRoute = require("./routers/nguoiDungRouter.js");
+const xeRoute = require("./routers/xeRouter.js");
 // app.use("/", userRoute);
 app.use("/", nguoiDungRoute);
+app.use("/", xeRoute);
 //
 
-const donHangRoute = require("./routers/donHangRouter.js");
 app.use("/", donHangRoute);
 // Socket.IO logic
 const userSockets = {}; // Lưu trữ socket.id của từng user theo userId

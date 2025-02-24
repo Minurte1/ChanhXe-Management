@@ -346,11 +346,7 @@ const NavBarAdmin = () => {
           url: "/customer/list",
           className: location.pathname === "/customer/list" ? "active" : "",
         },
-        {
-          label: "Thêm khách hàng mới",
-          url: "/customer/create",
-          className: location.pathname === "/customer/create" ? "active" : "",
-        },
+
         {
           label: "Cập nhật khách hàng",
           url: "/customer/update/:id",

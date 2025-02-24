@@ -8,11 +8,11 @@ const {
   updateVehicle,
   deleteVehicle,
 } = require("../controllers/xeController");
-
-router.get("/vehicles", getAllVehicles);
-router.get("/vehicles/:id", getVehicleById);
-router.post("/vehicles", createVehicle);
-router.put("/vehicles/:id", updateVehicle);
-router.delete("/vehicles/:id", deleteVehicle);
+const { checkUserJWT } = require("../middleware/JWTaction");
+router.get("/xe", getAllVehicles);
+router.get("/xe/:id", getVehicleById);
+router.post("/xe", checkUserJWT, createVehicle);
+router.put("/xe/:id", checkUserJWT, updateVehicle);
+router.delete("/xe/:id", checkUserJWT, deleteVehicle);
 
 module.exports = router;
