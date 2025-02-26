@@ -29,15 +29,33 @@ const getCustomerById = async (req, res) => {
 // Thêm mới khách hàng
 const createCustomer = async (req, res) => {
   try {
-    const { ho_ten, so_dien_thoai, dia_chi } = req.body;
+    const { ho_ten, so_dien_thoai, mat_khau, dia_chi } = req.body;
     const id_nguoi_cap_nhat = req.user?.id;
     if (!id_nguoi_cap_nhat) {
       return res.status(403).json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
     }
+
+    const [existingUser] = await pool.query(
+      `SELECT id FROM khach_hang WHERE so_dien_thoai = ? LIMIT 1`,
+      [so_dien_thoai]
+    );
+
+    if (existingUser.length > 0) {
+      return res.status(400).json({
+        EM: "Số điện thoại đã tồn tại",
+        EC: -1,
+        DT: {},
+      });
+    }
+
+    // Băm mật khẩu trước khi lưu
+    const saltRounds = 10; // Số vòng salt
+    const hashedPassword = await bcrypt.hash(mat_khau, saltRounds);
+
     const [result] = await pool.query(
-      `INSERT INTO khach_hang (ho_ten, so_dien_thoai, dia_chi, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat) 
+      `INSERT INTO khach_hang (ho_ten, so_dien_thoai, matkhau, dia_chi, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat) 
        VALUES (?, ?, ?, ?, NOW(), NOW())`,
-      [ho_ten, so_dien_thoai, dia_chi, id_nguoi_cap_nhat]
+      [ho_ten, so_dien_thoai, hashedPassword, dia_chi, id_nguoi_cap_nhat]
     );
 
     return res.status(201).json({ EM: "Tạo khách hàng thành công", EC: 1, DT: { id: result.insertId } });
