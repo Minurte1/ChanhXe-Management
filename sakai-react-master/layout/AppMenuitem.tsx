@@ -29,12 +29,14 @@ const AppMenuitem = (props: AppMenuItemProps) => {
     }, [pathname, searchParams]);
 
     const itemClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+       
+      
         //avoid processing disabled items
         if (item!.disabled) {
             event.preventDefault();
             return;
         }
-
+        console.log('item',item)
         //execute command
         if (item!.command) {
             item!.command({ originalEvent: event, item: item });
@@ -54,31 +56,30 @@ const AppMenuitem = (props: AppMenuItemProps) => {
             </ul>
         </CSSTransition>
     );
-
     return (
         <li className={classNames({ 'layout-root-menuitem': props.root, 'active-menuitem': active })}>
             {props.root && item!.visible !== false && <div className="layout-menuitem-root-text">{item!.label}</div>}
-            {(!item!.to || item!.items) && item!.visible !== false ? (
-                <a href={item!.url} onClick={(e) => itemClick(e)} className={classNames(item!.class, 'p-ripple')} target={item!.target} tabIndex={0}>
-                    <i className={classNames('layout-menuitem-icon', item!.icon)}></i>
-                    <span className="layout-menuitem-text">{item!.label}</span>
-                    {item!.items && <i className="pi pi-fw pi-angle-down layout-submenu-toggler"></i>}
-                    <Ripple />
-                </a>
-            ) : null}
-
-            {item!.to && !item!.items && item!.visible !== false ? (
-                <Link href={item!.to} replace={item!.replaceUrl} target={item!.target} onClick={(e) => itemClick(e)} className={classNames(item!.class, 'p-ripple', { 'active-route': isActiveRoute })} tabIndex={0}>
+            
+            {item!.visible !== false && (
+                <Link
+                    href={item!.to || '/'}
+                    replace={item!.replaceUrl}
+                    target={item!.target}
+                    onClick={(e) => itemClick(e)}
+                    className={classNames(item!.class, 'p-ripple', { 'active-route': isActiveRoute })}
+                    tabIndex={0}
+                >
                     <i className={classNames('layout-menuitem-icon', item!.icon)}></i>
                     <span className="layout-menuitem-text">{item!.label}</span>
                     {item!.items && <i className="pi pi-fw pi-angle-down layout-submenu-toggler"></i>}
                     <Ripple />
                 </Link>
-            ) : null}
-
-            {subMenu}
+            )}
+    
+            {subMenu} 
         </li>
     );
+    
 };
 
 export default AppMenuitem;

@@ -1,9 +1,11 @@
-// menuService.js
-
 const getMenuItems = (role) => {
   const menus = {
     admin: [
-      { label: "Thống kê cơ bản", icon: "pi pi-chart-bar", url: "/" },
+      {
+        label: "Thống kê cơ bản",
+        icon: "pi pi-chart-bar",
+        url: "/",
+      },
       {
         label: "Báo cáo doanh thu",
         icon: "pi pi-dollar",
@@ -15,14 +17,12 @@ const getMenuItems = (role) => {
       {
         label: "Thông tin nhân viên",
         icon: "pi pi-user",
-        items: [
-          { label: "Danh sách nhân viên", url: "/admin/nhan-vien/danh-sach" },
-        ],
+        items: [{ label: "Danh sách nhân viên", url: "/nhan-vien/danh-sach" }],
       },
       {
         label: "Danh sách các loại xe",
         icon: "pi pi-car",
-        items: [{ label: "Danh sách xe", url: "/admin/xe/danh-sach" }],
+        items: [{ label: "Danh sách xe", url: "/xe/danh-sach" }],
       },
     ],
     nhan_vien_kho: [

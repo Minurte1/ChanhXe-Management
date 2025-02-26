@@ -1,4 +1,3 @@
-import { toast } from 'react-toastify';
 import axiosInstance from '../authentication/axiosInstance';
 import Cookies from 'js-cookie';
 import axios from 'axios';
