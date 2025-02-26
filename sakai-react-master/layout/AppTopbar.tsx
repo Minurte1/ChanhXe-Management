@@ -56,7 +56,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
                     height="35px"
                     alt="logo"
                 />
-                <span>SAKAI</span>
+                <span>Quản Lý Chành Xe</span>
             </Link>
 
             <button ref={menubuttonRef} type="button" className="p-link layout-menu-button layout-topbar-button" onClick={onMenuToggle}>
