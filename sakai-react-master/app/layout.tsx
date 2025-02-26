@@ -6,21 +6,49 @@ import 'primeflex/primeflex.css';
 import 'primeicons/primeicons.css';
 import '../styles/layout/layout.scss';
 import '../styles/demo/Demos.scss';
-
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie'; // Import js-cookie
+import { Provider } from 'react-redux';import { GoogleOAuthProvider } from "@react-oauth/google";
+import  store  from "./redux/store"
+import { SnackbarProvider } from "notistack";
 interface RootLayoutProps {
     children: React.ReactNode;
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
+    const router = useRouter();
+
+    useEffect(() => {
+        // Kiểm tra cookie bằng js-cookie
+        const authToken = Cookies.get('accessToken'); // Giả sử cookie tên là 'auth_token'
+
+        if (!authToken) {
+            // Chuyển hướng đến trang đăng nhập nếu không có cookie
+            router.push('/auth/login');
+        }
+    }, [router]);
+
     return (
         <html lang="en" suppressHydrationWarning>
             <head>
                 <link id="theme-css" href={`/themes/lara-light-indigo/theme.css`} rel="stylesheet"></link>
             </head>
-            <body>
-                <PrimeReactProvider>
-                    <LayoutProvider>{children}</LayoutProvider>
-                </PrimeReactProvider>
+            <body>  
+                <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}>
+            <Provider store={store}>
+    <PrimeReactProvider>
+        <LayoutProvider>    <SnackbarProvider
+        maxSnack={3}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        autoHideDuration={2000}
+      >{children} </SnackbarProvider></LayoutProvider>
+    </PrimeReactProvider>
+</Provider>  </GoogleOAuthProvider>
+
             </body>
         </html>
     );
