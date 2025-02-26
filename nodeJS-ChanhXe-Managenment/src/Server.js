@@ -40,6 +40,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+const menuService = require("./services/menuService");
+
 // //api user
 const userRoute = require("./routers/userRouters.js");
 const donHangRoute = require("./routers/donHangRouter.js");
