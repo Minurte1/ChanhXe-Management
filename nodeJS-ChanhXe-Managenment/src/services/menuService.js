@@ -1,9 +1,4 @@
-const express = require("express");
-const cors = require("cors");
-
-const app = express();
-app.use(cors());
-app.use(express.json());
+// menuService.js
 
 const getMenuItems = (role) => {
   const menus = {
@@ -20,7 +15,9 @@ const getMenuItems = (role) => {
       {
         label: "Thông tin nhân viên",
         icon: "pi pi-user",
-        items: [{ label: "Danh sách nhân viên", url: "/admin/nhan-vien/danh-sach" }],
+        items: [
+          { label: "Danh sách nhân viên", url: "/admin/nhan-vien/danh-sach" },
+        ],
       },
       {
         label: "Danh sách các loại xe",
@@ -53,15 +50,15 @@ const getMenuItems = (role) => {
       },
     ],
     tai_xe: [
-      { label: "Lịch trình vận chuyển", icon: "pi pi-map", url: "/driver/schedule" },
+      {
+        label: "Lịch trình vận chuyển",
+        icon: "pi pi-map",
+        url: "/driver/schedule",
+      },
     ],
   };
 
   return menus[role] || [];
 };
 
-app.get("/menu", (req, res) => {
-  const role = req.query.role;
-  const menuItems = getMenuItems(role);
-  res.json(menuItems);
-});
+module.exports = { getMenuItems };

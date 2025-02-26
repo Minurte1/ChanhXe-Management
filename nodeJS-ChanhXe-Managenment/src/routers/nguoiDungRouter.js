@@ -16,6 +16,7 @@ const {
   checkOtp,
   registerUser,
 } = require("../controllers/nguoiDungController");
+const { getMenuUser } = require("../controllers/menuUserController");
 const { checkUserJWT } = require("../middleware/JWTaction");
 router.get("/users", getAllUsers);
 router.get("/users/:id", getUserById);
@@ -31,5 +32,9 @@ router.post("/verify-admin", verifyAdmin);
 router.post("/send-otp", sendOtp);
 router.post("/check-otp", checkOtp);
 router.post("/register", registerUser);
+
+// --------------------
+
+router.get("/menu", checkUserJWT, getMenuUser);
 
 module.exports = router;
