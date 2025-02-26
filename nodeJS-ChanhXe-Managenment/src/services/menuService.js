@@ -1,4 +1,4 @@
-const getMenuItems = (role) => {
+const getMenuItems = (role, selectedRole = null) => {
   const menus = {
     admin: [
       {
@@ -17,12 +17,57 @@ const getMenuItems = (role) => {
       {
         label: "Thông tin nhân viên",
         icon: "pi pi-user",
-        items: [{ label: "Danh sách nhân viên", url: "/nhan-vien/danh-sach" }],
+        items: [
+          {
+            label: "Danh sách nhân viên",
+            url: "/nhan-vien/danh-sach",
+            icon: "pi pi-user",
+          },
+        ],
       },
       {
         label: "Danh sách các loại xe",
         icon: "pi pi-car",
         items: [{ label: "Danh sách xe", url: "/xe/danh-sach" }],
+      },
+      {
+        label: "Danh sách các bến xe",
+        icon: "pi pi-car",
+        items: [{ label: "Danh sách bến xe", url: "/ben-xe/danh-sach" }],
+      },
+      {
+        label: "Quản lý phân quyền",
+        icon: "pi pi-user",
+        items: [
+          {
+            label: "Nhân viên điều phối",
+            url: "#",
+            admin: "1",
+            icon: "pi pi-user",
+            role: "nhan_vien_dieu_phoi",
+          },
+          {
+            label: "Nhân viên kho",
+            url: "#",
+            admin: "1",
+            icon: "pi pi-user",
+            role: "nhan_vien_kho",
+          },
+          {
+            label: "Nhân viên giao dịch",
+            url: "#",
+            admin: "1",
+            icon: "pi pi-user",
+            role: "nhan_vien_giao_dich",
+          },
+          {
+            label: "Tài xế",
+            url: "#",
+            admin: "1",
+            icon: "pi pi-user",
+            role: "tai_xe",
+          },
+        ],
       },
     ],
     nhan_vien_kho: [
@@ -56,7 +101,19 @@ const getMenuItems = (role) => {
         url: "/driver/schedule",
       },
     ],
+    nhan_vien_giao_dich: [
+      {
+        label: "Giao dịch đơn hàng",
+        icon: "pi pi-map",
+        url: "/don-hang/giao-dich",
+      },
+    ],
   };
+
+  // Nếu admin chọn 1 role con thì thêm menu của role đó
+  if (role === "admin" && selectedRole && menus[selectedRole]) {
+    return [...menus.admin, ...menus[selectedRole]];
+  }
 
   return menus[role] || [];
 };

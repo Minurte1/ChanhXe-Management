@@ -21,26 +21,21 @@ const BenXeService = {
         }
     },
 
-    createBenXe: async (data, token) => {
+    createBenXe: async (data) => {
         try {
-            const response = await axiosInstance.post(API_URL, data, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            console.log('data', data);
+            const response = await axiosInstance.post(`${API_URL}`, data);
             return response.data;
         } catch (error) {
+            console.log('error', error);
             throw error;
         }
     },
 
-    updateBenXe: async (id, data, token) => {
+    updateBenXe: async (id, data) => {
+        console.log('data', data);
         try {
-            const response = await axiosInstance.put(`${API_URL}/${id}`, data, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            const response = await axiosInstance.put(`${API_URL}/${id}`, data);
             return response.data;
         } catch (error) {
             throw error;

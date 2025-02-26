@@ -84,11 +84,12 @@ const DanhSachXe = () => {
     };
     console.log('form', formData);
     const saveXe = async () => {
+        const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = formData;
         try {
             if (isNew) {
                 await VehicleService.createVehicle(formData);
             } else {
-                await VehicleService.updateVehicle(formData.id, formData);
+                await VehicleService.updateVehicle(filteredData.id, filteredData);
             }
             fetchXe();
             setDisplayDialog(false);

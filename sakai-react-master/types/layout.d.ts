@@ -103,4 +103,6 @@ export interface AppMenuItemProps {
     index?: number;
     root?: boolean;
     className?: string;
+    selectedRole?: string;
+    onRoleChange?: (role: string) => void;
 }
