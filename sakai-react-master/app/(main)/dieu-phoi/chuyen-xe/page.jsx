@@ -6,11 +6,13 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import TripService from '../../../services/chuyenXeServices'; // Đường dẫn tới TripService
 import TripDialog from '../../../modal/ChuyenXeDialog'; // Đường dẫn tới TripDialog
-
+import DonHangChuyenXeDialog from '../../../modal/DonHangChuyenXeDialog';
 const DanhSachChuyenXe = () => {
   const [tripList, setTripList] = useState([]);
   const [displayDialog, setDisplayDialog] = useState(false);
   const [isNew, setIsNew] = useState(false);
+  const [displayDonHangDialog, setDisplayDonHangDialog] = useState(false); // State cho modal DonHangChuyenXe
+  const [selectedChuyenXe, setSelectedChuyenXe] = useState(null); // ID chuyến xe được chọn
   const [formData, setFormData] = useState({
     xe_id: '',
     tai_xe_id: '',
@@ -109,7 +111,11 @@ const DanhSachChuyenXe = () => {
       [name]: val
     }));
   };
-
+  // Mở modal thêm đơn hàng vào chuyến xe
+  const openDonHangDialog = (chuyenXe) => {
+    setSelectedChuyenXe(chuyenXe);
+    setDisplayDonHangDialog(true);
+  };
   return (
     <div className="p-grid">
       <Toast ref={toast} />
@@ -132,11 +138,13 @@ const DanhSachChuyenXe = () => {
               body={(rowData) => (
                 <>
                   <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editTrip(rowData)} />
+                  <Button icon="pi pi-trash" style={{ marginLeft: '5px' }} className="p-button-rounded p-button-warning" onClick={() => deleteTrip(rowData.id)} />
                   <Button
-                    icon="pi pi-trash"
+                    icon="pi pi-plus"
                     style={{ marginLeft: '5px' }}
-                    className="p-button-rounded p-button-warning"
-                    onClick={() => deleteTrip(rowData.chuyen_xe_id)} // Dùng chuyen_xe_id thay vì id
+                    className="p-button-rounded p-button-info"
+                    onClick={() => openDonHangDialog(rowData)} // Mở modal thêm đơn hàng
+                    tooltip="Thêm đơn hàng"
                   />
                 </>
               )}
@@ -144,8 +152,25 @@ const DanhSachChuyenXe = () => {
           </DataTable>
         </div>
       </div>
-
-      <TripDialog visible={displayDialog} onHide={() => setDisplayDialog(false)} isNew={isNew} formData={formData} onInputChange={onInputChange} onSave={saveTrip} />
+      <DonHangChuyenXeDialog
+        visible={displayDonHangDialog}
+        onHide={() => {
+          setDisplayDonHangDialog(false);
+          fetchTrips();
+        }}
+        selectedChuyenXe={selectedChuyenXe}
+      />
+      <TripDialog
+        visible={displayDialog}
+        onHide={() => {
+          setDisplayDialog(false);
+          fetchTrips();
+        }}
+        isNew={isNew}
+        formData={formData}
+        onInputChange={onInputChange}
+        onSave={saveTrip}
+      />
     </div>
   );
 };
