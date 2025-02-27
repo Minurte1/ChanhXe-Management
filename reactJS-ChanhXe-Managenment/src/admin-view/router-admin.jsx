@@ -14,6 +14,7 @@ const RouterAdmin = () => {
     {
       path: "/",
       element: <TrangChuAdmin />,
+      name: "",
     },
     // {
     //   path: "/bao-cao/doanh-thu",

@@ -2,11 +2,12 @@ const pool = require("../config/database"); // Kết nối cơ sở dữ liệu
 const { getMenuItems } = require("../services/menuService");
 
 const getMenuUser = async (req, res) => {
-  const roleUser = req.user.role;
+  const roleUser = req.user.vai_tro;
+  const selectedRole = req.query.selectedRole || null;
 
   try {
-    const menuUser = await getMenuItems(roleUser);
-    console.log("menuUser", menuUser);
+    const menuUser = await getMenuItems(roleUser, selectedRole);
+
     return res.status(200).json({
       EM: "Lấy menu thành công",
       EC: 1,

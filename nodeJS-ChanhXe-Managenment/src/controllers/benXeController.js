@@ -39,17 +39,19 @@ const getBenXeById = async (req, res) => {
 // Thêm mới bến xe
 const createBenXe = async (req, res) => {
   try {
-    const { dia_chi, ten_ben_xe } = req.body;
+    const { dia_chi, ten_ben_xe, tinh, huyen, xa, duong } = req.body;
+    console.log("req", req.body);
     const id_nguoi_cap_nhat = req.user?.id;
     if (!id_nguoi_cap_nhat) {
       return res
         .status(403)
         .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
     }
+
     const [result] = await pool.query(
-      `INSERT INTO ben_xe (dia_chi, ten_ben_xe, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat) 
-       VALUES (?, ?, ?, NOW(), NOW())`,
-      [dia_chi, ten_ben_xe, id_nguoi_cap_nhat]
+      `INSERT INTO ben_xe (dia_chi, ten_ben_xe, tinh, huyen, xa, id_nguoi_cap_nhat,  ngay_cap_nhat, ngay_tao,duong) 
+       VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW(),?)`,
+      [dia_chi, ten_ben_xe, tinh, huyen, xa, id_nguoi_cap_nhat, duong]
     );
 
     return res.status(201).json({
@@ -69,13 +71,19 @@ const createBenXe = async (req, res) => {
 const updateBenXe = async (req, res) => {
   try {
     const { id } = req.params;
-    const updates = req.body;
+    let updates = req.body;
     const id_nguoi_cap_nhat = req.user?.id;
+
     if (!id_nguoi_cap_nhat) {
       return res
         .status(403)
         .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
     }
+
+    // Xóa `id_nguoi_cap_nhat` và `ngay_cap_nhat` nếu có trong `updates`
+    delete updates.id_nguoi_cap_nhat;
+    delete updates.ngay_cap_nhat;
+    delete updates.ngay_tao;
     if (Object.keys(updates).length === 0) {
       return res
         .status(400)
@@ -89,6 +97,7 @@ const updateBenXe = async (req, res) => {
     values.push(id_nguoi_cap_nhat, id);
 
     const updateQuery = `UPDATE ben_xe SET ${fields}, ngay_cap_nhat = NOW(), id_nguoi_cap_nhat = ? WHERE id = ?`;
+
     const [result] = await pool.query(updateQuery, values);
 
     if (result.affectedRows === 0) {

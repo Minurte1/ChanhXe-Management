@@ -130,10 +130,30 @@ const updateUser = async (req, res) => {
         .status(403)
         .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
     }
-    // Kiểm tra nếu có `mat_khau`, băm trước khi cập nhật
+
+    // Kiểm tra nếu có `mat_khau`, so sánh với mật khẩu hiện tại
     if (updates.mat_khau) {
-      const saltRounds = 10;
-      updates.mat_khau = await bcrypt.hash(updates.mat_khau, saltRounds);
+      // Lấy mật khẩu hiện tại từ cơ sở dữ liệu
+      const [user] = await pool.query(
+        "SELECT mat_khau FROM nguoi_dung WHERE id = ?",
+        [id]
+      );
+      const currentPassword = user[0].mat_khau;
+
+      // So sánh mật khẩu mới với mật khẩu hiện tại
+      const isPasswordChanged = await bcrypt.compare(
+        updates.mat_khau,
+        currentPassword
+      );
+
+      if (!isPasswordChanged) {
+        // Nếu mật khẩu thay đổi, băm mật khẩu mới
+        const saltRounds = 10;
+        updates.mat_khau = await bcrypt.hash(updates.mat_khau, saltRounds);
+      } else {
+        // Nếu mật khẩu không thay đổi, không cập nhật mật khẩu
+        delete updates.mat_khau;
+      }
     }
 
     // Bổ sung `id_nguoi_cap_nhat` và `ngay_cap_nhat`
