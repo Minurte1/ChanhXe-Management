@@ -6,7 +6,7 @@ trong_luong,kich_thuoc_,so_kien,gia_tri_hang,cuoc_phi,phi_bao_hiem,phu_phi, tran
 trong bang ben_don_hang gồm : id, dia_chi, trangthai
 trong bang don_hang_cua_ben_chuyen_xe: id, don_hang_cua_ben_id, don_hang_chuyen_xe_id
 
-trong bang khach_hang gồm: id,ho_ten,_so_dien_thoai, dia_chi
+trong bang khach_hang gồm: id,ho_ten,_so_dien_thoai, dia_chi, mat_khau ,id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat
 
 
 trong bang chuyen_xe gồm: id, xe_id,tai_xe,tai_xe_phu_id,
@@ -16,5 +16,3 @@ trong bang xe gồm : id, bien_so,loai_xe,suc_chua,trang_thai,id_nguoi_cap_nhat,
 
 trong bang dia_diem gồm id, tinh, huyen,xa,id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat
 trong bang ben_xe gồm: id, dia_chi, ten_ben_xe,tinh,huyen,xa ,id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat
-
-

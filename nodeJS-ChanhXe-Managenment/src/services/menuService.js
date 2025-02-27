@@ -101,6 +101,13 @@ const getMenuItems = (role, selectedRole = null) => {
         url: "/driver/schedule",
       },
     ],
+    tai_xe_phu: [
+      {
+        label: "Lịch trình vận chuyển",
+        icon: "pi pi-map",
+        url: "/driver/schedule",
+      },
+    ],
     nhan_vien_giao_dich: [
       {
         label: "Giao dịch đơn hàng",
