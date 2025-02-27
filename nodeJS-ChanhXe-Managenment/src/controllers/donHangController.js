@@ -45,9 +45,6 @@ const createOrder = async (req, res) => {
       ma_van_don,
       ma_qr_code,
       nguoi_gui_id,
-      ten_nguoi_nhan,
-      so_dien_thoai_nhan,
-      email_nhan,
       id_ben_xe_nhan,
       id_ben_xe_gui,
       loai_hang_hoa,
@@ -59,7 +56,9 @@ const createOrder = async (req, res) => {
       phi_bao_hiem,
       phu_phi,
       trang_thai,
-      ben_don_hang_id,
+      ten_nguoi_nhan,
+      so_dien_thoai_nhan,
+      email_nhan,
     } = req.body;
 
     const id_nguoi_cap_nhat = req.user?.id;
@@ -71,18 +70,14 @@ const createOrder = async (req, res) => {
 
     const [result] = await pool.query(
       `INSERT INTO don_hang 
-      (ma_van_don, ma_qr_code, nguoi_gui_id, ten_nguoi_nhan, so_dien_thoai_nhan, email_nhan, 
-      id_ben_xe_nhan, id_ben_xe_gui, loai_hang_hoa, trong_luong, kich_thuoc, so_kien, 
-      gia_tri_hang, cuoc_phi, phi_bao_hiem, phu_phi, trang_thai, ben_don_hang_id, 
-      id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+      (ma_van_don, ma_qr_code, nguoi_gui_id, id_ben_xe_nhan, id_ben_xe_gui, loai_hang_hoa, 
+      trong_luong, kich_thuoc, so_kien, gia_tri_hang, cuoc_phi, phi_bao_hiem, phu_phi, 
+      trang_thai, ten_nguoi_nhan, so_dien_thoai_nhan, email_nhan, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
       [
         ma_van_don,
         ma_qr_code,
         nguoi_gui_id,
-        ten_nguoi_nhan,
-        so_dien_thoai_nhan,
-        email_nhan,
         id_ben_xe_nhan,
         id_ben_xe_gui,
         loai_hang_hoa,
@@ -94,18 +89,18 @@ const createOrder = async (req, res) => {
         phi_bao_hiem,
         phu_phi,
         trang_thai,
-        ben_don_hang_id,
+        ten_nguoi_nhan,
+        so_dien_thoai_nhan,
+        email_nhan,
         id_nguoi_cap_nhat,
       ]
     );
 
-    return res
-      .status(201)
-      .json({
-        EM: "Tạo đơn hàng thành công",
-        EC: 1,
-        DT: { id: result.insertId },
-      });
+    return res.status(201).json({
+      EM: "Tạo đơn hàng thành công",
+      EC: 1,
+      DT: { id: result.insertId },
+    });
   } catch (error) {
     console.error("Error in createOrder:", error);
     return res

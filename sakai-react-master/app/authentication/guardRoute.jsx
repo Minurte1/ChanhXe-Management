@@ -35,7 +35,7 @@ const GuardRoute = ({ element: Element, allowedRoles }) => {
   if (loading)
     return (
       <Box
-        sx={{
+                sx={{
           display: "flex",
           justifyContent: "center",
           alignItems: "center",

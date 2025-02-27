@@ -1,5 +1,14 @@
 const pool = require("../config/database"); // Kết nối cơ sở dữ liệu
+const jwt = require("jsonwebtoken");
+const JWT_SECRET = process.env.JWT_SECRET;
+const fs = require("fs");
+const path = require("path");
+const dayjs = require("dayjs");
 
+const bcrypt = require("bcrypt");
+const nodemailer = require("nodemailer");
+const crypto = require("crypto");
+const otpStorage = new Map();
 // Lấy tất cả khách hàng
 const getAllCustomers = async (req, res) => {
   try {
@@ -60,13 +69,11 @@ const createCustomer = async (req, res) => {
       [ho_ten, so_dien_thoai, dia_chi, hashedPassword, id_nguoi_cap_nhat]
     );
 
-    return res
-      .status(201)
-      .json({
-        EM: "Tạo khách hàng thành công",
-        EC: 1,
-        DT: { id: result.insertId },
-      });
+    return res.status(201).json({
+      EM: "Tạo khách hàng thành công",
+      EC: 1,
+      DT: { id: result.insertId },
+    });
   } catch (error) {
     console.error("Error in createCustomer:", error);
     return res
@@ -90,6 +97,27 @@ const updateCustomer = async (req, res) => {
       return res
         .status(400)
         .json({ EM: "Không có dữ liệu cập nhật", EC: -1, DT: {} });
+    }
+
+    if (updates.mat_khau) {
+      const [currentCustomer] = await pool.query(
+        "SELECT mat_khau FROM khach_hang WHERE id = ?",
+        [id]
+      );
+      if (
+        currentCustomer.length > 0 &&
+        currentCustomer[0].mat_khau === updates.mat_khau
+      ) {
+        delete updates.mat_khau;
+      }
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({
+        EM: "Không có dữ liệu cập nhật hoặc mật khẩu không thay đổi",
+        EC: -1,
+        DT: {},
+      });
     }
 
     const fields = Object.keys(updates)

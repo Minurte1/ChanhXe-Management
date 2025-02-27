@@ -113,7 +113,10 @@ const getMenuItems = (role, selectedRole = null) => {
         label: "Giao dịch đơn hàng",
         icon: "pi pi-map",
 
-        items: [{ label: "Giao dịch", url: "/don-hang/giao-dich" }],
+        items: [
+          { label: "Giao dịch", url: "/don-hang/giao-dich" },
+          { label: "Thêm khách hàng", url: "/don-hang/khach-hang" },
+        ],
       },
     ],
   };
