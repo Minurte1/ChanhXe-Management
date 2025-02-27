@@ -8,11 +8,11 @@ const {
   updateTrip,
   deleteTrip,
 } = require("../controllers/chuyenXeController");
-
-router.get("/trips", getAllTrips);
-router.get("/trips/:id", getTripById);
-router.post("/trips", createTrip);
-router.put("/trips/:id", updateTrip);
-router.delete("/trips/:id", deleteTrip);
+const { checkUserJWT } = require("../middleware/JWTaction");
+router.get("/trips", checkUserJWT, getAllTrips);
+router.get("/trips/:id", checkUserJWT, getTripById);
+router.post("/trips", checkUserJWT, createTrip);
+router.put("/trips/:id", checkUserJWT, updateTrip);
+router.delete("/trips/:id", checkUserJWT, deleteTrip);
 
 module.exports = router;

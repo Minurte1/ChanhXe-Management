@@ -92,10 +92,14 @@ const getMenuItems = (role, selectedRole = null) => {
         label: "Quản lý điều phối",
         icon: "pi pi-cog",
         items: [
-          { label: "Ghi nhận xe xuất bến", url: "/dispatch/departure" },
-          { label: "Phân công tài xế", url: "/dispatch/assign-driver" },
-          { label: "Phân công xe vận chuyển", url: "/dispatch/assign-vehicle" },
-          { label: "Cập nhật trạng thái xe", url: "/dispatch/vehicle-status" },
+          { label: "Phân công chuyến xe", url: "/dieu-phoi/chuyen-xe" },
+          { label: "Ghi nhận xe xuất bến", url: "/dieu-phoi/departure" },
+          { label: "Phân công tài xế", url: "/dieu-phoi/assign-driver" },
+          {
+            label: "Phân công xe vận chuyển đơn hàng",
+            url: "/dieu-phoi/assign-vehicle",
+          },
+          { label: "Cập nhật trạng thái xe", url: "/dieu-phoi/vehicle-status" },
         ],
       },
     ],
