@@ -1,3 +1,4 @@
+'use client';
 import React, { useState, useEffect } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
@@ -9,10 +10,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { Autocomplete, TextField } from '@mui/material';
 
 const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, isLoggedIn }) => {
-  const [users, setUsers] = useState([]);
   const [listBenXe, setListBenXe] = useState([]);
   const [tongTien, setTongTien] = useState(0); // State để lưu tổng tiền
-
+  const [users, setUsers] = useState([]);
   useEffect(() => {
     if (visible) {
       fetchUsers();

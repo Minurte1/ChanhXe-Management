@@ -49,11 +49,13 @@ const nguoiDungRoute = require("./routers/nguoiDungRouter.js");
 const xeRoute = require("./routers/xeRouter.js");
 const benXeRoute = require("./routers/benXeRouter.js");
 const khachHangRoute = require("./routers/khachHangRouter.js");
+const taiXeRoute = require("./routers/taiXeRouter.js");
 // app.use("/", userRoute);
 app.use("/", nguoiDungRoute);
 app.use("/", xeRoute);
 app.use("/", benXeRoute);
 app.use("/", khachHangRoute);
+app.use("/", taiXeRoute);
 //
 
 app.use("/", donHangRoute);

@@ -23,6 +23,11 @@ const getMenuItems = (role, selectedRole = null) => {
             url: "/nhan-vien/danh-sach",
             icon: "pi pi-user",
           },
+          {
+            label: "Danh sách tài xế",
+            url: "/nhan-vien/tai-xe",
+            icon: "pi pi-user",
+          },
         ],
       },
       {

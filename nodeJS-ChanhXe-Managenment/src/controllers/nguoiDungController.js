@@ -12,18 +12,76 @@ const otpStorage = new Map();
 // Lấy tất cả người dùng
 const getAllUsers = async (req, res) => {
   try {
-    const [rows] = await pool.query(
-      "SELECT * FROM nguoi_dung ORDER BY ngay_cap_nhat DESC"
-    );
+    const {
+      id,
+      ho_ten,
+      so_dien_thoai,
+      email,
+      vai_tro,
+      trang_thai,
+      id_nguoi_cap_nhat,
+      ngay_cap_nhat,
+      ngay_tao,
+    } = req.query;
 
-    return res
-      .status(200)
-      .json({ EM: "Lấy danh sách người dùng thành công", EC: 1, DT: rows });
+    let query = "SELECT * FROM nguoi_dung WHERE 1=1";
+    let queryParams = [];
+
+    if (id) {
+      query += " AND id = ?";
+      queryParams.push(id);
+    }
+    if (ho_ten) {
+      query += " AND ho_ten LIKE ?";
+      queryParams.push(`%${ho_ten}%`);
+    }
+    if (so_dien_thoai) {
+      query += " AND so_dien_thoai = ?";
+      queryParams.push(so_dien_thoai);
+    }
+    if (email) {
+      query += " AND email LIKE ?";
+      queryParams.push(`%${email}%`);
+    }
+    if (vai_tro) {
+      // Xử lý vai_tro dạng mảng hoặc chuỗi đơn
+      const roles = Array.isArray(vai_tro) ? vai_tro : vai_tro.split(",");
+      query += " AND vai_tro IN (" + roles.map(() => "?").join(",") + ")";
+      queryParams.push(...roles);
+    }
+    if (trang_thai) {
+      query += " AND trang_thai = ?";
+      queryParams.push(trang_thai);
+    }
+    if (id_nguoi_cap_nhat) {
+      query += " AND id_nguoi_cap_nhat = ?";
+      queryParams.push(id_nguoi_cap_nhat);
+    }
+    if (ngay_cap_nhat) {
+      query += " AND DATE(ngay_cap_nhat) = ?";
+      queryParams.push(ngay_cap_nhat);
+    }
+    if (ngay_tao) {
+      query += " AND DATE(ngay_tao) = ?";
+      queryParams.push(ngay_tao);
+    }
+
+    query += " ORDER BY ngay_cap_nhat DESC";
+
+    const [rows] = await pool.query(query, queryParams);
+
+    return res.status(200).json({
+      EM: "Lấy danh sách người dùng thành công",
+      EC: 1,
+      DT: rows,
+    });
   } catch (error) {
     console.error("Error in getAllUsers:", error);
-    return res
-      .status(500)
-      .json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: [] });
+    return res.status(500).json({
+      EM: `Lỗi: ${error.message}`,
+      EC: -1,
+      DT: [],
+    });
   }
 };
 
