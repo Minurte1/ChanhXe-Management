@@ -8,11 +8,30 @@ const {
   updateVehicle,
   deleteVehicle,
 } = require("../controllers/xeController");
-const { checkUserJWT } = require("../middleware/JWTaction");
-router.get("/xe", getAllVehicles);
-router.get("/xe/:id", getVehicleById);
-router.post("/xe", checkUserJWT, createVehicle);
-router.put("/xe/:id", checkUserJWT, updateVehicle);
-router.delete("/xe/:id", checkUserJWT, deleteVehicle);
+const {
+  checkUserJWT,
+  checkUserPermission,
+} = require("../middleware/JWTaction");
+
+router.get("/xe", checkUserJWT, checkUserPermission("admin"), getAllVehicles);
+router.get(
+  "/xe/:id",
+  checkUserJWT,
+  checkUserPermission("admin"),
+  getVehicleById
+);
+router.post("/xe", checkUserJWT, checkUserPermission("admin"), createVehicle);
+router.put(
+  "/xe/:id",
+  checkUserJWT,
+  checkUserPermission("admin"),
+  updateVehicle
+);
+router.delete(
+  "/xe/:id",
+  checkUserJWT,
+  checkUserPermission("admin"),
+  deleteVehicle
+);
 
 module.exports = router;

@@ -3,19 +3,19 @@ import AppConfig from '../../layout/AppConfig';
 import React from 'react';
 
 interface SimpleLayoutProps {
-    children: React.ReactNode;
+  children: React.ReactNode;
 }
 
 export const metadata: Metadata = {
-    title: 'Quản lý chành xe || Hệ thống quản lý',
-    description: 'The ultimate collection of design-agnostic, flexible and accessible React UI Components.'
+  title: 'Quản lý chành xe || Hệ thống quản lý',
+  description: 'The ultimate collection of design-agnostic, flexible and accessible React UI Components.'
 };
 
 export default function SimpleLayout({ children }: SimpleLayoutProps) {
-    return (
-        <React.Fragment>
-            {children}
-            <AppConfig simple />
-        </React.Fragment>
-    );
+  return (
+    <React.Fragment>
+      {children}
+      <AppConfig simple />
+    </React.Fragment>
+  );
 }

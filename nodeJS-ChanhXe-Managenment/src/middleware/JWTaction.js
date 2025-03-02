@@ -53,21 +53,43 @@ const checkUserJWT = (req, res, next) => {
       return res.status(401).json({
         EC: -1,
         DT: "",
-        EM: "không xác thực được user",
+        EM: "Không thể xác thực được user này.",
       });
     }
   } else {
     return res.status(401).json({
       EC: -1,
       DT: "",
-      EM: "không thể xác thực được user này",
+      EM: "Không thể xác thực được user này.",
     });
   }
 };
 
+// kiểm tra đúng role không?
+const checkUserPermission = (allowedRoles) => {
+  return (req, res, next) => {
+    const userRole = req.user.vai_tro;
+    const userStatus = req.user.trang_thai;
+    if (userStatus === "tam_ngung") {
+      return res.status(401).json({
+        EC: -1,
+        DT: "",
+        EM: "Tài khoản của bạn bị tạm ngưng hoạt động !!",
+      });
+    }
+    if (!allowedRoles.includes(userRole)) {
+      return res.status(401).json({
+        EC: -1,
+        DT: "",
+        EM: "Bạn không thuộc phân quyền này.",
+      });
+    }
+    next();
+  };
+};
 module.exports = {
   createJWT,
   verifyToken,
   checkUserJWT,
-  // checkUserPermission,
+  checkUserPermission,
 };
