@@ -395,6 +395,7 @@ const sendAccountEmail = async (email, hoTen, password, vaiTro, trangThai) => {
     console.error("❌ Gửi email thất bại:", error);
   }
 };
+
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
@@ -443,7 +444,7 @@ const loginUser = async (req, res) => {
     }
 
     // Tạo JWT token
-    const token = jwt.sign(
+    const accessToken = jwt.sign(
       {
         id: user.id,
         email: user.email,
@@ -459,12 +460,35 @@ const loginUser = async (req, res) => {
       { expiresIn: "5h" }
     );
 
+    const refreshToken = jwt.sign(
+      {
+        id: user.id,
+        email: user.email,
+        ho_ten: user.ho_ten,
+        so_dien_thoai: user.so_dien_thoai,
+        vai_tro: user.vai_tro,
+        trang_thai: user.trang_thai,
+        id_nguoi_cap_nhat: user.id_nguoi_cap_nhat,
+        ngay_cap_nhat: user.ngay_cap_nhat,
+        ngay_tao: user.ngay_tao,
+      },
+      process.env.JWT_REFRESH_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    // refresh token là HTTP-only cookie
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // Set to true in production
+      sameSite: 'strict',
+    });
+
     // Trả về token và thông tin người dùng
     return res.status(200).json({
       EM: "Đăng nhập thành công",
       EC: 1,
       DT: {
-        accessToken: token,
+        accessToken: accessToken,
         userInfo: {
           id: user.id,
           email: user.email,
