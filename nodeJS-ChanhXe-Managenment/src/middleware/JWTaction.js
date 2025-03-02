@@ -77,7 +77,7 @@ const checkUserJWT = (req, res, next) => {
 };
 
 const refreshToken = (req, res) => {
-  const { refreshToken } = req.body;
+  const { refreshToken } = req.cookies;
   if (!refreshToken) {
     return res.status(401).json({
       EC: -1,

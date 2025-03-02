@@ -46,7 +46,6 @@ app.use('/auth', authRoutes);
 const menuService = require("./services/menuService");
 
 // //api user
-const userRoute = require("./routers/userRouters.js");
 const donHangRoute = require("./routers/donHangRouter.js");
 const nguoiDungRoute = require("./routers/nguoiDungRouter.js");
 const xeRoute = require("./routers/xeRouter.js");

@@ -456,8 +456,8 @@ const loginUser = async (req, res) => {
         ngay_cap_nhat: user.ngay_cap_nhat,
         ngay_tao: user.ngay_tao,
       },
-      JWT_SECRET,
-      { expiresIn: "5h" }
+      process.env.JWT_SECRET,
+      { expiresIn: "15m" }
     );
 
     const refreshToken = jwt.sign(
@@ -513,7 +513,7 @@ const loginUser = async (req, res) => {
 };
 
 const logoutUser = (req, res) => {
-  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
   return res.status(200).json({ message: "Đăng xuất thành công" });
 };
 
