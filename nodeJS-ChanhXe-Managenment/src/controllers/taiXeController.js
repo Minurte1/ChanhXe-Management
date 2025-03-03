@@ -163,7 +163,7 @@ const createDriver = async (req, res) => {
     }
     const [result] = await pool.query(
       `INSERT INTO tai_xe (nguoi_dung_id, bang_lai, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat, trang_thai) 
-       VALUES (?, ?, ?, NOW(), NOW()),?`,
+       VALUES (?, ?, ?, NOW(), NOW(), ?)`,
       [nguoi_dung_id, bang_lai, id_nguoi_cap_nhat, trang_thai]
     );
 
@@ -186,33 +186,61 @@ const updateDriver = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
     const id_nguoi_cap_nhat = req.user?.id;
+
+    // Kiểm tra quyền thực hiện
     if (!id_nguoi_cap_nhat) {
       return res
         .status(403)
         .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
     }
+
+    // Kiểm tra dữ liệu cập nhật
     if (Object.keys(updates).length === 0) {
       return res
         .status(400)
         .json({ EM: "Không có dữ liệu cập nhật", EC: -1, DT: {} });
     }
 
-    const fields = Object.keys(updates)
+    // Danh sách các trường hợp lệ trong bảng tai_xe
+    const validFields = ["nguoi_dung_id", "bang_lai", "trang_thai"];
+
+    // Lọc các trường hợp lệ từ dữ liệu được truyền vào
+    const filteredUpdates = {};
+    for (const key of validFields) {
+      if (updates.hasOwnProperty(key)) {
+        filteredUpdates[key] = updates[key];
+      }
+    }
+
+    // Kiểm tra nếu không có trường hợp lệ nào
+    if (Object.keys(filteredUpdates).length === 0) {
+      return res
+        .status(400)
+        .json({ EM: "Không có trường hợp lệ để cập nhật", EC: -1, DT: {} });
+    }
+
+    // Tạo câu lệnh SQL động
+    const fields = Object.keys(filteredUpdates)
       .map((key) => `${key} = ?`)
       .join(", ");
-    const values = Object.values(updates);
+    const values = Object.values(filteredUpdates);
 
-    const updateQuery = `UPDATE tai_xe SET ${fields}, ngay_cap_nhat = NOW(), id_nguoi_cap_nhat = ? WHERE id = ?`;
+    // Thêm id_nguoi_cap_nhat và id vào cuối mảng values
     values.push(id_nguoi_cap_nhat, id);
 
+    const updateQuery = `UPDATE tai_xe SET ${fields}, ngay_cap_nhat = NOW(), id_nguoi_cap_nhat = ? WHERE id = ?`;
+
+    // Thực thi truy vấn
     const [result] = await pool.query(updateQuery, values);
 
+    // Kiểm tra xem có bản ghi nào được cập nhật không
     if (result.affectedRows === 0) {
       return res
         .status(404)
         .json({ EM: "Không tìm thấy tài xế để cập nhật", EC: -1, DT: {} });
     }
 
+    // Trả về kết quả thành công
     return res
       .status(200)
       .json({ EM: "Cập nhật tài xế thành công", EC: 1, DT: {} });
@@ -223,7 +251,6 @@ const updateDriver = async (req, res) => {
       .json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
   }
 };
-
 // Xóa tài xế
 const deleteDriver = async (req, res) => {
   try {
@@ -243,10 +270,39 @@ const deleteDriver = async (req, res) => {
   }
 };
 
+// Lấy danh sách người dùng chưa thêm vào vai trò tài xế
+const getUsersNotInDriverTable = async (req, res) => {
+  try {
+    // Truy vấn SQL để lấy danh sách người dùng có vai trò là tai_xe hoặc tai_xe_phu và chưa có trong bảng tai_xe
+    const query = `
+      SELECT nguoi_dung.* 
+      FROM nguoi_dung
+      LEFT JOIN tai_xe ON nguoi_dung.id = tai_xe.nguoi_dung_id
+      WHERE tai_xe.nguoi_dung_id IS NULL
+      AND (nguoi_dung.vai_tro = 'tai_xe' OR nguoi_dung.vai_tro = 'tai_xe_phu');
+    `;
+
+    // Thực thi truy vấn
+    const [results] = await pool.query(query);
+
+    // Trả về kết quả
+    return res.status(200).json({
+      EM: "Lấy danh sách người dùng thành công",
+      EC: 1,
+      DT: results,
+    });
+  } catch (error) {
+    console.error("Error in getUsersNotInDriverTable:", error);
+    return res
+      .status(500)
+      .json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
+  }
+};
 module.exports = {
   getAllDrivers,
   getDriverById,
   createDriver,
   updateDriver,
   deleteDriver,
+  getUsersNotInDriverTable,
 };

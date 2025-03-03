@@ -144,19 +144,25 @@ const createTrip = async (req, res) => {
     } = req.body;
     const id_nguoi_cap_nhat = req.user?.id;
 
+    // Kiểm tra quyền thực hiện
     if (!id_nguoi_cap_nhat) {
       return res
         .status(403)
         .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
     }
 
+    // Định dạng thời gian xuất bến
     const thoiGianXuatBen = moment(thoi_gian_xuat_ben).format(
       "YYYY-MM-DD HH:mm:ss"
     );
-    const thoiGianCapBen = moment(thoi_gian_cap_ben).format(
-      "YYYY-MM-DD HH:mm:ss"
-    );
 
+    // Xử lý thời gian cập bến: nếu là chuỗi rỗng hoặc không hợp lệ, gán giá trị NULL
+    let thoiGianCapBen = null;
+    if (thoi_gian_cap_ben && moment(thoi_gian_cap_ben).isValid()) {
+      thoiGianCapBen = moment(thoi_gian_cap_ben).format("YYYY-MM-DD HH:mm:ss");
+    }
+
+    // Thực thi truy vấn SQL
     const [result] = await pool.query(
       `INSERT INTO chuyen_xe (xe_id, tai_xe_id, tai_xe_phu_id, thoi_gian_xuat_ben, thoi_gian_cap_ben, trang_thai, id_ben_xe_nhan, id_ben_xe_gui, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat) 
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
@@ -173,6 +179,7 @@ const createTrip = async (req, res) => {
       ]
     );
 
+    // Trả về kết quả thành công
     return res.status(201).json({
       EM: "Tạo chuyến xe thành công",
       EC: 1,
@@ -185,7 +192,6 @@ const createTrip = async (req, res) => {
       .json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
   }
 };
-
 // Cập nhật chuyến xe
 const updateTrip = async (req, res) => {
   try {

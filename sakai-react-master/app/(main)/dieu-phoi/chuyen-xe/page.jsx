@@ -139,13 +139,16 @@ const DanhSachChuyenXe = () => {
                 <>
                   <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editTrip(rowData)} />
                   <Button icon="pi pi-trash" style={{ marginLeft: '5px' }} className="p-button-rounded p-button-warning" onClick={() => deleteTrip(rowData.id)} />
-                  <Button
-                    icon="pi pi-plus"
-                    style={{ marginLeft: '5px' }}
-                    className="p-button-rounded p-button-info"
-                    onClick={() => openDonHangDialog(rowData)} // Mở modal thêm đơn hàng
-                    tooltip="Thêm đơn hàng"
-                  />
+
+                  {rowData.chuyen_xe_trang_thai === 'cho_xuat_ben' && (
+                    <Button
+                      icon="pi pi-plus"
+                      style={{ marginLeft: '5px' }}
+                      className="p-button-rounded p-button-info"
+                      onClick={() => openDonHangDialog(rowData)} // Mở modal thêm đơn hàng
+                      tooltip="Thêm đơn hàng"
+                    />
+                  )}
                 </>
               )}
             />

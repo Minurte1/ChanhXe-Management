@@ -81,7 +81,7 @@ const DanhSachTaiXe = () => {
       if (isNew) {
         await taiXeServices.createDriver(filteredData);
       } else {
-        await taiXeServices.updateDriver(filteredData.id, filteredData);
+        await taiXeServices.updateDriver(formData.tai_xe_id, filteredData);
       }
       fetchTaiXe();
       setDisplayDialog(false);

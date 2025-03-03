@@ -138,7 +138,7 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
       </div>
 
       <div className="p-field mt-2">
-        <label htmlFor="thoi_gian_xuat_ben">Thời Gian Xuất Bến</label>
+        <label htmlFor="thoi_gian_xuat_ben">Thời Gian </label>
         <Calendar
           id="thoi_gian_xuat_ben"
           value={formData.thoi_gian_xuat_ben ? new Date(formData.thoi_gian_xuat_ben) : null}

@@ -6,7 +6,7 @@ trong bang chuyen_xe gồm: id, xe_id,tai_xe,tai_xe_phu_id, thoi_gian_xuat_ben, 
 
 trong bang nguoi_dung gom:  id, ho_ten,so_dien_thoai,email,mat_khau,vai_tro,trang_thai,id_nguoi_cap_nhat,ngay_cap_nhat,ngay_tao
 
-trong bang tai_xe gồm : id,nguoi_dung_id,bang_lai,id_nguoi_cap_nhat,ngay_cap_nhat,ngay_tao
+trong bang tai_xe gồm : id,nguoi_dung_id,bang_lai,id_nguoi_cap_nhat,ngay_cap_nhat,ngay_tao,trang_thai
 
 
 trong_luong,kich_thuoc_,so_kien,gia_tri_hang,cuoc_phi,phi_bao_hiem,phu_phi, trang_thai, ben_don_hang_id
@@ -14,7 +14,6 @@ trong_luong,kich_thuoc_,so_kien,gia_tri_hang,cuoc_phi,phi_bao_hiem,phu_phi, tran
 
 
 trong bang khach_hang gồm: id,ho_ten,_so_dien_thoai, dia_chi, mat_khau ,id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat
-
 
 
 

@@ -5,6 +5,7 @@ import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { getAllUsers } from '../services/userAccountService';
+import taiXeService from '../services/taiXeServices';
 
 const TaiXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }) => {
   const [users, setUsers] = useState([]);
@@ -19,7 +20,7 @@ const TaiXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }
     try {
       const filters = { vai_tro: ['tai_xe', 'tai_xe_phu'], trang_thai: 'hoat_dong' };
 
-      const response = await getAllUsers(filters);
+      const response = await taiXeService.getUsersNotInDriverTable();
 
       setUsers(Array.isArray(response.DT) ? response.DT : []);
     } catch (error) {

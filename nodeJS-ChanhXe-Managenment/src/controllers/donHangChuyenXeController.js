@@ -84,7 +84,7 @@ const createDonHangChuyenXe = async (req, res) => {
       [don_hang_ids]
     );
     const [chuyenXeCheck] = await pool.query(
-      "SELECT id, xe_id FROM chuyen_xe WHERE id = ?",
+      "SELECT * FROM chuyen_xe WHERE id = ?",
       [don_hang_chuyen_xe_id]
     );
 
@@ -103,23 +103,12 @@ const createDonHangChuyenXe = async (req, res) => {
       });
     }
 
+    const tai_xe_id = chuyenXeCheck[0].tai_xe_id;
+    const tai_xe_phu_id = chuyenXeCheck[0].tai_xe_phu_id;
     const xe_id = chuyenXeCheck[0].xe_id;
-
-    // Lấy thông tin tài xế liên quan đến xe
-    const [taiXeCheck] = await pool.query(
-      "SELECT id FROM tai_xe WHERE xe_id = ? LIMIT 1",
-      [xe_id]
-    );
-
-    if (taiXeCheck.length === 0) {
-      return res.status(400).json({
-        EM: "Không tìm thấy tài xế cho xe này",
-        EC: -1,
-        DT: {},
-      });
-    }
-
-    const tai_xe_id = taiXeCheck[0].id;
+    console.log("xe_id", xe_id);
+    console.log("tai_xe_id", tai_xe_id);
+    console.log("tai_xe_phu_id", tai_xe_phu_id);
 
     await pool.query("START TRANSACTION");
 
@@ -200,9 +189,27 @@ const createDonHangChuyenXe = async (req, res) => {
       `;
       const taiXeValues = ["dang_van_chuyen", id_nguoi_cap_nhat, tai_xe_id];
       const [taiXeResult] = await pool.query(updateTaiXeQuery, taiXeValues);
-
       if (taiXeResult.affectedRows === 0) {
         throw new Error("Không tìm thấy tài xế để cập nhật trạng thái");
+      }
+
+      //Update trạng thái tài xế phụ
+      const updateTaiXePhuQuery = `
+        UPDATE tai_xe 
+        SET trang_thai = ?, ngay_cap_nhat = NOW(), id_nguoi_cap_nhat = ? 
+        WHERE id = ?
+      `;
+      const taiXe_PhuValues = [
+        "dang_van_chuyen",
+        id_nguoi_cap_nhat,
+        tai_xe_phu_id,
+      ];
+      const [taiXe_PhuResult] = await pool.query(
+        updateTaiXePhuQuery,
+        taiXe_PhuValues
+      );
+      if (taiXe_PhuResult.affectedRows === 0) {
+        throw new Error("Không tìm thấy tài xế phụ để cập nhật trạng thái");
       }
 
       await pool.query("COMMIT");

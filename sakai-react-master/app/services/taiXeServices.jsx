@@ -15,6 +15,17 @@ const taiXeService = {
     }
   },
 
+  //Lấy danh sách người dùng vai trò tài xế chưa thêm vào bảng tài xế
+  getUsersNotInDriverTable: async () => {
+    // Thêm params mặc định là object rỗng
+    try {
+      const response = await axiosInstance.get(`${API_URL}/tai-xe-add-table`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching drivers:', error);
+      throw error;
+    }
+  },
   getDriverById: async (id) => {
     try {
       const response = await axiosInstance.get(`${API_URL}/tai-xe/${id}`);
