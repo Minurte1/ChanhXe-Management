@@ -301,7 +301,8 @@ const loginUserGoogle = async (req, res) => {
       }
 
       // Tạo token
-      const token = jwt.sign(
+      // Tạo JWT token
+      const accessToken = jwt.sign(
         {
           id: user.id,
           email: user.email,
@@ -310,18 +311,42 @@ const loginUserGoogle = async (req, res) => {
           vai_tro: user.vai_tro,
           trang_thai: user.trang_thai,
           id_nguoi_cap_nhat: user.id_nguoi_cap_nhat,
-          ngay_tao: user.ngay_tao,
           ngay_cap_nhat: user.ngay_cap_nhat,
+          ngay_tao: user.ngay_tao,
         },
-        JWT_SECRET,
-        { expiresIn: "5h" }
+        process.env.JWT_SECRET,
+        // { expiresIn: "10s" }
+        { expiresIn: "15m" }
       );
+
+      const refreshToken = jwt.sign(
+        {
+          id: user.id,
+          email: user.email,
+          ho_ten: user.ho_ten,
+          so_dien_thoai: user.so_dien_thoai,
+          vai_tro: user.vai_tro,
+          trang_thai: user.trang_thai,
+          id_nguoi_cap_nhat: user.id_nguoi_cap_nhat,
+          ngay_cap_nhat: user.ngay_cap_nhat,
+          ngay_tao: user.ngay_tao,
+        },
+        process.env.JWT_REFRESH_SECRET,
+        { expiresIn: "7d" }
+      );
+
+      // refresh token là HTTP-only cookie
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Set to true in production
+        sameSite: 'strict',
+      });
 
       return res.status(200).json({
         EM: "Login successful",
         EC: 200,
         DT: {
-          accessToken: token,
+          accessToken: accessToken,
           userInfo: {
             id: user.id,
             email: user.email,
@@ -369,7 +394,8 @@ const loginUserGoogle = async (req, res) => {
         trang_thai_mac_dinh
       );
       // Tạo token cho user mới
-      const token = jwt.sign(
+      // Tạo JWT token
+      const accessToken = jwt.sign(
         {
           id: newUser.id,
           email: newUser.email,
@@ -378,18 +404,42 @@ const loginUserGoogle = async (req, res) => {
           vai_tro: newUser.vai_tro,
           trang_thai: newUser.trang_thai,
           id_nguoi_cap_nhat: newUser.id_nguoi_cap_nhat,
-          ngay_tao: newUser.ngay_tao,
           ngay_cap_nhat: newUser.ngay_cap_nhat,
+          ngay_tao: newUser.ngay_tao,
         },
-        JWT_SECRET,
-        { expiresIn: "5h" }
+        process.env.JWT_SECRET,
+        // { expiresIn: "10s" }
+        { expiresIn: "15m" }
       );
+
+      const refreshToken = jwt.sign(
+        {
+          id: newUser.id,
+          email: newUser.email,
+          ho_ten: newUser.ho_ten,
+          so_dien_thoai: newUser.so_dien_thoai,
+          vai_tro: newUser.vai_tro,
+          trang_thai: newUser.trang_thai,
+          id_nguoi_cap_nhat: newUser.id_nguoi_cap_nhat,
+          ngay_cap_nhat: newUser.ngay_cap_nhat,
+          ngay_tao: newUser.ngay_tao,
+        },
+        process.env.JWT_REFRESH_SECRET,
+        { expiresIn: "7d" }
+      );
+
+      // refresh token là HTTP-only cookie
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Set to true in production
+        sameSite: 'strict',
+      });
 
       return res.status(200).json({
         EM: "Tài khoản của bạn đã được tạo thành công, vui lòng kiểm tra email để lấy mật khẩu",
         EC: 200,
         DT: {
-          accessToken: token,
+          accessToken: accessToken,
           userInfo: {
             id: newUser.id,
             email: newUser.email,
@@ -436,9 +486,8 @@ const sendAccountEmail = async (email, hoTen, password, vaiTro, trangThai) => {
           <p><strong>Email:</strong> ${email}</p>
           <p><strong>Mật khẩu tạm thời:</strong> <span style="color: red;">${password}</span></p>
           <p><strong>Vai trò:</strong> ${vaiTro}</p>
-          <p><strong>Trạng thái:</strong> ${
-            trangThai === "hoat_dong" ? "Hoạt động" : "Bị khóa"
-          }</p>
+          <p><strong>Trạng thái:</strong> ${trangThai === "hoat_dong" ? "Hoạt động" : "Bị khóa"
+      }</p>
         </div>
         <p>Vui lòng đăng nhập và đổi mật khẩu để đảm bảo an toàn.</p>
         <p style="text-align: center; color: #888; font-size: 12px;">&copy; 2024 Quản Lý Chành Xe. All rights reserved.</p>
@@ -453,6 +502,7 @@ const sendAccountEmail = async (email, hoTen, password, vaiTro, trangThai) => {
     console.error("❌ Gửi email thất bại:", error);
   }
 };
+
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
@@ -501,7 +551,7 @@ const loginUser = async (req, res) => {
     }
 
     // Tạo JWT token
-    const token = jwt.sign(
+    const accessToken = jwt.sign(
       {
         id: user.id,
         email: user.email,
@@ -513,16 +563,40 @@ const loginUser = async (req, res) => {
         ngay_cap_nhat: user.ngay_cap_nhat,
         ngay_tao: user.ngay_tao,
       },
-      JWT_SECRET,
-      { expiresIn: "5h" }
+      process.env.JWT_SECRET,
+      // { expiresIn: "10s" }
+      { expiresIn: "15m" }
     );
+
+    const refreshToken = jwt.sign(
+      {
+        id: user.id,
+        email: user.email,
+        ho_ten: user.ho_ten,
+        so_dien_thoai: user.so_dien_thoai,
+        vai_tro: user.vai_tro,
+        trang_thai: user.trang_thai,
+        id_nguoi_cap_nhat: user.id_nguoi_cap_nhat,
+        ngay_cap_nhat: user.ngay_cap_nhat,
+        ngay_tao: user.ngay_tao,
+      },
+      process.env.JWT_REFRESH_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    // refresh token là HTTP-only cookie
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // Set to true in production
+      sameSite: 'strict',
+    });
 
     // Trả về token và thông tin người dùng
     return res.status(200).json({
       EM: "Đăng nhập thành công",
       EC: 1,
       DT: {
-        accessToken: token,
+        accessToken: accessToken,
         userInfo: {
           id: user.id,
           email: user.email,
@@ -547,7 +621,7 @@ const loginUser = async (req, res) => {
 };
 
 const logoutUser = (req, res) => {
-  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
   return res.status(200).json({ message: "Đăng xuất thành công" });
 };
 

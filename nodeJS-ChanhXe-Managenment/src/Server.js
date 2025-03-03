@@ -8,6 +8,7 @@ require("./config/database.js");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const hostname = process.env.HOST_NAME || "localhost";
+const authRoutes = require('./routers/auth.js');
 
 // Middleware để gắn `io` vào `req`
 const http = require("http");
@@ -40,10 +41,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+app.use('/auth', authRoutes);
+
 const menuService = require("./services/menuService");
 
 // //api user
-const userRoute = require("./routers/userRouters.js");
 const donHangRoute = require("./routers/donHangRouter.js");
 const nguoiDungRoute = require("./routers/nguoiDungRouter.js");
 const xeRoute = require("./routers/xeRouter.js");

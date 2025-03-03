@@ -2,29 +2,46 @@ require("dotenv").config();
 var jwt = require("jsonwebtoken");
 
 const nonSercurePaths = ["/", "/register", "/login", "/logout"];
+
 const createJWT = (payload) => {
   let key = process.env.JWT_SECRET;
   let token;
   try {
-    token = jwt.sign(payload, key, { expiresIn: 300000 });
+    token = jwt.sign(payload, key, { expiresIn: "15m" }); // Access token expires in 15 minutes
   } catch (e) {
     console.log(e);
   }
-
   return token;
 };
-//--
-const verifyToken = (token) => {
-  let key = process.env.JWT_SECRET;
+
+const createRefreshToken = (payload) => {
+  let key = process.env.JWT_REFRESH_SECRET;
+  let token;
+  try {
+    token = jwt.sign(payload, key, { expiresIn: "7d" }); // Refresh token expires in 7 days
+  } catch (e) {
+    console.log(e);
+  }
+  return token;
+};
+
+const verifyToken = (token, isRefreshToken = false) => {
+  let key = isRefreshToken
+    ? process.env.JWT_REFRESH_SECRET
+    : process.env.JWT_SECRET;
   let decoded = null;
   try {
     decoded = jwt.verify(token, key);
   } catch (e) {
+    if (e.name === "TokenExpiredError") {
+      //console.log('Token expired');
+      return { expired: true };
+    }
     console.log(e);
   }
   return decoded;
 };
-//-- Giải nén cookie
+
 const extractToken = (req) => {
   if (
     req.headers.authorization &&
@@ -44,11 +61,17 @@ const checkUserJWT = (req, res, next) => {
   if ((cookie && cookie.jwt) || tokenFromHeader) {
     let token = cookie && cookie.jwt ? cookie.jwt : tokenFromHeader;
     let decoded = verifyToken(token);
-    if (decoded) {
+    if (decoded && !decoded.expired) {
       console.log("check decode: ", decoded);
       req.user = decoded;
       req.token = token;
       next();
+    } else if (decoded && decoded.expired) {
+      return res.status(401).json({
+        EC: -1,
+        DT: "",
+        EM: "Token expired",
+      });
     } else {
       return res.status(401).json({
         EC: -1,
@@ -63,6 +86,43 @@ const checkUserJWT = (req, res, next) => {
       EM: "Không thể xác thực được user này.",
     });
   }
+};
+
+const refreshAccessToken = (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+  if (!refreshToken) {
+    return res.status(401).json({
+      EC: -1,
+      DT: "",
+      EM: "Refresh token is required",
+    });
+  }
+
+  const decoded = verifyToken(refreshToken, true);
+  if (!decoded) {
+    return res.status(401).json({
+      EC: -1,
+      DT: "",
+      EM: "Invalid refresh token",
+    });
+  }
+
+  const newAccessToken = createJWT({ id: decoded.id });
+  // const newRefreshToken = createRefreshToken({ id: decoded.id });
+
+  // res.cookie('refreshToken', newRefreshToken, {
+  //   httpOnly: true,
+  //   secure: process.env.NODE_ENV === 'production', // Set to true in production
+  //   sameSite: 'strict',
+  // });
+
+  return res.status(200).json({
+    EC: 0,
+    DT: {
+      accessToken: newAccessToken,
+    },
+    EM: "Token refreshed successfully",
+  });
 };
 
 // kiểm tra đúng role không?
@@ -89,7 +149,9 @@ const checkUserPermission = (allowedRoles) => {
 };
 module.exports = {
   createJWT,
+  createRefreshToken,
   verifyToken,
   checkUserJWT,
   checkUserPermission,
+  refreshAccessToken,
 };
