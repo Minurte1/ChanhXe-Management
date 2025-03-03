@@ -52,7 +52,7 @@ const getDonHangChuyenXeById = async (req, res) => {
 // Thêm nhiều đơn hàng vào một chuyến xe
 const createDonHangChuyenXe = async (req, res) => {
   try {
-    const { don_hang_ids, don_hang_chuyen_xe_id } = req.body; // don_hang_ids là mảng các id đơn hàng
+    const { don_hang_ids, don_hang_chuyen_xe_id } = req.body;
     const id_nguoi_cap_nhat = req.user?.id;
 
     if (!id_nguoi_cap_nhat) {
@@ -79,7 +79,6 @@ const createDonHangChuyenXe = async (req, res) => {
       });
     }
 
-    // Kiểm tra xem các don_hang_id và don_hang_chuyen_xe_id có tồn tại không
     const [donHangCheck] = await pool.query(
       "SELECT id FROM don_hang WHERE id IN (?)",
       [don_hang_ids]
@@ -106,7 +105,22 @@ const createDonHangChuyenXe = async (req, res) => {
 
     const xe_id = chuyenXeCheck[0].xe_id;
 
-    // Bắt đầu transaction để đảm bảo tính toàn vẹn dữ liệu
+    // Lấy thông tin tài xế liên quan đến xe
+    const [taiXeCheck] = await pool.query(
+      "SELECT id FROM tai_xe WHERE xe_id = ? LIMIT 1",
+      [xe_id]
+    );
+
+    if (taiXeCheck.length === 0) {
+      return res.status(400).json({
+        EM: "Không tìm thấy tài xế cho xe này",
+        EC: -1,
+        DT: {},
+      });
+    }
+
+    const tai_xe_id = taiXeCheck[0].id;
+
     await pool.query("START TRANSACTION");
 
     try {
@@ -125,7 +139,7 @@ const createDonHangChuyenXe = async (req, res) => {
         [values]
       );
 
-      // 2. Cập nhật trang_thai của chuyen_xe thành "dang_van_chuyen"
+      // 2. Cập nhật trang_thai của chuyen_xe
       const updateChuyenXeQuery = `
         UPDATE chuyen_xe 
         SET trang_thai = ?, ngay_cap_nhat = NOW(), id_nguoi_cap_nhat = ? 
@@ -145,7 +159,7 @@ const createDonHangChuyenXe = async (req, res) => {
         throw new Error("Không tìm thấy chuyến xe để cập nhật trạng thái");
       }
 
-      // 3. Cập nhật trang_thai của tất cả đơn hàng trong don_hang_ids thành "dang_van_chuyen"
+      // 3. Cập nhật trang_thai của đơn hàng
       const updateDonHangQuery = `
         UPDATE don_hang 
         SET trang_thai = ?, ngay_cap_nhat = NOW(), id_nguoi_cap_nhat = ? 
@@ -165,7 +179,7 @@ const createDonHangChuyenXe = async (req, res) => {
         throw new Error("Không cập nhật được trạng thái tất cả đơn hàng");
       }
 
-      // 4. Cập nhật trang_thai của xe thành "dang_van_chuyen"
+      // 4. Cập nhật trang_thai của xe
       const updateXeQuery = `
         UPDATE xe 
         SET trang_thai = ?, ngay_cap_nhat = NOW(), id_nguoi_cap_nhat = ? 
@@ -178,7 +192,19 @@ const createDonHangChuyenXe = async (req, res) => {
         throw new Error("Không tìm thấy xe để cập nhật trạng thái");
       }
 
-      // Commit transaction nếu mọi thứ thành công
+      // 5. Cập nhật trang_thai của tài xế
+      const updateTaiXeQuery = `
+        UPDATE tai_xe 
+        SET trang_thai = ?, ngay_cap_nhat = NOW(), id_nguoi_cap_nhat = ? 
+        WHERE id = ?
+      `;
+      const taiXeValues = ["dang_van_chuyen", id_nguoi_cap_nhat, tai_xe_id];
+      const [taiXeResult] = await pool.query(updateTaiXeQuery, taiXeValues);
+
+      if (taiXeResult.affectedRows === 0) {
+        throw new Error("Không tìm thấy tài xế để cập nhật trạng thái");
+      }
+
       await pool.query("COMMIT");
 
       return res.status(201).json({
@@ -187,7 +213,6 @@ const createDonHangChuyenXe = async (req, res) => {
         DT: { insertedRows: insertResult.affectedRows },
       });
     } catch (error) {
-      // Rollback nếu có lỗi
       await pool.query("ROLLBACK");
       throw error;
     }

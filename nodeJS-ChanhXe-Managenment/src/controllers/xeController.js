@@ -1,17 +1,87 @@
 const pool = require("../config/database"); // Kết nối cơ sở dữ liệu
 
-// Lấy tất cả xe
+// Lấy tất cả xe với search động
 const getAllVehicles = async (req, res) => {
   try {
-    const [rows] = await pool.query("SELECT * FROM xe");
-    return res
-      .status(200)
-      .json({ EM: "Lấy danh sách xe thành công", EC: 1, DT: rows });
+    const {
+      id,
+      bien_so,
+      loai_xe,
+      suc_chua,
+      trang_thai,
+      id_nguoi_cap_nhat,
+      ngay_cap_nhat,
+      ngay_tao,
+    } = req.query;
+
+    // Query cơ bản
+    let query = `
+      SELECT 
+        id,
+        bien_so,
+        loai_xe,
+        suc_chua,
+        trang_thai,
+        id_nguoi_cap_nhat,
+        ngay_cap_nhat,
+        ngay_tao
+      FROM xe
+      WHERE 1=1
+    `;
+    let queryParams = [];
+
+    // Thêm điều kiện tìm kiếm động
+    if (id) {
+      query += " AND id = ?";
+      queryParams.push(id);
+    }
+    if (bien_so) {
+      query += " AND bien_so LIKE ?";
+      queryParams.push(`%${bien_so}%`);
+    }
+    if (loai_xe) {
+      query += " AND loai_xe = ?";
+      queryParams.push(loai_xe);
+    }
+    if (suc_chua) {
+      query += " AND suc_chua = ?";
+      queryParams.push(suc_chua);
+    }
+    if (trang_thai) {
+      query += " AND trang_thai = ?";
+      queryParams.push(trang_thai);
+    }
+    if (id_nguoi_cap_nhat) {
+      query += " AND id_nguoi_cap_nhat = ?";
+      queryParams.push(id_nguoi_cap_nhat);
+    }
+    if (ngay_cap_nhat) {
+      query += " AND DATE(ngay_cap_nhat) = ?";
+      queryParams.push(ngay_cap_nhat);
+    }
+    if (ngay_tao) {
+      query += " AND DATE(ngay_tao) = ?";
+      queryParams.push(ngay_tao);
+    }
+
+    // Sắp xếp theo ngày cập nhật (tùy chọn)
+    query += " ORDER BY ngay_cap_nhat DESC";
+
+    // Thực thi query
+    const [rows] = await pool.query(query, queryParams);
+
+    return res.status(200).json({
+      EM: "Lấy danh sách xe thành công",
+      EC: 1,
+      DT: rows,
+    });
   } catch (error) {
     console.error("Error in getAllVehicles:", error);
-    return res
-      .status(500)
-      .json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: [] });
+    return res.status(500).json({
+      EM: `Lỗi: ${error.message}`,
+      EC: -1,
+      DT: [],
+    });
   }
 };
 

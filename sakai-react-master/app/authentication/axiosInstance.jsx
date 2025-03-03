@@ -39,7 +39,7 @@ const refreshAccessToken = async () => {
     enqueueSnackbar('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.', { variant: 'info' });
     Cookies.remove('accessToken');
     // Chuyển hướng đến trang đăng nhập nếu cần
-    window.location.href = '/login';
+    window.location.href = '/auth/login';
     return null;
   }
 };

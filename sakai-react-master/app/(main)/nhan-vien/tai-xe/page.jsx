@@ -13,7 +13,8 @@ const DanhSachTaiXe = () => {
   const [isNew, setIsNew] = useState(false);
   const [formData, setFormData] = useState({
     nguoi_dung_id: '',
-    bang_lai: ''
+    bang_lai: '',
+    trang_thai: ''
   });
 
   const toast = useRef(null);

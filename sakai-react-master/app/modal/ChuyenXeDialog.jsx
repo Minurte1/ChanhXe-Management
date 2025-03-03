@@ -55,8 +55,11 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [xeResponse, taiXeResponse, benXeResponse] = await Promise.all([xeService.getAllVehicles(), taiXeServices.getAllDrivers(), BenXeService.getAllBenXe()]);
-
+        const [xeResponse, taiXeResponse, benXeResponse] = await Promise.all([
+          xeService.getAllVehicles({ trang_thai: 'hoat_dong' }), // Ví dụ lọc xe hoạt động
+          taiXeServices.getAllDrivers({ trang_thai_tai_xe: 'hoat_dong' }),
+          BenXeService.getAllBenXe()
+        ]);
         setXeList(Array.isArray(xeResponse.DT) ? xeResponse.DT : []);
         setTaiXeList(Array.isArray(taiXeResponse.DT) ? taiXeResponse.DT : []);
         setListBenXe(Array.isArray(benXeResponse.DT) ? benXeResponse.DT : []);

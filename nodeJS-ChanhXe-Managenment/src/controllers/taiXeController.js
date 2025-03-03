@@ -18,6 +18,7 @@ const getAllDrivers = async (req, res) => {
       id_nguoi_cap_nhat_tai_xe,
       ngay_cap_nhat_tai_xe,
       ngay_tao_tai_xe,
+      trang_thai_tai_xe,
     } = req.query;
 
     // Query cơ bản với INNER JOIN, lấy từ tai_xe làm gốc
@@ -33,7 +34,8 @@ const getAllDrivers = async (req, res) => {
         nguoi_dung.ngay_cap_nhat AS ngay_cap_nhat_nguoi_dung, 
         nguoi_dung.ngay_tao AS ngay_tao_nguoi_dung,
         tai_xe.id AS tai_xe_id, 
-        tai_xe.bang_lai, 
+        tai_xe.bang_lai,
+           tai_xe.trang_thai,  
         tai_xe.id_nguoi_cap_nhat AS id_nguoi_cap_nhat_tai_xe, 
         tai_xe.ngay_cap_nhat AS ngay_cap_nhat_tai_xe, 
         tai_xe.ngay_tao AS ngay_tao_tai_xe
@@ -102,6 +104,10 @@ const getAllDrivers = async (req, res) => {
       query += " AND DATE(tai_xe.ngay_tao) = ?";
       queryParams.push(ngay_tao_tai_xe);
     }
+    if (trang_thai_tai_xe) {
+      query += " AND tai_xe.trang_thai = ?";
+      queryParams.push(trang_thai_tai_xe);
+    }
 
     // Sắp xếp theo ngày cập nhật của tai_xe (hoặc nguoi_dung nếu muốn)
     query += " ORDER BY tai_xe.ngay_cap_nhat DESC";
@@ -148,7 +154,7 @@ const getDriverById = async (req, res) => {
 // Thêm mới tài xế
 const createDriver = async (req, res) => {
   try {
-    const { nguoi_dung_id, bang_lai } = req.body;
+    const { nguoi_dung_id, bang_lai, trang_thai } = req.body;
     const id_nguoi_cap_nhat = req.user?.id;
     if (!id_nguoi_cap_nhat) {
       return res
@@ -156,9 +162,9 @@ const createDriver = async (req, res) => {
         .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
     }
     const [result] = await pool.query(
-      `INSERT INTO tai_xe (nguoi_dung_id, bang_lai, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat) 
-       VALUES (?, ?, ?, NOW(), NOW())`,
-      [nguoi_dung_id, bang_lai, id_nguoi_cap_nhat]
+      `INSERT INTO tai_xe (nguoi_dung_id, bang_lai, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat, trang_thai) 
+       VALUES (?, ?, ?, NOW(), NOW()),?`,
+      [nguoi_dung_id, bang_lai, id_nguoi_cap_nhat, trang_thai]
     );
 
     return res.status(201).json({
