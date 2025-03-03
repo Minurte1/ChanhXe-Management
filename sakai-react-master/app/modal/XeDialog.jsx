@@ -17,7 +17,8 @@ const XeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }) =
   const trangThaiOptions = [
     { label: 'Đang hoạt động', value: 'hoat_dong' },
     { label: 'Bảo trì', value: 'bao_tri' },
-    { label: 'Ngưng hoạt động', value: 'ngung_hoat_dong' }
+    { label: 'Ngưng hoạt động', value: 'ngung_hoat_dong' },
+    { label: 'Đang vận chuyển', value: 'dang_van_chuyen' }
   ];
 
   // Danh sách loại xe

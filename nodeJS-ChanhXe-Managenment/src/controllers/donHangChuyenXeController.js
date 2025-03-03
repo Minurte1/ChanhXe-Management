@@ -85,7 +85,7 @@ const createDonHangChuyenXe = async (req, res) => {
       [don_hang_ids]
     );
     const [chuyenXeCheck] = await pool.query(
-      "SELECT id FROM chuyen_xe WHERE id = ?",
+      "SELECT id, xe_id FROM chuyen_xe WHERE id = ?",
       [don_hang_chuyen_xe_id]
     );
 
@@ -103,6 +103,8 @@ const createDonHangChuyenXe = async (req, res) => {
         DT: {},
       });
     }
+
+    const xe_id = chuyenXeCheck[0].xe_id;
 
     // Bắt đầu transaction để đảm bảo tính toàn vẹn dữ liệu
     await pool.query("START TRANSACTION");
@@ -161,6 +163,19 @@ const createDonHangChuyenXe = async (req, res) => {
 
       if (donHangResult.affectedRows !== don_hang_ids.length) {
         throw new Error("Không cập nhật được trạng thái tất cả đơn hàng");
+      }
+
+      // 4. Cập nhật trang_thai của xe thành "dang_van_chuyen"
+      const updateXeQuery = `
+        UPDATE xe 
+        SET trang_thai = ?, ngay_cap_nhat = NOW(), id_nguoi_cap_nhat = ? 
+        WHERE id = ?
+      `;
+      const xeValues = ["dang_van_chuyen", id_nguoi_cap_nhat, xe_id];
+      const [xeResult] = await pool.query(updateXeQuery, xeValues);
+
+      if (xeResult.affectedRows === 0) {
+        throw new Error("Không tìm thấy xe để cập nhật trạng thái");
       }
 
       // Commit transaction nếu mọi thứ thành công
