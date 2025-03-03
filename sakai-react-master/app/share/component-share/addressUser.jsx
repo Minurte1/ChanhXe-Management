@@ -80,6 +80,8 @@ const AddressSelector = ({ selectedProvince, selectedDistrict, selectedWards, se
           optionLabel="full_name"
           placeholder="Chọn tỉnh"
           disabled={loadingProvinces}
+          filter // Thêm filter để bật tính năng search
+          filterPlaceholder="Tìm kiếm tỉnh"
         />
       </div>
 
@@ -96,13 +98,15 @@ const AddressSelector = ({ selectedProvince, selectedDistrict, selectedWards, se
           optionLabel="full_name"
           placeholder="Chọn huyện"
           disabled={!selectedProvince || loadingDistricts}
+          filter
+          filterPlaceholder="Tìm kiếm huyện"
         />
       </div>
 
       <div className="field">
         <label>Chọn phường xã</label>
         {loadingWards ? <ProgressSpinner style={{ width: '20px', height: '20px' }} /> : null}
-        <Dropdown value={selectedWards} options={wards} onChange={(e) => setSelectedWards(e.value)} optionLabel="full_name" placeholder="Chọn phường xã" disabled={!selectedDistrict || loadingWards} />
+        <Dropdown value={selectedWards} options={wards} onChange={(e) => setSelectedWards(e.value)} optionLabel="full_name" placeholder="Chọn phường xã" disabled={!selectedDistrict || loadingWards} filter filterPlaceholder="Tìm kiếm phường xã" />
       </div>
     </div>
   );

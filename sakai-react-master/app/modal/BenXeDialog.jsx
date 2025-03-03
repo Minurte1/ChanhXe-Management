@@ -18,9 +18,9 @@ const BenXeDialog = ({ visible, onHide, isEditing, formData, onInputChange, onSa
       if (isEditing) {
         setStreet(formData.duong);
         setAddress(formData.dia_chi || '');
-        setSelectedProvince(formData.tinh ? { name_with_type: formData.tinh } : null);
-        setSelectedDistrict(formData.huyen ? { name_with_type: formData.huyen } : null);
-        setSelectedWards(formData.xa ? { name_with_type: formData.xa } : null);
+        setSelectedProvince(formData.tinh ? { full_name: formData.tinh } : null);
+        setSelectedDistrict(formData.huyen ? { full_name: formData.huyen } : null);
+        setSelectedWards(formData.xa ? { full_name: formData.xa } : null);
       } else {
         setStreet('');
         setAddress('');
@@ -33,7 +33,7 @@ const BenXeDialog = ({ visible, onHide, isEditing, formData, onInputChange, onSa
 
   // Update address locally whenever street or address components change
   useEffect(() => {
-    const addressParts = [street, selectedWards?.name_with_type, selectedDistrict?.name_with_type, selectedProvince?.name_with_type].filter((part) => part).join(', ');
+    const addressParts = [street, selectedWards?.full_name, selectedDistrict?.full_name, selectedProvince?.full_name].filter((part) => part).join(', ');
     setAddress(addressParts);
   }, [street, selectedProvince, selectedDistrict, selectedWards]);
 
@@ -43,9 +43,9 @@ const BenXeDialog = ({ visible, onHide, isEditing, formData, onInputChange, onSa
       id: formData.id, // Thêm id để giữ nguyên khi edit
       ten_ben_xe: formData.ten_ben_xe || '',
       dia_chi: address,
-      tinh: selectedProvince?.name_with_type || '',
-      huyen: selectedDistrict?.name_with_type || '',
-      xa: selectedWards?.name_with_type || '',
+      tinh: selectedProvince?.full_name || '',
+      huyen: selectedDistrict?.full_name || '',
+      xa: selectedWards?.full_name || '',
       duong: street
     };
 

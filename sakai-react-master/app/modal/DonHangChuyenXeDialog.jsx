@@ -121,7 +121,7 @@ const DonHangChuyenXeDialog = ({ visible, onHide, selectedChuyenXe }) => {
 
   return (
     <Dialog
-      header={`Thêm đơn hàng vào chuyến xe ID: ${selectedChuyenXe?.id}`} // Sửa thành id thay vì chuyen_xe_id
+      header={`Thêm đơn hàng vào chuyến xe ID: ${selectedChuyenXe?.chuyen_xe_id}`} // Sửa thành id thay vì chuyen_xe_id
       visible={visible}
       style={{ width: '60vw', maxWidth: '900px' }} // Tăng chiều rộng và đặt giới hạn tối đa
       footer={dialogFooter}

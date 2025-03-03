@@ -1,12 +1,8 @@
 import axiosInstance from '../authentication/axiosInstance';
-import Cookies from 'js-cookie';
-import axios from 'axios';
+
 import { enqueueSnackbar } from 'notistack';
-import { useDispatch } from 'react-redux';
-import { login } from '../redux/authSlice';
 
 const BASE_URL = process.env.NEXT_PUBLIC_URL_SERVER;
-const dispatch = useDispatch();
 
 // Lấy danh sách tất cả người dùng
 export const getAllUsers = async (searchParams = {}) => {
@@ -106,29 +102,6 @@ export const verifyAdmin = async (accessToken) => {
     return response.data.DT.role;
   } catch (error) {
     enqueueSnackbar('Bạn không có quyền truy cập vào trang này', {
-      variant: 'info'
-    });
-    console.error('Error verifying admin:', error);
-    return false;
-  }
-};
-export const refreshAccessToken = async () => {
-  try {
-    const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_URL_SERVER}/auth/refresh-token`, { token: accessToken });
-    if (response.data.EC === 1) {
-      Cookies.set('accessToken', response.data.accessToken);
-      dispatch(
-        login({
-          accessToken: response.data.DT.accessToken,
-          userInfo: response.data.DT.userInfo
-        })
-      );
-      return true;
-    } else {
-      return false;
-    }
-  } catch (error) {
-    enqueueSnackbar('Bạn hết thời gian đăng nhập vui lòng đăng nhập lại', {
       variant: 'info'
     });
     console.error('Error verifying admin:', error);
