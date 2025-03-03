@@ -99,35 +99,49 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="nguoi_gui_id">Người gửi</label>
-        <Autocomplete
+        <Dropdown
           id="nguoi_gui_id"
+          value={formData.nguoi_gui_id}
           options={users}
-          getOptionLabel={(option) => option.ho_ten || ''}
-          value={users.find((user) => user.id === formData.nguoi_gui_id) || null}
-          onChange={(event, newValue) => onInputChange({ target: { value: newValue ? newValue.id : '' } }, 'nguoi_gui_id')}
-          renderInput={(params) => <TextField {...params} variant="outlined" placeholder="Tìm kiếm khách hàng" className="mt-2" />}
+          optionLabel="ho_ten"
+          optionValue="id"
+          onChange={(e) => onInputChange({ target: { value: e.value } }, 'nguoi_gui_id')}
+          filter
+          placeholder="Tìm kiếm khách hàng"
+          showClear
+          className="w-100 mt-2"
         />
       </div>
+
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="id_ben_xe_gui">Bến Xe Gửi</label>
-        <Autocomplete
+        <Dropdown
           id="id_ben_xe_gui"
+          value={formData.id_ben_xe_gui}
           options={listBenXe}
-          getOptionLabel={(option) => option.ten_ben_xe || ''}
-          value={listBenXe.find((ben) => ben.id === formData.id_ben_xe_gui) || null}
-          onChange={(event, newValue) => onInputChange({ target: { value: newValue ? newValue.id : '' } }, 'id_ben_xe_gui')}
-          renderInput={(params) => <TextField {...params} variant="outlined" placeholder="Tìm kiếm bến xe gửi" className="mt-2" />}
+          optionLabel="ten_ben_xe"
+          optionValue="id"
+          onChange={(e) => onInputChange({ target: { value: e.value } }, 'id_ben_xe_gui')}
+          placeholder="Tìm kiếm bến xe gửi"
+          filter
+          showClear
+          className="w-100 mt-2"
         />
       </div>
+
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="id_ben_xe_nhan">Bến Xe Nhận</label>
-        <Autocomplete
+        <Dropdown
           id="id_ben_xe_nhan"
+          value={formData.id_ben_xe_nhan}
           options={listBenXe}
-          getOptionLabel={(option) => option.ten_ben_xe || ''}
-          value={listBenXe.find((ben) => ben.id === formData.id_ben_xe_nhan) || null}
-          onChange={(event, newValue) => onInputChange({ target: { value: newValue ? newValue.id : '' } }, 'id_ben_xe_nhan')}
-          renderInput={(params) => <TextField {...params} variant="outlined" placeholder="Tìm kiếm bến xe nhận" className="mt-2" />}
+          optionLabel="ten_ben_xe"
+          optionValue="id"
+          onChange={(e) => onInputChange({ target: { value: e.value } }, 'id_ben_xe_nhan')}
+          placeholder="Tìm kiếm bến xe nhận"
+          filter
+          showClear
+          className="w-100 mt-2"
         />
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>

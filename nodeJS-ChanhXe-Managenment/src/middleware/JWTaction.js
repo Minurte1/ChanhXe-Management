@@ -117,7 +117,7 @@ const refreshAccessToken = (req, res) => {
   // });
 
   return res.status(200).json({
-    EC: 0,
+    EC: 1,
     DT: {
       accessToken: newAccessToken,
     },

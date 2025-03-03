@@ -19,7 +19,8 @@ const KhachHangDialog = ({ isEditing, visible, onHide, isNew, formData, onInputC
   }, [visible]);
   // Update address locally whenever street or address components change
   useEffect(() => {
-    formData.dia_chi = [street, selectedWards?.name_with_type, selectedDistrict?.name_with_type, selectedProvince?.name_with_type].filter((part) => part).join(', ');
+    console.log('selectedWards', selectedWards);
+    formData.dia_chi = [street, selectedWards?.full_name, selectedDistrict?.full_name, selectedProvince?.full_name].filter((part) => part).join(', ');
     setAddress(formData.dia_chi);
   }, [street, selectedProvince, selectedDistrict, selectedWards]);
 
