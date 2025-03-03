@@ -120,6 +120,17 @@ const refreshAccessToken = (req, res) => {
     EC: 0,
     DT: {
       accessToken: newAccessToken,
+      userInfo: {
+        id: decoded.id,
+        email: decoded.email,
+        ho_ten: decoded.ho_ten,
+        so_dien_thoai: decoded.so_dien_thoai,
+        vai_tro: decoded.vai_tro,
+        trang_thai: decoded.trang_thai,
+        id_nguoi_cap_nhat: decoded.id_nguoi_cap_nhat,
+        ngay_cap_nhat: decoded.ngay_cap_nhat,
+        ngay_tao: decoded.ngay_tao,
+      },
     },
     EM: "Token refreshed successfully",
   });
