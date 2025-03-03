@@ -8,7 +8,7 @@ require("./config/database.js");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const hostname = process.env.HOST_NAME || "localhost";
-const authRoutes = require('./routers/auth.js');
+const authRoutes = require("./routers/auth.js");
 
 // Middleware để gắn `io` vào `req`
 const http = require("http");
@@ -41,8 +41,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.use('/auth', authRoutes);
-
 const menuService = require("./services/menuService");
 
 // //api user
@@ -50,10 +48,19 @@ const donHangRoute = require("./routers/donHangRouter.js");
 const nguoiDungRoute = require("./routers/nguoiDungRouter.js");
 const xeRoute = require("./routers/xeRouter.js");
 const benXeRoute = require("./routers/benXeRouter.js");
+const khachHangRoute = require("./routers/khachHangRouter.js");
+const taiXeRoute = require("./routers/taiXeRouter.js");
+const chuyenXeRoute = require("./routers/chuyenXeRouter.js");
+const donHangChuyenXeRoute = require("./routers/donHangChuyenXeRouter.js");
 // app.use("/", userRoute);
 app.use("/", nguoiDungRoute);
 app.use("/", xeRoute);
 app.use("/", benXeRoute);
+app.use("/", khachHangRoute);
+app.use("/", taiXeRoute);
+app.use("/", chuyenXeRoute);
+app.use("/", donHangChuyenXeRoute);
+app.use("/auth", authRoutes);
 //
 
 app.use("/", donHangRoute);

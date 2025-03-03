@@ -8,11 +8,11 @@ const {
   updateDriver,
   deleteDriver,
 } = require("../controllers/taiXeController");
-
-router.get("/drivers", getAllDrivers);
-router.get("/drivers/:id", getDriverById);
-router.post("/drivers", createDriver);
-router.put("/drivers/:id", updateDriver);
-router.delete("/drivers/:id", deleteDriver);
+const { checkUserJWT } = require("../middleware/JWTaction");
+router.get("/tai-xe", checkUserJWT, getAllDrivers);
+router.get("/tai-xe/:id", checkUserJWT, getDriverById);
+router.post("/tai-xe", checkUserJWT, createDriver);
+router.put("/tai-xe/:id", checkUserJWT, updateDriver);
+router.delete("/tai-xe/:id", checkUserJWT, deleteDriver);
 
 module.exports = router;

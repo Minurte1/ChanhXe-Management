@@ -1,119 +1,287 @@
-const pool = require("../config/database"); // Kết nối cơ sở dữ liệu
+const pool = require("../config/database");
 
-// Lấy tất cả đơn hàng trong chuyến xe
-const getAllOrdersInTrip = async (req, res) => {
-    try {
-        const id_nguoi_cap_nhat = req.user?.id;
-        if (!id_nguoi_cap_nhat) {
-        return res.status(403).json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
-        }
-        const [rows] = await pool.query("SELECT * FROM don_hang_chuyen_xe");
-        return res.status(200).json({ EM: "Lấy danh sách đơn hàng chuyến xe thành công", EC: 1, DT: rows });
-    } 
-    catch (error) {
-        console.error("Error in getAllOrdersInTrip:", error);
-        return res.status(500).json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: [] });
-    }
+// Lấy tất cả bản ghi trong don_hang_chuyen_xe
+const getAllDonHangChuyenXe = async (req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT * FROM don_hang_chuyen_xe");
+    return res.status(200).json({
+      EM: "Lấy danh sách đơn hàng chuyến xe thành công",
+      EC: 1,
+      DT: rows,
+    });
+  } catch (error) {
+    console.error("Error in getAllDonHangChuyenXe:", error);
+    return res.status(500).json({
+      EM: `Lỗi: ${error.message}`,
+      EC: -1,
+      DT: [],
+    });
+  }
 };
 
-// Lấy đơn hàng theo ID trong chuyến xe
-const getOrderInTripById = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const id_nguoi_cap_nhat = req.user?.id;
-        if (!id_nguoi_cap_nhat) {
-            return res.status(403).json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
-        }
-        const [rows] = await pool.query("SELECT * FROM don_hang_chuyen_xe WHERE id = ?", [id]);
-        if (rows.length === 0) {
-            return res.status(404).json({ EM: "Không tìm thấy đơn hàng trong chuyến xe", EC: -1, DT: {} });
-        }
-
-        return res.status(200).json({ EM: "Lấy đơn hàng trong chuyến xe thành công", EC: 1, DT: rows[0] });
-    } 
-    catch (error) {
-        console.error("Error in getOrderInTripById:", error);
-        return res.status(500).json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
+// Lấy bản ghi theo ID
+const getDonHangChuyenXeById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const [rows] = await pool.query(
+      "SELECT * FROM don_hang_chuyen_xe WHERE id = ?",
+      [id]
+    );
+    if (rows.length === 0) {
+      return res.status(404).json({
+        EM: "Không tìm thấy đơn hàng chuyến xe",
+        EC: -1,
+        DT: {},
+      });
     }
+    return res.status(200).json({
+      EM: "Lấy đơn hàng chuyến xe thành công",
+      EC: 1,
+      DT: rows[0],
+    });
+  } catch (error) {
+    console.error("Error in getDonHangChuyenXeById:", error);
+    return res.status(500).json({
+      EM: `Lỗi: ${error.message}`,
+      EC: -1,
+      DT: {},
+    });
+  }
 };
 
-// Thêm mới đơn hàng vào chuyến xe
-const createOrderInTrip = async (req, res) => {
-    try {
-        const { don_hang_id, don_hang_chuyen_xe_id } = req.body;
-        const id_nguoi_cap_nhat = req.user?.id;
-        if (!id_nguoi_cap_nhat) {
-            return res.status(403).json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
-        }
-        const [result] = await pool.query(
-            `INSERT INTO don_hang_chuyen_xe (don_hang_id, don_hang_chuyen_xe_id, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat) 
-       VALUES (?, ?, ?, NOW(), NOW())`,
-            [don_hang_id, don_hang_chuyen_xe_id, id_nguoi_cap_nhat]
-        );
+// Thêm nhiều đơn hàng vào một chuyến xe
+const createDonHangChuyenXe = async (req, res) => {
+  try {
+    const { don_hang_ids, don_hang_chuyen_xe_id } = req.body; // don_hang_ids là mảng các id đơn hàng
+    const id_nguoi_cap_nhat = req.user?.id;
 
-        return res.status(201).json({ EM: "Tạo đơn hàng trong chuyến xe thành công", EC: 1, DT: { id: result.insertId } });
-    } 
-    catch (error) {
-        console.error("Error in createOrderInTrip:", error);
-        return res.status(500).json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
+    if (!id_nguoi_cap_nhat) {
+      return res.status(403).json({
+        EM: "Không có quyền thực hiện",
+        EC: -1,
+        DT: {},
+      });
     }
-};
 
-// Cập nhật đơn hàng trong chuyến xe
-const updateOrderInTrip = async (req, res) => {
+    if (!Array.isArray(don_hang_ids) || don_hang_ids.length === 0) {
+      return res.status(400).json({
+        EM: "Danh sách đơn hàng không hợp lệ",
+        EC: -1,
+        DT: {},
+      });
+    }
+
+    if (!don_hang_chuyen_xe_id) {
+      return res.status(400).json({
+        EM: "ID chuyến xe không được để trống",
+        EC: -1,
+        DT: {},
+      });
+    }
+
+    // Kiểm tra xem các don_hang_id và don_hang_chuyen_xe_id có tồn tại không
+    const [donHangCheck] = await pool.query(
+      "SELECT id FROM don_hang WHERE id IN (?)",
+      [don_hang_ids]
+    );
+    const [chuyenXeCheck] = await pool.query(
+      "SELECT id FROM chuyen_xe WHERE id = ?",
+      [don_hang_chuyen_xe_id]
+    );
+
+    if (donHangCheck.length !== don_hang_ids.length) {
+      return res.status(400).json({
+        EM: "Một hoặc nhiều đơn hàng không tồn tại",
+        EC: -1,
+        DT: {},
+      });
+    }
+    if (chuyenXeCheck.length === 0) {
+      return res.status(400).json({
+        EM: "Chuyến xe không tồn tại",
+        EC: -1,
+        DT: {},
+      });
+    }
+
+    // Bắt đầu transaction để đảm bảo tính toàn vẹn dữ liệu
+    await pool.query("START TRANSACTION");
+
     try {
-        const { id } = req.params;
-        const updates = req.body;
-        const id_nguoi_cap_nhat = req.user?.id;
-        if (!id_nguoi_cap_nhat) {
-            return res.status(403).json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
-        }
-        if (Object.keys(updates).length === 0) {
-            return res.status(400).json({ EM: "Không có dữ liệu cập nhật", EC: -1, DT: {} });
-        }
+      // 1. Thêm các bản ghi vào don_hang_chuyen_xe
+      const values = don_hang_ids.map((don_hang_id) => [
+        don_hang_id,
+        don_hang_chuyen_xe_id,
+        id_nguoi_cap_nhat,
+        new Date(),
+        new Date(),
+      ]);
 
-        const fields = Object.keys(updates).map((key) => `${key} = ?`).join(", ");
-        const values = Object.values(updates);
+      const [insertResult] = await pool.query(
+        `INSERT INTO don_hang_chuyen_xe (don_hang_id, don_hang_chuyen_xe_id, id_nguoi_cap_nhat, ngay_cap_nhat, ngay_tao) 
+         VALUES ?`,
+        [values]
+      );
 
-        const updateQuery = `UPDATE don_hang_chuyen_xe SET ${fields}, ngay_cap_nhat = NOW(), id_nguoi_cap_nhat = ? WHERE id = ?`;
-        values.push(id_nguoi_cap_nhat, id);
+      // 2. Cập nhật trang_thai của chuyen_xe thành "dang_van_chuyen"
+      const updateChuyenXeQuery = `
+        UPDATE chuyen_xe 
+        SET trang_thai = ?, ngay_cap_nhat = NOW(), id_nguoi_cap_nhat = ? 
+        WHERE id = ?
+      `;
+      const chuyenXeValues = [
+        "dang_van_chuyen",
+        id_nguoi_cap_nhat,
+        don_hang_chuyen_xe_id,
+      ];
+      const [chuyenXeResult] = await pool.query(
+        updateChuyenXeQuery,
+        chuyenXeValues
+      );
 
-        const [result] = await pool.query(updateQuery, values);
+      if (chuyenXeResult.affectedRows === 0) {
+        throw new Error("Không tìm thấy chuyến xe để cập nhật trạng thái");
+      }
 
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ EM: "Không tìm thấy đơn hàng trong chuyến xe để cập nhật", EC: -1, DT: {} });
-        }
+      // 3. Cập nhật trang_thai của tất cả đơn hàng trong don_hang_ids thành "dang_van_chuyen"
+      const updateDonHangQuery = `
+        UPDATE don_hang 
+        SET trang_thai = ?, ngay_cap_nhat = NOW(), id_nguoi_cap_nhat = ? 
+        WHERE id IN (?)
+      `;
+      const donHangValues = [
+        "dang_van_chuyen",
+        id_nguoi_cap_nhat,
+        don_hang_ids,
+      ];
+      const [donHangResult] = await pool.query(
+        updateDonHangQuery,
+        donHangValues
+      );
 
-        return res.status(200).json({ EM: "Cập nhật đơn hàng trong chuyến xe thành công", EC: 1, DT: {} });
+      if (donHangResult.affectedRows !== don_hang_ids.length) {
+        throw new Error("Không cập nhật được trạng thái tất cả đơn hàng");
+      }
+
+      // Commit transaction nếu mọi thứ thành công
+      await pool.query("COMMIT");
+
+      return res.status(201).json({
+        EM: "Thêm đơn hàng vào chuyến xe và cập nhật trạng thái thành công",
+        EC: 1,
+        DT: { insertedRows: insertResult.affectedRows },
+      });
     } catch (error) {
-        console.error("Error in updateOrderInTrip:", error);
-        return res.status(500).json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
+      // Rollback nếu có lỗi
+      await pool.query("ROLLBACK");
+      throw error;
     }
+  } catch (error) {
+    console.error("Error in createDonHangChuyenXe:", error);
+    return res.status(500).json({
+      EM: `Lỗi: ${error.message}`,
+      EC: -1,
+      DT: {},
+    });
+  }
 };
 
-// Xóa đơn hàng khỏi chuyến xe
-const deleteOrderInTrip = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const id_nguoi_cap_nhat = req.user?.id;
-        if (!id_nguoi_cap_nhat) {
-            return res.status(403).json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
-        }
-        const [result] = await pool.query("DELETE FROM don_hang_chuyen_xe WHERE id = ?", [id]);
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ EM: "Không tìm thấy đơn hàng trong chuyến xe để xóa", EC: -1, DT: {} });
-        }
-        return res.status(200).json({ EM: "Xóa đơn hàng trong chuyến xe thành công", EC: 1, DT: {} });
-    } catch (error) {
-        console.error("Error in deleteOrderInTrip:", error);
-        return res.status(500).json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
+// Cập nhật bản ghi don_hang_chuyen_xe
+const updateDonHangChuyenXe = async (req, res) => {
+  try {
+    const { id } = req.params;
+    let updates = req.body;
+    const id_nguoi_cap_nhat = req.user?.id;
+
+    if (!id_nguoi_cap_nhat) {
+      return res.status(403).json({
+        EM: "Không có quyền thực hiện",
+        EC: -1,
+        DT: {},
+      });
     }
+
+    delete updates.id_nguoi_cap_nhat;
+    delete updates.ngay_cap_nhat;
+    delete updates.ngay_tao;
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({
+        EM: "Không có dữ liệu cập nhật",
+        EC: -1,
+        DT: {},
+      });
+    }
+
+    const fields = Object.keys(updates)
+      .map((key) => `${key} = ?`)
+      .join(", ");
+    const values = Object.values(updates);
+    values.push(id_nguoi_cap_nhat, id);
+
+    const updateQuery = `UPDATE don_hang_chuyen_xe SET ${fields}, ngay_cap_nhat = NOW(), id_nguoi_cap_nhat = ? WHERE id = ?`;
+
+    const [result] = await pool.query(updateQuery, values);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        EM: "Không tìm thấy bản ghi để cập nhật",
+        EC: -1,
+        DT: {},
+      });
+    }
+
+    return res.status(200).json({
+      EM: "Cập nhật đơn hàng chuyến xe thành công",
+      EC: 1,
+      DT: {},
+    });
+  } catch (error) {
+    console.error("Error in updateDonHangChuyenXe:", error);
+    return res.status(500).json({
+      EM: `Lỗi: ${error.message}`,
+      EC: -1,
+      DT: {},
+    });
+  }
+};
+
+// Xóa bản ghi don_hang_chuyen_xe
+const deleteDonHangChuyenXe = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const [result] = await pool.query(
+      "DELETE FROM don_hang_chuyen_xe WHERE id = ?",
+      [id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        EM: "Không tìm thấy bản ghi để xóa",
+        EC: -1,
+        DT: {},
+      });
+    }
+
+    return res.status(200).json({
+      EM: "Xóa đơn hàng chuyến xe thành công",
+      EC: 1,
+      DT: {},
+    });
+  } catch (error) {
+    console.error("Error in deleteDonHangChuyenXe:", error);
+    return res.status(500).json({
+      EM: `Lỗi: ${error.message}`,
+      EC: -1,
+      DT: {},
+    });
+  }
 };
 
 module.exports = {
-    getAllOrdersInTrip,
-    getOrderInTripById,
-    createOrderInTrip,
-    updateOrderInTrip,
-    deleteOrderInTrip,
+  getAllDonHangChuyenXe,
+  getDonHangChuyenXeById,
+  createDonHangChuyenXe,
+  updateDonHangChuyenXe,
+  deleteDonHangChuyenXe,
 };

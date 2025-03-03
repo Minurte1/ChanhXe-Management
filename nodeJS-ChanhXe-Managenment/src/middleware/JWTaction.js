@@ -7,7 +7,7 @@ const createJWT = (payload) => {
   let key = process.env.JWT_SECRET;
   let token;
   try {
-    token = jwt.sign(payload, key, { expiresIn: '15m' }); // Access token expires in 15 minutes
+    token = jwt.sign(payload, key, { expiresIn: "15m" }); // Access token expires in 15 minutes
   } catch (e) {
     console.log(e);
   }
@@ -18,7 +18,7 @@ const createRefreshToken = (payload) => {
   let key = process.env.JWT_REFRESH_SECRET;
   let token;
   try {
-    token = jwt.sign(payload, key, { expiresIn: '7d' }); // Refresh token expires in 7 days
+    token = jwt.sign(payload, key, { expiresIn: "7d" }); // Refresh token expires in 7 days
   } catch (e) {
     console.log(e);
   }
@@ -26,12 +26,14 @@ const createRefreshToken = (payload) => {
 };
 
 const verifyToken = (token, isRefreshToken = false) => {
-  let key = isRefreshToken ? process.env.JWT_REFRESH_SECRET : process.env.JWT_SECRET;
+  let key = isRefreshToken
+    ? process.env.JWT_REFRESH_SECRET
+    : process.env.JWT_SECRET;
   let decoded = null;
   try {
     decoded = jwt.verify(token, key);
   } catch (e) {
-    if (e.name === 'TokenExpiredError') {
+    if (e.name === "TokenExpiredError") {
       //console.log('Token expired');
       return { expired: true };
     }
@@ -74,14 +76,14 @@ const checkUserJWT = (req, res, next) => {
       return res.status(401).json({
         EC: -1,
         DT: "",
-        EM: "không xác thực được user",
+        EM: "Không thể xác thực được user này.",
       });
     }
   } else {
     return res.status(401).json({
       EC: -1,
       DT: "",
-      EM: "không thể xác thực được user này",
+      EM: "Không thể xác thực được user này.",
     });
   }
 };
@@ -115,7 +117,7 @@ const refreshAccessToken = (req, res) => {
   // });
 
   return res.status(200).json({
-    EC: 0,
+    EC: 1,
     DT: {
       accessToken: newAccessToken,
       userInfo: {
@@ -134,10 +136,33 @@ const refreshAccessToken = (req, res) => {
   });
 };
 
+// kiểm tra đúng role không?
+const checkUserPermission = (allowedRoles) => {
+  return (req, res, next) => {
+    const userRole = req.user.vai_tro;
+    const userStatus = req.user.trang_thai;
+    if (userStatus === "tam_ngung") {
+      return res.status(401).json({
+        EC: -1,
+        DT: "",
+        EM: "Tài khoản của bạn bị tạm ngưng hoạt động !!",
+      });
+    }
+    if (!allowedRoles.includes(userRole)) {
+      return res.status(401).json({
+        EC: -1,
+        DT: "",
+        EM: "Bạn không thuộc phân quyền này.",
+      });
+    }
+    next();
+  };
+};
 module.exports = {
   createJWT,
   createRefreshToken,
   verifyToken,
   checkUserJWT,
+  checkUserPermission,
   refreshAccessToken,
 };

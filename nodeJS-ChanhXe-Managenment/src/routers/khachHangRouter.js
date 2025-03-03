@@ -8,11 +8,11 @@ const {
   updateCustomer,
   deleteCustomer,
 } = require("../controllers/khachHangController");
-
-router.get("/customers", getAllCustomers);
-router.get("/customers/:id", getCustomerById);
-router.post("/customers", createCustomer);
-router.put("/customers/:id", updateCustomer);
-router.delete("/customers/:id", deleteCustomer);
+const { checkUserJWT } = require("../middleware/JWTaction");
+router.get("/customers", checkUserJWT, getAllCustomers);
+router.get("/customers/:id", checkUserJWT, getCustomerById);
+router.post("/customers", checkUserJWT, createCustomer);
+router.put("/customers/:id", checkUserJWT, updateCustomer);
+router.delete("/customers/:id", checkUserJWT, deleteCustomer);
 
 module.exports = router;

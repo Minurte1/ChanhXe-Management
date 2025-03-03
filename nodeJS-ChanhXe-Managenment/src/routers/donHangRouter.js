@@ -8,12 +8,11 @@ const {
   updateOrder,
   deleteOrder,
 } = require("../controllers/donHangController");
-// const { checkUserJWT } = require("../../middleware/JWTaction");
-
-router.get("/orders", getAllOrders);
-router.get("/orders/:id", getOrderById);
-router.post("/orders", createOrder);
-router.put("/orders/:id", updateOrder);
-router.delete("/orders/:id", deleteOrder);
+const { checkUserJWT } = require("../middleware/JWTaction");
+router.get("/orders", checkUserJWT, getAllOrders);
+router.get("/orders/:id", checkUserJWT, getOrderById);
+router.post("/orders", checkUserJWT, createOrder);
+router.put("/orders/:id", checkUserJWT, updateOrder);
+router.delete("/orders/:id", checkUserJWT, deleteOrder);
 
 module.exports = router;
