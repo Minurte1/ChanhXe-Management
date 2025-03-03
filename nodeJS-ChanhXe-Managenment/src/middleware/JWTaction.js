@@ -31,6 +31,10 @@ const verifyToken = (token, isRefreshToken = false) => {
   try {
     decoded = jwt.verify(token, key);
   } catch (e) {
+    if (e.name === 'TokenExpiredError') {
+      //console.log('Token expired');
+      return { expired: true };
+    }
     console.log(e);
   }
   return decoded;
@@ -55,11 +59,17 @@ const checkUserJWT = (req, res, next) => {
   if ((cookie && cookie.jwt) || tokenFromHeader) {
     let token = cookie && cookie.jwt ? cookie.jwt : tokenFromHeader;
     let decoded = verifyToken(token);
-    if (decoded) {
+    if (decoded && !decoded.expired) {
       console.log("check decode: ", decoded);
       req.user = decoded;
       req.token = token;
       next();
+    } else if (decoded && decoded.expired) {
+      return res.status(401).json({
+        EC: -1,
+        DT: "",
+        EM: "Token expired",
+      });
     } else {
       return res.status(401).json({
         EC: -1,
@@ -76,8 +86,8 @@ const checkUserJWT = (req, res, next) => {
   }
 };
 
-const refreshToken = (req, res) => {
-  const { refreshToken } = req.cookies;
+const refreshAccessToken = (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
   if (!refreshToken) {
     return res.status(401).json({
       EC: -1,
@@ -96,13 +106,13 @@ const refreshToken = (req, res) => {
   }
 
   const newAccessToken = createJWT({ id: decoded.id });
-  const newRefreshToken = createRefreshToken({ id: decoded.id });
+  // const newRefreshToken = createRefreshToken({ id: decoded.id });
 
-  res.cookie('refreshToken', newRefreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production', // Set to true in production
-    sameSite: 'strict',
-  });
+  // res.cookie('refreshToken', newRefreshToken, {
+  //   httpOnly: true,
+  //   secure: process.env.NODE_ENV === 'production', // Set to true in production
+  //   sameSite: 'strict',
+  // });
 
   return res.status(200).json({
     EC: 0,
@@ -118,11 +128,5 @@ module.exports = {
   createRefreshToken,
   verifyToken,
   checkUserJWT,
-  refreshToken,
+  refreshAccessToken,
 };
-// module.exports = {
-//   createJWT,
-//   verifyToken,
-//   checkUserJWT,
-//   // checkUserPermission,
-// };

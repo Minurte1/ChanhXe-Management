@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { refreshToken } = require('../middleware/JWTaction');
+const { refreshAccessToken } = require('../middleware/JWTaction');
 
-router.post('/refresh-token', refreshToken);
+router.post('/refresh-token', refreshAccessToken);
 
 module.exports = router;
