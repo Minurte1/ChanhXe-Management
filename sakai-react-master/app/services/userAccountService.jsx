@@ -89,14 +89,14 @@ export const deleteUser = async (id) => {
   }
 };
 
-export const verifyAdmin = async (accessToken) => {
+export const verifyAdmin = async (accessToken, pathName) => {
   if (!accessToken) {
     return false;
   }
   console.log('accessToken', accessToken);
 
   try {
-    const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_URL_SERVER}/verify-admin`, { token: accessToken });
+    const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_URL_SERVER}/verify-admin`, { token: accessToken, pathName: pathName });
 
     console.log('response.data admin:', response.data.DT.role);
 

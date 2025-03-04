@@ -630,7 +630,7 @@ const logoutUser = (req, res) => {
 };
 
 const verifyAdmin = async (req, res) => {
-  const { token } = req.body;
+  const { token, pathName } = req.body;
 
   if (!token) {
     return res.status(401).json({
