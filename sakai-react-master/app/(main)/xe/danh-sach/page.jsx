@@ -9,6 +9,7 @@ import VehicleService from '../../../services/xeSerivces';
 import PhanCongXeServie from '../../../services/phanCongXeSerivces';
 import XeDialog from '../../../modal/XeDialog';
 import PhanCongDialog from '../../../modal/PhanCongXeDialog';
+import VehicleAssignmentService from '../../../services/phanCongXeSerivces';
 
 const DanhSachXe = () => {
     const [xeList, setXeList] = useState([]);
@@ -23,29 +24,30 @@ const DanhSachXe = () => {
         trang_thai: ''
     });
     const [assignData, setAssignData] = useState({
+        xe: '',
         ben_xe: ''
     });
 
-  const showSuccess = (message) => {
-    toast.current.show({
-      severity: 'success',
-      summary: 'Thành công',
-      detail: message,
-      life: 3000
-    });
-  };
+    const showSuccess = (message) => {
+        toast.current.show({
+            severity: 'success',
+            summary: 'Thành công',
+            detail: message,
+            life: 3000
+        });
+    };
 
-  const openNew = () => {
-    setFormData({
-      ten_xe: '',
-      bien_so: '',
-      suc_chua: '',
-      loai_xe: '',
-      trang_thai: ''
-    });
-    setIsNew(true);
-    setDisplayDialog(true);
-  };
+    const openNew = () => {
+        setFormData({
+            ten_xe: '',
+            bien_so: '',
+            suc_chua: '',
+            loai_xe: '',
+            trang_thai: ''
+        });
+        setIsNew(true);
+        setDisplayDialog(true);
+    };
 
     const openPhanCongForm = () => {
         setAssignData({
@@ -98,19 +100,18 @@ const DanhSachXe = () => {
 
     const savePhanCong = async () => {
         const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = assignData;
-        // const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = formData;
-        // try {
-        //     if (isNew) {
-        //         await VehicleService.createVehicle(formData);
-        //     } else {
-        //         await VehicleService.updateVehicle(filteredData.id, filteredData);
-        //     }
-        //     fetchXe();
-        //     setDisplayDialog(false);
-        //     showSuccess(isNew ? 'Thêm xe thành công' : 'Cập nhật xe thành công');
-        // } catch (error) {
-        //     showError(isNew ? 'Lỗi khi thêm xe' : 'Lỗi khi cập nhật xe');
-        // }
+        try {
+            if (isNew) {
+                await VehicleAssignmentService.createVehicleAssignment(assignData);
+            } else {
+                await VehicleAssignmentService.createVehicleAssignment(filteredData.id, filteredData);
+            }
+            fetchXe();
+            setDisplayAssignDialog(false);
+            showSuccess(isNew ? 'Thêm phân công xe thành công' : 'Cập nhật phân công xe thành công');
+        } catch (error) {
+            showError(isNew ? 'Lỗi khi thêm phân công  xe' : 'Lỗi khi cập nhật phân công  xe');
+        }
     };
 
     const onInputChange = (e, name) => {
@@ -151,7 +152,7 @@ const DanhSachXe = () => {
             <XeDialog visible={displayDialog} onHide={() => setDisplayDialog(false)} isNew={isNew} formData={formData} onInputChange={onInputChange} onSave={saveXe} />
             <PhanCongDialog visible={displayAssignDialog} onHide={() => setDisplayAssignDialog(false)} formData={formData} onInputChange={onInputChange} onSave={savePhanCong} />
         </div>
-  );
+    );
 };
 
 export default DanhSachXe;
