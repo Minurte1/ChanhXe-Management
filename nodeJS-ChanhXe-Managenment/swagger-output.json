@@ -5,23 +5,16 @@
     "title": "Document API Chành Xe",
     "description": ""
   },
-  "host": "localhost:3002",
+  "host": "https://chanhxe-management.onrender.com",
   "basePath": "/",
   "tags": [
     {
       "name": "tts.vnpt"
     }
   ],
-  "schemes": [
-    "http",
-    "https"
-  ],
-  "consumes": [
-    "application/json"
-  ],
-  "produces": [
-    "application/json"
-  ],
+  "schemes": ["http", "https"],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
   "paths": {
     "/refresh-token": {
       "post": {
@@ -324,9 +317,7 @@
     },
     "/users": {
       "get": {
-        "tags": [
-          "Người dùng"
-        ],
+        "tags": ["Người dùng"],
         "description": "",
         "parameters": [
           {

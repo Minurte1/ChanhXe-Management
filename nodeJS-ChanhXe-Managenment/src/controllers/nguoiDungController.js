@@ -8,6 +8,7 @@ const dayjs = require("dayjs");
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
+const { getMenuItems } = require("../services/menuService");
 const otpStorage = new Map();
 // Lấy tất cả người dùng
 const getAllUsers = async (req, res) => {
@@ -648,6 +649,8 @@ const verifyAdmin = async (req, res) => {
       [id]
     );
 
+    const menuUser = await getMenuItems(roleUser);
+    console.log("menuUser", menuUser);
     if (rows.length > 0) {
       return res.status(200).json({
         EM: "Role retrieved successfully",
