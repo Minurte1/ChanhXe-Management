@@ -75,5 +75,5 @@ export default function AppLayout({ children }: AppLayoutProps) {
     return <Layout>{children}</Layout>;
   }
 
-  return router.push('/auth/login');
+  // return router.push('/auth/login');
 }
