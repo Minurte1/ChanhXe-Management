@@ -160,7 +160,7 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
               id="xe"
               value={formData.xe}
               options={xeOptions}
-              onChange={(e) => setSelectedXe(e.value)}
+              onChange={(e) => onInputChange(e, 'xe')}
               placeholder="Chọn xe"
               className="p-inputtext-sm"
               style={{ width: '100%' }}
@@ -175,7 +175,7 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
               id="ben_xe"
               value={formData.ben_xe}
               options={benXeOptions}
-              onChange={(e) => setSelectedBenXe(e.value)}
+              onChange={(e) => onInputChange(e, 'ben_xe')}
               placeholder="Chọn bến xe"
               className="p-inputtext-sm"
               style={{ width: '100%' }}
