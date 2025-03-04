@@ -28,6 +28,21 @@ const DanhSachXe = () => {
         ben_xe: ''
     });
 
+    const toast = useRef(null);
+
+    useEffect(() => {
+        fetchXe();
+      }, []);
+    
+      const fetchXe = async () => {
+        try {
+          const response = await VehicleService.getAllVehicles();
+          setXeList(Array.isArray(response.DT) ? response.DT : []);
+        } catch (error) {
+          showError('Lỗi khi tải danh sách xe');
+        }
+      };
+
     const showSuccess = (message) => {
         toast.current.show({
             severity: 'success',
@@ -36,6 +51,15 @@ const DanhSachXe = () => {
             life: 3000
         });
     };
+
+    const showError = (message) => {
+        toast.current.show({
+          severity: 'error',
+          summary: 'Lỗi',
+          detail: message,
+          life: 3000
+        });
+      };
 
     const openNew = () => {
         setFormData({
