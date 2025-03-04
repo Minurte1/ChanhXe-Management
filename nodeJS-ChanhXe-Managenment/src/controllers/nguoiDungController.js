@@ -113,6 +113,7 @@ const getUserById = async (req, res) => {
 
 // Thêm mới người dùng
 const createUser = async (req, res) => {
+  // #swagger.tags = ['Người dùng']
   try {
     const id_nguoi_cap_nhat = req.user?.id;
     if (!id_nguoi_cap_nhat) {
@@ -172,6 +173,7 @@ const createUser = async (req, res) => {
 
 // Cập nhật người dùng
 const updateUser = async (req, res) => {
+  // #swagger.tags = ['Người dùng']
   try {
     const { id } = req.params;
     console.log("id", id);
@@ -251,6 +253,7 @@ const updateUser = async (req, res) => {
 };
 // Xóa người dùng
 const deleteUser = async (req, res) => {
+  // #swagger.tags = ['Người dùng']
   try {
     const { id } = req.params;
     const [result] = await pool.query("DELETE FROM nguoi_dung WHERE id = ?", [
@@ -508,6 +511,7 @@ const sendAccountEmail = async (email, hoTen, password, vaiTro, trangThai) => {
 };
 
 const loginUser = async (req, res) => {
+  // #swagger.tags = ['Người dùng']
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -625,11 +629,13 @@ const loginUser = async (req, res) => {
 };
 
 const logoutUser = (req, res) => {
+  // #swagger.tags = ['Người dùng']
   res.clearCookie("refreshToken");
   return res.status(200).json({ message: "Đăng xuất thành công" });
 };
 
 const verifyAdmin = async (req, res) => {
+  // #swagger.tags = ['Người dùng']
   const { token, pathName } = req.body;
 
   if (!token) {
@@ -648,22 +654,48 @@ const verifyAdmin = async (req, res) => {
       "SELECT vai_tro FROM nguoi_dung WHERE id = ?",
       [id]
     );
-    const roleUser = decoded.vai_tro;
-    const menuUser = await getMenuItems(roleUser);
-    console.log("menuUser", menuUser);
-    if (rows.length > 0) {
-      return res.status(200).json({
-        EM: "Role retrieved successfully",
-        EC: 200,
-        DT: { role: rows[0].vai_tro }, // Trả về vai trò
-      });
-    } else {
+
+    if (rows.length === 0) {
       return res.status(404).json({
         EM: "User not found",
         EC: 404,
         DT: { role: null },
       });
     }
+
+    const roleUser = rows[0].vai_tro;
+    const menuUser = getMenuItems(roleUser); // Lấy danh sách menu của vai trò
+
+    // Hàm đệ quy để tìm pathName trong danh sách menu
+    const findPathInMenu = (menus, path) => {
+      for (const item of menus) {
+        if (item.url === path) {
+          return true;
+        }
+        if (item.items && item.items.length > 0) {
+          if (findPathInMenu(item.items, path)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+
+    const isPathAllowed = findPathInMenu(menuUser, pathName);
+
+    if (!isPathAllowed) {
+      return res.status(403).json({
+        EM: "Access denied",
+        EC: 403,
+        DT: { role: roleUser },
+      });
+    }
+
+    return res.status(200).json({
+      EM: "Role verified successfully",
+      EC: 200,
+      DT: { role: roleUser },
+    });
   } catch (error) {
     return res.status(401).json({
       EM: `Invalid token: ${error.message}`,
@@ -779,6 +811,7 @@ const checkOtp = async (req, res) => {
 };
 
 const registerUser = async (req, res) => {
+  // #swagger.tags = ['Người dùng']
   const {
     password,
     email,

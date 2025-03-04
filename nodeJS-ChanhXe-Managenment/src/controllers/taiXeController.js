@@ -2,6 +2,7 @@ const pool = require("../config/database"); // Kết nối cơ sở dữ liệu
 
 // Lấy tất cả tài xế
 const getAllDrivers = async (req, res) => {
+  // #swagger.tags = ['Tài xế']
   try {
     const {
       id,
@@ -132,6 +133,7 @@ const getAllDrivers = async (req, res) => {
 
 // Lấy tài xế theo ID
 const getDriverById = async (req, res) => {
+  // #swagger.tags = ['Tài xế']
   try {
     const { id } = req.params;
     const [rows] = await pool.query("SELECT * FROM tai_xe WHERE id = ?", [id]);
@@ -153,6 +155,7 @@ const getDriverById = async (req, res) => {
 
 // Thêm mới tài xế
 const createDriver = async (req, res) => {
+  // #swagger.tags = ['Tài xế']
   try {
     const { nguoi_dung_id, bang_lai, trang_thai } = req.body;
     const id_nguoi_cap_nhat = req.user?.id;
@@ -182,6 +185,7 @@ const createDriver = async (req, res) => {
 
 // Cập nhật tài xế
 const updateDriver = async (req, res) => {
+  // #swagger.tags = ['Tài xế']
   try {
     const { id } = req.params;
     const updates = req.body;
@@ -253,6 +257,7 @@ const updateDriver = async (req, res) => {
 };
 // Xóa tài xế
 const deleteDriver = async (req, res) => {
+  // #swagger.tags = ['Tài xế']
   try {
     const { id } = req.params;
     const [result] = await pool.query("DELETE FROM tai_xe WHERE id = ?", [id]);
@@ -272,6 +277,7 @@ const deleteDriver = async (req, res) => {
 
 // Lấy danh sách người dùng chưa thêm vào vai trò tài xế
 const getUsersNotInDriverTable = async (req, res) => {
+  // #swagger.tags = ['Tài xế']
   try {
     // Truy vấn SQL để lấy danh sách người dùng có vai trò là tai_xe hoặc tai_xe_phu và chưa có trong bảng tai_xe
     const query = `

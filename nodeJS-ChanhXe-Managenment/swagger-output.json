@@ -385,6 +385,9 @@
         }
       },
       "post": {
+        "tags": [
+          "Người dùng"
+        ],
         "description": "",
         "parameters": [
           {
@@ -452,6 +455,9 @@
         }
       },
       "put": {
+        "tags": [
+          "Người dùng"
+        ],
         "description": "",
         "parameters": [
           {
@@ -501,6 +507,9 @@
         }
       },
       "delete": {
+        "tags": [
+          "Người dùng"
+        ],
         "description": "",
         "parameters": [
           {
@@ -561,6 +570,9 @@
     },
     "/login": {
       "post": {
+        "tags": [
+          "Người dùng"
+        ],
         "description": "",
         "parameters": [
           {
@@ -603,6 +615,9 @@
     },
     "/logout": {
       "post": {
+        "tags": [
+          "Người dùng"
+        ],
         "description": "",
         "parameters": [],
         "responses": {
@@ -624,6 +639,9 @@
               "properties": {
                 "token": {
                   "example": "any"
+                },
+                "pathName": {
+                  "example": "any"
                 }
               }
             }
@@ -635,6 +653,9 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
@@ -704,6 +725,9 @@
     },
     "/register": {
       "post": {
+        "tags": [
+          "Người dùng"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1266,6 +1290,9 @@
     },
     "/tai-xe": {
       "get": {
+        "tags": [
+          "Tài xế"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1348,15 +1375,15 @@
           "200": {
             "description": "OK"
           },
-          "401": {
-            "description": "Unauthorized"
-          },
           "500": {
             "description": "Internal Server Error"
           }
         }
       },
       "post": {
+        "tags": [
+          "Tài xế"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1382,9 +1409,6 @@
           "201": {
             "description": "Created"
           },
-          "401": {
-            "description": "Unauthorized"
-          },
           "403": {
             "description": "Forbidden"
           },
@@ -1396,14 +1420,14 @@
     },
     "/tai-xe-add-table": {
       "get": {
+        "tags": [
+          "Tài xế"
+        ],
         "description": "",
         "parameters": [],
         "responses": {
           "200": {
             "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
           },
           "500": {
             "description": "Internal Server Error"
@@ -1413,6 +1437,9 @@
     },
     "/tai-xe/{id}": {
       "get": {
+        "tags": [
+          "Tài xế"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1426,9 +1453,6 @@
           "200": {
             "description": "OK"
           },
-          "401": {
-            "description": "Unauthorized"
-          },
           "404": {
             "description": "Not Found"
           },
@@ -1438,6 +1462,9 @@
         }
       },
       "put": {
+        "tags": [
+          "Tài xế"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1466,9 +1493,6 @@
           "400": {
             "description": "Bad Request"
           },
-          "401": {
-            "description": "Unauthorized"
-          },
           "403": {
             "description": "Forbidden"
           },
@@ -1481,6 +1505,9 @@
         }
       },
       "delete": {
+        "tags": [
+          "Tài xế"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1493,9 +1520,6 @@
         "responses": {
           "200": {
             "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
           },
           "404": {
             "description": "Not Found"
