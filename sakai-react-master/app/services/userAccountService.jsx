@@ -93,6 +93,7 @@ export const verifyAdmin = async (accessToken) => {
   if (!accessToken) {
     return false;
   }
+  console.log('accessToken', accessToken);
 
   try {
     const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_URL_SERVER}/verify-admin`, { token: accessToken });

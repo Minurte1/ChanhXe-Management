@@ -648,7 +648,7 @@ const verifyAdmin = async (req, res) => {
       "SELECT vai_tro FROM nguoi_dung WHERE id = ?",
       [id]
     );
-
+    const roleUser = decoded.vai_tro;
     const menuUser = await getMenuItems(roleUser);
     console.log("menuUser", menuUser);
     if (rows.length > 0) {

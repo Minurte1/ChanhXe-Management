@@ -5,16 +5,23 @@
     "title": "Document API Chành Xe",
     "description": ""
   },
-  "host": "https://chanhxe-management.onrender.com",
+  "host": "localhost:3002",
   "basePath": "/",
   "tags": [
     {
       "name": "tts.vnpt"
     }
   ],
-  "schemes": ["http", "https"],
-  "consumes": ["application/json"],
-  "produces": ["application/json"],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
   "paths": {
     "/refresh-token": {
       "post": {
@@ -317,7 +324,9 @@
     },
     "/users": {
       "get": {
-        "tags": ["Người dùng"],
+        "tags": [
+          "Người dùng"
+        ],
         "description": "",
         "parameters": [
           {
@@ -418,6 +427,9 @@
     },
     "/users/{id}": {
       "get": {
+        "tags": [
+          "Người dùng"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1788,6 +1800,68 @@
           },
           "404": {
             "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/provinces": {
+      "get": {
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/districts/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/wards/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "500": {
             "description": "Internal Server Error"
