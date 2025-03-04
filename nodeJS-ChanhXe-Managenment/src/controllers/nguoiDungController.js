@@ -11,6 +11,7 @@ const crypto = require("crypto");
 const otpStorage = new Map();
 // Lấy tất cả người dùng
 const getAllUsers = async (req, res) => {
+  // #swagger.tags = ['Người dùng']
   try {
     const {
       id,
@@ -87,6 +88,7 @@ const getAllUsers = async (req, res) => {
 
 // Lấy người dùng theo ID
 const getUserById = async (req, res) => {
+  // #swagger.tags = ['Người dùng']
   try {
     const { id } = req.params;
     const [rows] = await pool.query("SELECT * FROM nguoi_dung WHERE id = ?", [
