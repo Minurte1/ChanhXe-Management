@@ -13,7 +13,8 @@ const DanhSachTaiXe = () => {
   const [isNew, setIsNew] = useState(false);
   const [formData, setFormData] = useState({
     nguoi_dung_id: '',
-    bang_lai: ''
+    bang_lai: '',
+    trang_thai: ''
   });
 
   const toast = useRef(null);
@@ -80,7 +81,7 @@ const DanhSachTaiXe = () => {
       if (isNew) {
         await taiXeServices.createDriver(filteredData);
       } else {
-        await taiXeServices.updateDriver(filteredData.id, filteredData);
+        await taiXeServices.updateDriver(formData.tai_xe_id, filteredData);
       }
       fetchTaiXe();
       setDisplayDialog(false);

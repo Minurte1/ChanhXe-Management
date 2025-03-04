@@ -336,10 +336,10 @@ const loginUserGoogle = async (req, res) => {
       );
 
       // refresh token là HTTP-only cookie
-      res.cookie('refreshToken', refreshToken, {
+      res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // Set to true in production
-        sameSite: 'strict',
+        secure: process.env.NODE_ENV === "production", // Set to true in production
+        sameSite: "strict",
       });
 
       return res.status(200).json({
@@ -429,10 +429,10 @@ const loginUserGoogle = async (req, res) => {
       );
 
       // refresh token là HTTP-only cookie
-      res.cookie('refreshToken', refreshToken, {
+      res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // Set to true in production
-        sameSite: 'strict',
+        secure: process.env.NODE_ENV === "production", // Set to true in production
+        sameSite: "strict",
       });
 
       return res.status(200).json({
@@ -486,8 +486,9 @@ const sendAccountEmail = async (email, hoTen, password, vaiTro, trangThai) => {
           <p><strong>Email:</strong> ${email}</p>
           <p><strong>Mật khẩu tạm thời:</strong> <span style="color: red;">${password}</span></p>
           <p><strong>Vai trò:</strong> ${vaiTro}</p>
-          <p><strong>Trạng thái:</strong> ${trangThai === "hoat_dong" ? "Hoạt động" : "Bị khóa"
-      }</p>
+          <p><strong>Trạng thái:</strong> ${
+            trangThai === "hoat_dong" ? "Hoạt động" : "Bị khóa"
+          }</p>
         </div>
         <p>Vui lòng đăng nhập và đổi mật khẩu để đảm bảo an toàn.</p>
         <p style="text-align: center; color: #888; font-size: 12px;">&copy; 2024 Quản Lý Chành Xe. All rights reserved.</p>
@@ -530,9 +531,9 @@ const loginUser = async (req, res) => {
     }
 
     const user = rows[0];
-
+    console.log("user", user);
     // Kiểm tra nếu tài khoản bị khóa
-    if (user.trang_thai === "ngung_hoat_dong") {
+    if (user.trang_thai == "tam_ngung") {
       return res.status(403).json({
         EM: "Tài khoản đã ngừng hoạt động, không thể đăng nhập",
         EC: 0,
@@ -565,7 +566,7 @@ const loginUser = async (req, res) => {
       },
       process.env.JWT_SECRET,
       // { expiresIn: "10s" }
-      { expiresIn: "15m" }
+      { expiresIn: "5h" }
     );
 
     const refreshToken = jwt.sign(
@@ -585,10 +586,10 @@ const loginUser = async (req, res) => {
     );
 
     // refresh token là HTTP-only cookie
-    res.cookie('refreshToken', refreshToken, {
+    res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // Set to true in production
-      sameSite: 'strict',
+      secure: process.env.NODE_ENV === "production", // Set to true in production
+      sameSite: "strict",
     });
 
     // Trả về token và thông tin người dùng

@@ -15,7 +15,8 @@ const trangThaiOptions = [
 ];
 
 const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }) => {
-  const [taiXeList, setTaiXeList] = useState([]);
+  const [taiXeList, setTaiXeList] = useState([]); // Chỉ chứa tài xế chính (vai_tro = 'tai_xe')
+  const [taiXePhuList, setTaiXePhuList] = useState([]); // Chỉ chứa tài xế phụ (vai_tro = 'tai_xe_phu')
   const [xeList, setXeList] = useState([]);
   const [listBenXe, setListBenXe] = useState([]);
   const [error, setError] = useState(null);
@@ -33,7 +34,7 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
               thoi_gian_xuat_ben: formatDateTime(formData.thoi_gian_xuat_ben),
               thoi_gian_cap_ben: formatDateTime(formData.thoi_gian_cap_ben)
             };
-            onSave(formattedData); // Gửi dữ liệu đã định dạng
+            onSave(formattedData);
           }
         }}
       />
@@ -45,7 +46,6 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
     console.error(message);
   };
 
-  // Định dạng Date thành chuỗi YYYY-MM-DD HH:MM:SS
   const formatDateTime = (date) => {
     if (!date) return null;
     const d = new Date(date);
@@ -55,10 +55,16 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [xeResponse, taiXeResponse, benXeResponse] = await Promise.all([xeService.getAllVehicles(), taiXeServices.getAllDrivers(), BenXeService.getAllBenXe()]);
+        const [xeResponse, taiXeResponse, benXeResponse] = await Promise.all([xeService.getAllVehicles({ trang_thai: 'hoat_dong' }), taiXeServices.getAllDrivers({ trang_thai_tai_xe: 'hoat_dong' }), BenXeService.getAllBenXe()]);
+
+        // Lọc dữ liệu tài xế dựa trên vai_tro
+        const allTaiXe = Array.isArray(taiXeResponse.DT) ? taiXeResponse.DT : [];
+        const taiXeChinh = allTaiXe.filter((taiXe) => taiXe.vai_tro === 'tai_xe');
+        const taiXePhu = allTaiXe.filter((taiXe) => taiXe.vai_tro === 'tai_xe_phu');
 
         setXeList(Array.isArray(xeResponse.DT) ? xeResponse.DT : []);
-        setTaiXeList(Array.isArray(taiXeResponse.DT) ? taiXeResponse.DT : []);
+        setTaiXeList(taiXeChinh);
+        setTaiXePhuList(taiXePhu);
         setListBenXe(Array.isArray(benXeResponse.DT) ? benXeResponse.DT : []);
       } catch (error) {
         showError('Lỗi khi tải dữ liệu: ' + error.message);
@@ -72,6 +78,10 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
 
   const xeOptions = xeList.map((xe) => ({ label: `${xe.bien_so} (${xe.loai_xe})`, value: xe.id }));
   const taiXeOptions = taiXeList.map((taiXe) => ({
+    label: `${taiXe.ho_ten} (${taiXe.bang_lai})`,
+    value: taiXe.tai_xe_id
+  }));
+  const taiXePhuOptions = taiXePhuList.map((taiXe) => ({
     label: `${taiXe.ho_ten} (${taiXe.bang_lai})`,
     value: taiXe.tai_xe_id
   }));
@@ -114,11 +124,21 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
 
       <div className="p-field mt-2">
         <label htmlFor="tai_xe_phu_id">Tài Xế Phụ</label>
-        <Dropdown id="tai_xe_phu_id" value={formData.tai_xe_phu_id} options={taiXeOptions} onChange={(e) => onInputChange(e, 'tai_xe_phu_id')} placeholder="Chọn tài xế phụ (nếu có)" filter filterBy="label" style={{ marginTop: '3px' }} showClear />
+        <Dropdown
+          id="tai_xe_phu_id"
+          value={formData.tai_xe_phu_id}
+          options={taiXePhuOptions} // Sử dụng taiXePhuOptions thay vì taiXeOptions
+          onChange={(e) => onInputChange(e, 'tai_xe_phu_id')}
+          placeholder="Chọn tài xế phụ (nếu có)"
+          filter
+          filterBy="label"
+          style={{ marginTop: '3px' }}
+          showClear
+        />
       </div>
 
       <div className="p-field mt-2">
-        <label htmlFor="thoi_gian_xuat_ben">Thời Gian Xuất Bến</label>
+        <label htmlFor="thoi_gian_xuat_ben">Thời Gian </label>
         <Calendar
           id="thoi_gian_xuat_ben"
           value={formData.thoi_gian_xuat_ben ? new Date(formData.thoi_gian_xuat_ben) : null}
@@ -132,7 +152,7 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
         />
       </div>
 
-      <div className="p-field mt-2">
+      {/* <div className="p-field mt-2">
         <label htmlFor="thoi_gian_cap_ben">Thời Gian Cập Bến</label>
         <Calendar
           id="thoi_gian_cap_ben"
@@ -146,7 +166,7 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
           placeholder="Chọn thời gian cập bến"
           showClear
         />
-      </div>
+      </div> */}
 
       <div className="p-field mt-2">
         <label htmlFor="trang_thai">Trạng Thái</label>

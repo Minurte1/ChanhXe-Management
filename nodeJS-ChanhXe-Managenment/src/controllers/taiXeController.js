@@ -18,6 +18,7 @@ const getAllDrivers = async (req, res) => {
       id_nguoi_cap_nhat_tai_xe,
       ngay_cap_nhat_tai_xe,
       ngay_tao_tai_xe,
+      trang_thai_tai_xe,
     } = req.query;
 
     // Query cơ bản với INNER JOIN, lấy từ tai_xe làm gốc
@@ -33,7 +34,8 @@ const getAllDrivers = async (req, res) => {
         nguoi_dung.ngay_cap_nhat AS ngay_cap_nhat_nguoi_dung, 
         nguoi_dung.ngay_tao AS ngay_tao_nguoi_dung,
         tai_xe.id AS tai_xe_id, 
-        tai_xe.bang_lai, 
+        tai_xe.bang_lai,
+           tai_xe.trang_thai,  
         tai_xe.id_nguoi_cap_nhat AS id_nguoi_cap_nhat_tai_xe, 
         tai_xe.ngay_cap_nhat AS ngay_cap_nhat_tai_xe, 
         tai_xe.ngay_tao AS ngay_tao_tai_xe
@@ -102,6 +104,10 @@ const getAllDrivers = async (req, res) => {
       query += " AND DATE(tai_xe.ngay_tao) = ?";
       queryParams.push(ngay_tao_tai_xe);
     }
+    if (trang_thai_tai_xe) {
+      query += " AND tai_xe.trang_thai = ?";
+      queryParams.push(trang_thai_tai_xe);
+    }
 
     // Sắp xếp theo ngày cập nhật của tai_xe (hoặc nguoi_dung nếu muốn)
     query += " ORDER BY tai_xe.ngay_cap_nhat DESC";
@@ -148,7 +154,7 @@ const getDriverById = async (req, res) => {
 // Thêm mới tài xế
 const createDriver = async (req, res) => {
   try {
-    const { nguoi_dung_id, bang_lai } = req.body;
+    const { nguoi_dung_id, bang_lai, trang_thai } = req.body;
     const id_nguoi_cap_nhat = req.user?.id;
     if (!id_nguoi_cap_nhat) {
       return res
@@ -156,9 +162,9 @@ const createDriver = async (req, res) => {
         .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
     }
     const [result] = await pool.query(
-      `INSERT INTO tai_xe (nguoi_dung_id, bang_lai, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat) 
-       VALUES (?, ?, ?, NOW(), NOW())`,
-      [nguoi_dung_id, bang_lai, id_nguoi_cap_nhat]
+      `INSERT INTO tai_xe (nguoi_dung_id, bang_lai, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat, trang_thai) 
+       VALUES (?, ?, ?, NOW(), NOW(), ?)`,
+      [nguoi_dung_id, bang_lai, id_nguoi_cap_nhat, trang_thai]
     );
 
     return res.status(201).json({
@@ -180,33 +186,61 @@ const updateDriver = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
     const id_nguoi_cap_nhat = req.user?.id;
+
+    // Kiểm tra quyền thực hiện
     if (!id_nguoi_cap_nhat) {
       return res
         .status(403)
         .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
     }
+
+    // Kiểm tra dữ liệu cập nhật
     if (Object.keys(updates).length === 0) {
       return res
         .status(400)
         .json({ EM: "Không có dữ liệu cập nhật", EC: -1, DT: {} });
     }
 
-    const fields = Object.keys(updates)
+    // Danh sách các trường hợp lệ trong bảng tai_xe
+    const validFields = ["nguoi_dung_id", "bang_lai", "trang_thai"];
+
+    // Lọc các trường hợp lệ từ dữ liệu được truyền vào
+    const filteredUpdates = {};
+    for (const key of validFields) {
+      if (updates.hasOwnProperty(key)) {
+        filteredUpdates[key] = updates[key];
+      }
+    }
+
+    // Kiểm tra nếu không có trường hợp lệ nào
+    if (Object.keys(filteredUpdates).length === 0) {
+      return res
+        .status(400)
+        .json({ EM: "Không có trường hợp lệ để cập nhật", EC: -1, DT: {} });
+    }
+
+    // Tạo câu lệnh SQL động
+    const fields = Object.keys(filteredUpdates)
       .map((key) => `${key} = ?`)
       .join(", ");
-    const values = Object.values(updates);
+    const values = Object.values(filteredUpdates);
 
-    const updateQuery = `UPDATE tai_xe SET ${fields}, ngay_cap_nhat = NOW(), id_nguoi_cap_nhat = ? WHERE id = ?`;
+    // Thêm id_nguoi_cap_nhat và id vào cuối mảng values
     values.push(id_nguoi_cap_nhat, id);
 
+    const updateQuery = `UPDATE tai_xe SET ${fields}, ngay_cap_nhat = NOW(), id_nguoi_cap_nhat = ? WHERE id = ?`;
+
+    // Thực thi truy vấn
     const [result] = await pool.query(updateQuery, values);
 
+    // Kiểm tra xem có bản ghi nào được cập nhật không
     if (result.affectedRows === 0) {
       return res
         .status(404)
         .json({ EM: "Không tìm thấy tài xế để cập nhật", EC: -1, DT: {} });
     }
 
+    // Trả về kết quả thành công
     return res
       .status(200)
       .json({ EM: "Cập nhật tài xế thành công", EC: 1, DT: {} });
@@ -217,7 +251,6 @@ const updateDriver = async (req, res) => {
       .json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
   }
 };
-
 // Xóa tài xế
 const deleteDriver = async (req, res) => {
   try {
@@ -237,10 +270,39 @@ const deleteDriver = async (req, res) => {
   }
 };
 
+// Lấy danh sách người dùng chưa thêm vào vai trò tài xế
+const getUsersNotInDriverTable = async (req, res) => {
+  try {
+    // Truy vấn SQL để lấy danh sách người dùng có vai trò là tai_xe hoặc tai_xe_phu và chưa có trong bảng tai_xe
+    const query = `
+      SELECT nguoi_dung.* 
+      FROM nguoi_dung
+      LEFT JOIN tai_xe ON nguoi_dung.id = tai_xe.nguoi_dung_id
+      WHERE tai_xe.nguoi_dung_id IS NULL
+      AND (nguoi_dung.vai_tro = 'tai_xe' OR nguoi_dung.vai_tro = 'tai_xe_phu');
+    `;
+
+    // Thực thi truy vấn
+    const [results] = await pool.query(query);
+
+    // Trả về kết quả
+    return res.status(200).json({
+      EM: "Lấy danh sách người dùng thành công",
+      EC: 1,
+      DT: results,
+    });
+  } catch (error) {
+    console.error("Error in getUsersNotInDriverTable:", error);
+    return res
+      .status(500)
+      .json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
+  }
+};
 module.exports = {
   getAllDrivers,
   getDriverById,
   createDriver,
   updateDriver,
   deleteDriver,
+  getUsersNotInDriverTable,
 };

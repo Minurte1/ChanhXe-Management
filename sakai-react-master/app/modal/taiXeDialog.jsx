@@ -5,6 +5,7 @@ import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { getAllUsers } from '../services/userAccountService';
+import taiXeService from '../services/taiXeServices';
 
 const TaiXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }) => {
   const [users, setUsers] = useState([]);
@@ -19,7 +20,7 @@ const TaiXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }
     try {
       const filters = { vai_tro: ['tai_xe', 'tai_xe_phu'], trang_thai: 'hoat_dong' };
 
-      const response = await getAllUsers(filters);
+      const response = await taiXeService.getUsersNotInDriverTable();
 
       setUsers(Array.isArray(response.DT) ? response.DT : []);
     } catch (error) {
@@ -56,6 +57,22 @@ const TaiXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="bang_lai">Bằng Lái</label>
         <InputText id="bang_lai" style={{ marginTop: '3px' }} value={formData.bang_lai || ''} onChange={(e) => onInputChange(e, 'bang_lai')} placeholder="Ví dụ: B2" className="mt-2 h-10" />
+      </div>{' '}
+      <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
+        <label htmlFor="trang_thai">Trạng Thái</label>
+        <Dropdown
+          id="trang_thai"
+          value={formData.trang_thai || ''}
+          options={[
+            { label: 'Hoạt Động', value: 'hoat_dong' },
+            { label: 'Ngừng Hoạt Động', value: 'ngung_hoat_dong' },
+            { label: 'Đang Vận Chuyển', value: 'dang_van_chuyen' }
+          ]}
+          onChange={(e) => onInputChange({ target: { value: e.value } }, 'trang_thai')}
+          placeholder="Chọn trạng thái"
+          className="mt-2"
+          style={{ width: '100%' }}
+        />
       </div>
     </Dialog>
   );

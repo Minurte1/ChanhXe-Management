@@ -132,13 +132,11 @@ const DonHangChuyenXeDialog = ({ visible, onHide, selectedChuyenXe }) => {
 
       {/* Bộ lọc */}
       <div className="p-mb-4">
-        {' '}
-        {/* Tăng margin bottom từ p-mb-3 thành p-mb-4 */}
         <div className="p-grid p-align-center">
-          <div className="p-col-6 p-md-4">
+          <div className="p-col-6 p-md-4 p-mb-3">
             {' '}
-            {/* Tăng chiều rộng trên mobile, giảm trên desktop */}
-            <label htmlFor="id_ben_xe_nhan" className="p-d-block p-mb-2">
+            {/* Thêm khoảng cách giữa các hàng */}
+            <label htmlFor="id_ben_xe_nhan" className="p-d-block p-mb-2 ">
               Bến xe nhận
             </label>
             <Dropdown
@@ -147,15 +145,18 @@ const DonHangChuyenXeDialog = ({ visible, onHide, selectedChuyenXe }) => {
               options={benXeOptions}
               onChange={(e) => onFilterChange(e, 'id_ben_xe_nhan')}
               placeholder="Chọn bến xe nhận"
-              className="p-inputtext-sm" // Giảm kích thước Dropdown nếu cần
-              style={{ width: '100%' }}
+              className="p-inputtext-sm"
+              style={{ width: '100%', marginTop: '5px' }}
             />
           </div>
-          <div className="p-col-6 p-md-4">
+
+          <div className="p-col-6 p-md-4 p-mb-3 " style={{ marginTop: '10px' }}>
+            {' '}
+            {/* Thêm khoảng cách giữa các hàng */}
             <label htmlFor="id_ben_xe_gui" className="p-d-block p-mb-2">
               Bến xe gửi
             </label>
-            <Dropdown id="id_ben_xe_gui" value={filters.id_ben_xe_gui} options={benXeOptions} onChange={(e) => onFilterChange(e, 'id_ben_xe_gui')} placeholder="Chọn bến xe gửi" className="p-inputtext-sm" style={{ width: '100%' }} />
+            <Dropdown id="id_ben_xe_gui" value={filters.id_ben_xe_gui} options={benXeOptions} onChange={(e) => onFilterChange(e, 'id_ben_xe_gui')} placeholder="Chọn bến xe gửi" className="p-inputtext-sm" style={{ width: '100%', marginTop: '5px' }} />
           </div>
         </div>
       </div>
