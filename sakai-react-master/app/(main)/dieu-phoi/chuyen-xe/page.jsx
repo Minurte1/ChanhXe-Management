@@ -124,7 +124,7 @@ const DanhSachChuyenXe = () => {
           <h1>Danh Sách Chuyến Xe</h1>
           <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew} style={{ marginBottom: '10px' }} />
           <DataTable value={tripList} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}>
-            <Column field="chuyen_xe_id" header="ID Chuyến Xe" sortable />
+            {/* <Column field="chuyen_xe_id" header="ID Chuyến Xe" sortable /> */}
             <Column field="xe_bien_so" header="Biển số xe" sortable />
             <Column field="tai_xe_ho_ten" header="Tài Xế" sortable />
             <Column field="tai_xe_phu_ho_ten" header="Tài Xế Phụ" sortable body={(rowData) => rowData.tai_xe_phu_ho_ten || 'Không có'} />
@@ -137,17 +137,11 @@ const DanhSachChuyenXe = () => {
               header="Hành Động"
               body={(rowData) => (
                 <>
-                  <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editTrip(rowData)} />
-                  <Button icon="pi pi-trash" style={{ marginLeft: '5px' }} className="p-button-rounded p-button-warning" onClick={() => deleteTrip(rowData.id)} />
+                  <Button style={{ height: '30px', width: '30px' }} icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editTrip(rowData)} />
+                  <Button icon="pi pi-trash" style={{ marginLeft: '5px', height: '30px', width: '30px' }} className="p-button-rounded p-button-warning" onClick={() => deleteTrip(rowData.id)} />
 
                   {rowData.chuyen_xe_trang_thai === 'cho_xuat_ben' && (
-                    <Button
-                      icon="pi pi-plus"
-                      style={{ marginLeft: '5px' }}
-                      className="p-button-rounded p-button-info"
-                      onClick={() => openDonHangDialog(rowData)} // Mở modal thêm đơn hàng
-                      tooltip="Thêm đơn hàng"
-                    />
+                    <Button icon="pi pi-plus" style={{ height: '30px', width: '30px', marginLeft: '5px' }} className="p-button-rounded p-button-info" onClick={() => openDonHangDialog(rowData)} tooltip="Thêm đơn hàng" />
                   )}
                 </>
               )}

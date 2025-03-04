@@ -142,7 +142,7 @@ const LoginPage = () => {
               <Button label="Đăng nhập" className="w-full p-3 text-xl mb-3" onClick={handleLogin} disabled={loading} icon={loading ? 'pi pi-spin pi-spinner' : undefined} />
 
               {/* Đăng nhập bằng Google */}
-              <Button label="Đăng nhập với Google" className="w-full p-3 text-xl" onClick={() => loginGoogle()} disabled={loading} />
+              {/* <Button label="Đăng nhập với Google" className="w-full p-3 text-xl" onClick={() => loginGoogle()} disabled={loading} /> */}
             </div>
           </div>
         </div>
