@@ -9,7 +9,7 @@ const doc = {
     description: "",
   },
   host: isProduction
-    ? "https://chanhxe-management.onrender.com"
+    ? "chanhxe-management.onrender.com"
     : `${process.env.HOST_NAME}:${process.env.PORT}`,
   basePath: "/",
   schemes: ["http", "https"],
