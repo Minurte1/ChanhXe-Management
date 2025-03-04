@@ -20,7 +20,7 @@ const DonHangChuyenXeDialog = ({ visible, onHide, selectedChuyenXe }) => {
     id_ben_xe_gui: null
   });
   const toast = useRef(null);
-
+  console.log('selectedChuyenXe', selectedChuyenXe);
   // Chuyển đổi dữ liệu bến xe thành định dạng Dropdown
   const benXeOptions = [
     { label: 'Tất cả', value: null },
@@ -42,8 +42,8 @@ const DonHangChuyenXeDialog = ({ visible, onHide, selectedChuyenXe }) => {
     try {
       const params = {
         trang_thai: 'cho_xu_ly', // Chỉ lấy đơn hàng có trạng thái "Chờ xử lý"
-        ...(filters.id_ben_xe_nhan && { id_ben_xe_nhan: filters.id_ben_xe_nhan }),
-        ...(filters.id_ben_xe_gui && { id_ben_xe_gui: filters.id_ben_xe_gui })
+        id_ben_xe_nhan: selectedChuyenXe.id_ben_xe_nhan,
+        id_ben_xe_gui: selectedChuyenXe.id_ben_xe_gui
       };
       const response = await DonHangService.getAllOrders(params);
       setDonHangList(Array.isArray(response.DT) ? response.DT : []);
@@ -131,11 +131,10 @@ const DonHangChuyenXeDialog = ({ visible, onHide, selectedChuyenXe }) => {
       <Toast ref={toast} />
 
       {/* Bộ lọc */}
-      <div className="p-mb-4">
+      {/* <div className="p-mb-4">
         <div className="p-grid p-align-center">
           <div className="p-col-6 p-md-4 p-mb-3">
             {' '}
-            {/* Thêm khoảng cách giữa các hàng */}
             <label htmlFor="id_ben_xe_nhan" className="p-d-block p-mb-2 ">
               Bến xe nhận
             </label>
@@ -152,14 +151,13 @@ const DonHangChuyenXeDialog = ({ visible, onHide, selectedChuyenXe }) => {
 
           <div className="p-col-6 p-md-4 p-mb-3 " style={{ marginTop: '10px' }}>
             {' '}
-            {/* Thêm khoảng cách giữa các hàng */}
             <label htmlFor="id_ben_xe_gui" className="p-d-block p-mb-2">
               Bến xe gửi
             </label>
             <Dropdown id="id_ben_xe_gui" value={filters.id_ben_xe_gui} options={benXeOptions} onChange={(e) => onFilterChange(e, 'id_ben_xe_gui')} placeholder="Chọn bến xe gửi" className="p-inputtext-sm" style={{ width: '100%', marginTop: '5px' }} />
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* DataTable hiển thị đơn hàng */}
       <DataTable

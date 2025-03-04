@@ -4,6 +4,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import taiXeServices from '../../../services/taiXeServices';
 import TaiXeDialog from '../../../modal/TaiXeDialog';
 
@@ -65,6 +66,18 @@ const DanhSachTaiXe = () => {
     setDisplayDialog(true);
   };
 
+  const confirmDeleteTaiXe = (id) => {
+    confirmDialog({
+      message: 'Bạn có chắc chắn muốn xóa tài xế này không?',
+      header: 'Xác nhận xóa',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Đồng ý',
+      rejectLabel: 'Hủy',
+      accept: () => deleteTaiXe(id),
+      reject: () => console.log('Hủy bỏ')
+    });
+  };
+
   const deleteTaiXe = async (id) => {
     try {
       await taiXeServices.deleteDriver(id);
@@ -102,6 +115,7 @@ const DanhSachTaiXe = () => {
   return (
     <div className="p-grid">
       <Toast ref={toast} />
+      <ConfirmDialog />
       <div className="p-col-12">
         <div className="card">
           <h1>Danh Sách Tài Xế</h1>
@@ -119,12 +133,7 @@ const DanhSachTaiXe = () => {
               body={(rowData) => (
                 <>
                   <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editTaiXe(rowData)} />
-                  <Button
-                    icon="pi pi-trash"
-                    style={{ marginLeft: '5px' }}
-                    className="p-button-rounded p-button-warning"
-                    onClick={() => deleteTaiXe(rowData.tai_xe_id)} // Sử dụng tai_xe_id thay vì id
-                  />
+                  <Button icon="pi pi-trash" style={{ marginLeft: '5px' }} className="p-button-rounded p-button-warning" onClick={() => confirmDeleteTaiXe(rowData.tai_xe_id)} />
                 </>
               )}
             />

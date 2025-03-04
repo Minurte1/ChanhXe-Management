@@ -177,19 +177,42 @@ const updateVehicle = async (req, res) => {
   }
 };
 
-// Xóa xe
+// Xóa xe (Nếu vướng khóa ngoại thì cập nhật trạng_thai thành 'ngung_hoat_dong')
 const deleteVehicle = async (req, res) => {
   try {
     const { id } = req.params;
     const [result] = await pool.query("DELETE FROM xe WHERE id = ?", [id]);
+
     if (result.affectedRows === 0) {
       return res
         .status(404)
         .json({ EM: "Không tìm thấy xe để xóa", EC: -1, DT: {} });
     }
+
     return res.status(200).json({ EM: "Xóa xe thành công", EC: 1, DT: {} });
   } catch (error) {
     console.error("Error in deleteVehicle:", error);
+
+    // Kiểm tra lỗi liên quan đến khóa ngoại (ER_ROW_IS_REFERENCED_2 trong MySQL)
+    if (error.code === "ER_ROW_IS_REFERENCED_2") {
+      try {
+        await pool.query(
+          "UPDATE xe SET trang_thai = 'ngung_hoat_dong' WHERE id = ?",
+          [id]
+        );
+        return res.status(200).json({
+          EM: "Xe có liên kết dữ liệu, đã cập nhật trạng thái ngừng hoạt động",
+          EC: 1,
+          DT: {},
+        });
+      } catch (updateError) {
+        console.error("Error updating vehicle status:", updateError);
+        return res
+          .status(500)
+          .json({ EM: "Lỗi khi cập nhật trạng thái xe", EC: -1, DT: {} });
+      }
+    }
+
     return res
       .status(500)
       .json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });

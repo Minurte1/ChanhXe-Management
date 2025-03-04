@@ -4,9 +4,11 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
 import BenXeDialog from '../../../modal/BenXeDialog';
 import BenXeService from '../../../services/benXeServices';
+
 const DanhSachBenXe = () => {
   const [benXe, setBenXe] = useState([]);
   const [displayDialog, setDisplayDialog] = useState(false);
@@ -65,7 +67,17 @@ const DanhSachBenXe = () => {
     }
   };
 
-  // Điều chỉnh onInputChange để luôn cập nhật toàn bộ formData
+  const confirmDelete = (id) => {
+    confirmDialog({
+      message: 'Bạn có chắc chắn muốn xóa bến xe này không?',
+      header: 'Xác nhận',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Đồng ý',
+      rejectLabel: 'Hủy',
+      accept: () => deleteBenXeHandler(id)
+    });
+  };
+
   const onInputChange = (data) => {
     if (typeof data === 'object' && !data.target) {
       setFormData((prevData) => ({ ...prevData, ...data }));
@@ -75,19 +87,18 @@ const DanhSachBenXe = () => {
       setFormData((prevData) => ({ ...prevData, [name]: val }));
     }
   };
+
   const saveBenXe = async (dataToSave) => {
     try {
       if (isNew) {
         await BenXeService.createBenXe(dataToSave);
       } else {
-        console.log('formData', formData);
         await BenXeService.updateBenXe(formData.id, dataToSave);
       }
       fetchBenXe();
       setDisplayDialog(false);
       showSuccess(isNew ? 'Thêm bến xe thành công' : 'Cập nhật bến xe thành công');
     } catch (error) {
-      console.log('error', error);
       showError(isNew ? 'Lỗi khi thêm bến xe' : 'Lỗi khi cập nhật bến xe');
     }
   };
@@ -95,6 +106,7 @@ const DanhSachBenXe = () => {
   return (
     <div className="p-grid">
       <Toast ref={toast} />
+      <ConfirmDialog />
       <div className="p-col-12">
         <div className="card">
           <h1>Danh Sách Bến Xe</h1>
@@ -109,7 +121,7 @@ const DanhSachBenXe = () => {
               body={(rowData) => (
                 <>
                   <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editBenXe(rowData)} />
-                  <Button icon="pi pi-trash" className="p-button-rounded p-button-warning" style={{ marginLeft: '8px' }} onClick={() => deleteBenXeHandler(rowData.id)} />
+                  <Button icon="pi pi-trash" className="p-button-rounded p-button-warning" style={{ marginLeft: '8px' }} onClick={() => confirmDelete(rowData.id)} />
                 </>
               )}
             />
