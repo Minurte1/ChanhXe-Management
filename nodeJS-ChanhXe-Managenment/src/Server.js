@@ -27,9 +27,7 @@ app.use((req, res, next) => {
 });
 //setting
 const corsOptions = {
-  origin: (origin, callback) => {
-    callback(null, true); // Allow all origins dynamically
-  },
+  origin: ["http://localhost:3000", "https://chanh-xe-management.vercel.app"],
   credentials: true,
 };
 

@@ -10,7 +10,7 @@ const khachHangRoute = require("./khachHangRouter.js");
 const taiXeRoute = require("./taiXeRouter.js");
 const chuyenXeRoute = require("./chuyenXeRouter.js");
 const donHangChuyenXeRoute = require("./donHangChuyenXeRouter.js");
-// const provincesRoute = require("./routers/provincesRoute.js");
+const provincesRoute = require("./provincesRoute.js");
 
 // Register routes
 router.use("/", authRoutes);
@@ -22,5 +22,5 @@ router.use("/", khachHangRoute);
 router.use("/", taiXeRoute);
 router.use("/", chuyenXeRoute);
 router.use("/", donHangChuyenXeRoute);
-// router.use("/", provincesRoute);
+router.use("/", provincesRoute);
 module.exports = router;
