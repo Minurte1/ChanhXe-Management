@@ -13,10 +13,10 @@ const {
     checkUserPermission,
 } = require("../middleware/JWTaction");
 
-router.get("/phancongnguoidung", getAllUserAssignments);
-router.get("/phancongnguoidung/:id", getUserAssignmentById);
-router.post("/phancongnguoidung", createUserAssignment);
-router.put("/phancongnguoidung/:id", updateUserAssignment );
-router.delete("/phancongnguoidung/:id", deleteUserAssignment);
+router.get("/phancongnguoidung", checkUserJWT, getAllUserAssignments);
+router.get("/phancongnguoidung/:id", checkUserJWT, getUserAssignmentById);
+router.post("/phancongnguoidung", checkUserJWT, createUserAssignment);
+router.put("/phancongnguoidung/:id", checkUserJWT, updateUserAssignment );
+router.delete("/phancongnguoidung/:id", checkUserJWT, deleteUserAssignment);
 
 module.exports = router;

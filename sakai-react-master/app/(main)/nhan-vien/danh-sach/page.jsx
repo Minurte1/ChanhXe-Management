@@ -7,10 +7,13 @@ import { Toast } from 'primereact/toast';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { createUser, deleteUser, getAllUsers, updateUser } from '../../../services/userAccountService';
 import NhanVienDialog from '../../../modal/NhanVienDialog';
+import PhanCongNguoiDungDialog from '../../../modal/PhanCongNguoiDungDialog';
+import PhanCongNguoiDungService from '../../../services/phanCongNguoiDungServices';
 
 const DanhSachNhanVien = () => {
   const [nhanVien, setNhanVien] = useState([]);
   const [displayDialog, setDisplayDialog] = useState(false);
+  const [displayAssignDialog, setDisplayAssignDialog] = useState(false);
   const [isNew, setIsNew] = useState(false);
   const [formData, setFormData] = useState({
     ho_ten: '',
@@ -20,6 +23,10 @@ const DanhSachNhanVien = () => {
     vai_tro: '',
     trang_thai: ''
   });
+  const [assignData, setAssignData] = useState({
+    id_ben: '',
+    id_nguoi_dung: ''
+});
 
   const toast = useRef(null);
 
@@ -67,6 +74,15 @@ const DanhSachNhanVien = () => {
     setDisplayDialog(true);
   };
 
+  const openPhanCongForm = () => {
+    setAssignData({
+        id_ben: '',
+        id_xe: ''
+    });
+    setIsNew(true);
+    setDisplayAssignDialog(true);
+};
+
   const editNhanVien = (nhanVien) => {
     setFormData({ ...nhanVien });
     setIsNew(false);
@@ -112,11 +128,35 @@ const DanhSachNhanVien = () => {
     }
   };
 
+  const savePhanCong = async () => {
+    const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = assignData;
+    try {
+        if (isNew) {
+            await PhanCongNguoiDungService.createUserAssignment(assignData);
+        } else {
+            await PhanCongNguoiDungService.updateUserAssignment(filteredData.id, filteredData);
+        }
+        fetchNhanVien();
+        setDisplayAssignDialog(false);
+        showSuccess(isNew ? 'Thêm phân công thành công' : 'Cập nhật phân công thành công');
+    } catch (error) {
+        showError(isNew ? 'Lỗi khi thêm phân công' : 'Lỗi khi cập nhật phân công');
+    }
+};
+
   const onInputChange = (e, name) => {
     const val = (e.target && e.target.value) || '';
     setFormData((prevData) => ({
       ...prevData,
       [name]: val
+    }));
+  };
+
+  const onAssignInputChange = (e, name) => {
+    const val = (e.target && e.target.value) || '';
+    setAssignData((prevData) => ({
+        ...prevData,
+        [name]: val
     }));
   };
 
@@ -127,7 +167,10 @@ const DanhSachNhanVien = () => {
       <div className="p-col-12">
         <div className="card">
           <h1>Danh Sách Nhân Viên</h1>
+          <div>
           <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew} style={{ marginBottom: '10px' }} />
+          <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm} />
+          </div>
           <DataTable
             value={nhanVien}
             paginator
@@ -154,6 +197,7 @@ const DanhSachNhanVien = () => {
       </div>
 
       <NhanVienDialog visible={displayDialog} onHide={() => setDisplayDialog(false)} isNew={isNew} formData={formData} onInputChange={onInputChange} onSave={saveNhanVien} />
+      <PhanCongNguoiDungDialog visible={displayAssignDialog} onHide={() => setDisplayAssignDialog(false)} isNew={isNew} formData={assignData} onInputChange={onAssignInputChange} onSave={savePhanCong} />
     </div>
   );
 };

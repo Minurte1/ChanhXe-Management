@@ -7,15 +7,23 @@ import { Toast } from 'primereact/toast';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import taiXeServices from '../../../services/taiXeServices';
 import TaiXeDialog from '../../../modal/TaiXeDialog';
+import PhanCongTaiXeDialog from '../../../modal/PhanCongTaiXeDialog';
+import phanCongTaiXeService from '../../../services/phanCongTaiXeServices';
 
 const DanhSachTaiXe = () => {
   const [taiXeList, setTaiXeList] = useState([]);
   const [displayDialog, setDisplayDialog] = useState(false);
+  const [displayAssignDialog, setDisplayAssignDialog] = useState(false);
   const [isNew, setIsNew] = useState(false);
   const [formData, setFormData] = useState({
     nguoi_dung_id: '',
     bang_lai: '',
     trang_thai: ''
+  });
+
+  const [assignData, setAssignData] = useState({
+    id_ben: '',
+    id_tai_xe: ''
   });
 
   const toast = useRef(null);
@@ -59,6 +67,15 @@ const DanhSachTaiXe = () => {
     setIsNew(true);
     setDisplayDialog(true);
   };
+
+  const openPhanCongForm = () => {
+    setAssignData({
+        id_ben: '',
+        id_tai_xe: ''
+    });
+    setIsNew(true);
+    setDisplayAssignDialog(true);
+};
 
   const editTaiXe = (taiXe) => {
     setFormData({ ...taiXe });
@@ -104,6 +121,22 @@ const DanhSachTaiXe = () => {
     }
   };
 
+  const savePhanCong = async () => {
+    const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = assignData;
+    try {
+        if (isNew) {
+            await phanCongTaiXeService.createDriverAssignment(assignData);
+        } else {
+            await phanCongTaiXeService.createDriverAssignment(filteredData.id, filteredData);
+        }
+        fetchTaiXe();
+        setDisplayAssignDialog(false);
+        showSuccess(isNew ? 'Thêm phân công tài xe thành công' : 'Cập nhật phân công tài xe thành công');
+    } catch (error) {
+        showError(isNew ? 'Lỗi khi thêm phân công tài xe' : 'Lỗi khi cập nhật phân công tài xe');
+    }
+  };
+
   const onInputChange = (e, name) => {
     const val = (e.target && e.target.value) || '';
     setFormData((prevData) => ({
@@ -112,6 +145,14 @@ const DanhSachTaiXe = () => {
     }));
   };
 
+  const onAssignInputChange = (e, name) => {
+    const val = (e.target && e.target.value) || '';
+    setAssignData((prevData) => ({
+        ...prevData,
+        [name]: val
+    }));
+};
+
   return (
     <div className="p-grid">
       <Toast ref={toast} />
@@ -119,7 +160,10 @@ const DanhSachTaiXe = () => {
       <div className="p-col-12">
         <div className="card">
           <h1>Danh Sách Tài Xế</h1>
+          <div>
           <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew} style={{ marginBottom: '10px' }} />
+          <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm} />
+          </div>
           <DataTable value={taiXeList} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}>
             <Column field="nguoi_dung_id" header="ID Người Dùng" sortable />
             <Column field="ho_ten" header="Họ Tên" sortable />
@@ -142,6 +186,7 @@ const DanhSachTaiXe = () => {
       </div>
 
       <TaiXeDialog visible={displayDialog} onHide={() => setDisplayDialog(false)} isNew={isNew} formData={formData} onInputChange={onInputChange} onSave={saveTaiXe} />
+      <PhanCongTaiXeDialog visible={displayAssignDialog} onHide={() => setDisplayAssignDialog(false)} isNew={isNew} formData={assignData} onInputChange={onAssignInputChange} onSave={savePhanCong} />
     </div>
   );
 };

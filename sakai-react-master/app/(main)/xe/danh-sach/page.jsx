@@ -6,10 +6,9 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import VehicleService from '../../../services/xeSerivces';
-import PhanCongXeServie from '../../../services/phanCongXeSerivces';
 import XeDialog from '../../../modal/XeDialog';
 import PhanCongDialog from '../../../modal/PhanCongXeDialog';
-import VehicleAssignmentService from '../../../services/phanCongXeSerivces';
+import VehicleAssignmentService from '../../../services/phanCongXeServices';
 
 const DanhSachXe = () => {
     const [xeList, setXeList] = useState([]);
@@ -24,8 +23,8 @@ const DanhSachXe = () => {
         trang_thai: ''
     });
     const [assignData, setAssignData] = useState({
-        xe: '',
-        ben_xe: ''
+        id_ben: '',
+        id_xe: ''
     });
 
     const toast = useRef(null);
@@ -75,8 +74,10 @@ const DanhSachXe = () => {
 
     const openPhanCongForm = () => {
         setAssignData({
-            ben_xe: '',
+            id_ben: '',
+            id_xe: ''
         });
+        setIsNew(true);
         setDisplayAssignDialog(true);
     };
 
@@ -146,6 +147,14 @@ const DanhSachXe = () => {
         }));
     };
 
+    const onAssignInputChange = (e, name) => {
+        const val = (e.target && e.target.value) || '';
+        setAssignData((prevData) => ({
+            ...prevData,
+            [name]: val
+        }));
+    };
+
     return (
         <div className="p-grid">
             <Toast ref={toast} />
@@ -174,7 +183,7 @@ const DanhSachXe = () => {
             </div>
 
             <XeDialog visible={displayDialog} onHide={() => setDisplayDialog(false)} isNew={isNew} formData={formData} onInputChange={onInputChange} onSave={saveXe} />
-            <PhanCongDialog visible={displayAssignDialog} onHide={() => setDisplayAssignDialog(false)} formData={formData} onInputChange={onInputChange} onSave={savePhanCong} />
+            <PhanCongDialog visible={displayAssignDialog} onHide={() => setDisplayAssignDialog(false)} formData={assignData} onInputChange={onAssignInputChange} onSave={savePhanCong} />
         </div>
     );
 };

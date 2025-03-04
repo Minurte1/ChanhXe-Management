@@ -8,14 +8,12 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { Dropdown } from 'primereact/dropdown';
 import BenXeService from '../services/benXeServices';
-import XeService from '../services/xeSerivces';
-import phanCongXeService from '../services/phanCongXeServices';
+import { getAllUsers } from '../services/userAccountService';
+import phanCongNguoiDungService from '../services/phanCongNguoiDungServices';
 
 const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, onInputChange, onSave, }) => {
   const [listBenXe, setListBenXe] = useState([]);
   const [listXe, setListXe] = useState([]);
-  const [selectedBenXe, setSelectedBenXe] = useState([]);
-  const [selectedXe, setSelectedXe] = useState([]);
   const [filters, setFilters] = useState({
     // id_ben_xe_nhan: null,
     // id_ben_xe_gui: null
@@ -43,7 +41,7 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
     if (visible) {
       // fetchDonHang();
       fetchBenXe();
-      fetchXe();
+      fetchUser();
     }
   }, [visible, filters]);
 
@@ -58,11 +56,10 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
     }
   };
 
-  const fetchXe = async () => {
+  const fetchUser = async () => {
     try {
-      const response = await XeService.getAllVehicles();
-      console.log('response xe', response);
-      setListXe(Array.isArray(response.DT) ? response.DT : []);
+      const response = await getAllUsers();
+      setListNguoiDung(Array.isArray(response.DT) ? response.DT : []);
     } catch (error) {
       console.error('Lỗi khi tải danh sách xe', error);
       showError('Lỗi khi tải danh sách xe');
@@ -134,17 +131,17 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
           </div>
 
           <div className="p-col-12">
-            <label htmlFor="id_xe" className="p-d-block p-mb-2">
-              Chọn xe
+            <label htmlFor="id_nguoi_dung" className="p-d-block p-mb-2">
+              Chọn người dùng
             </label>
             <Dropdown
-              id="id_xe"
-              value={formData.id_xe}
+              id="id_nguoi_dung"
+              value={formData.id_nguoi_dung}
               options={listXe}
-              optionLabel="bien_so"
+              optionLabel="ho_ten"
               optionValue="id"
-              onChange={(e) => onInputChange({ target: { value: e.value } }, 'id_xe')}
-              placeholder="Chọn xe"
+              onChange={(e) => onInputChange({ target: { value: e.value } }, 'id_nguoi_dung')}
+              placeholder="Chọn người dùng"
               className="p-inputtext-sm"
               style={{ width: '100%' }}
             />

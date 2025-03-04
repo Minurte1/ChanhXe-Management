@@ -8,14 +8,12 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { Dropdown } from 'primereact/dropdown';
 import BenXeService from '../services/benXeServices';
-import XeService from '../services/xeSerivces';
-import phanCongXeService from '../services/phanCongXeServices';
+import TaiXeService from '../services/xeSerivces';
+import phanCongTaiXeService from '../services/phanCongTaiXeServices';
 
-const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, onInputChange, onSave, }) => {
+const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, onInputChange, onSave, }) => {
   const [listBenXe, setListBenXe] = useState([]);
-  const [listXe, setListXe] = useState([]);
-  const [selectedBenXe, setSelectedBenXe] = useState([]);
-  const [selectedXe, setSelectedXe] = useState([]);
+  const [listTaiXe, setListTaiXe] = useState([]);
   const [filters, setFilters] = useState({
     // id_ben_xe_nhan: null,
     // id_ben_xe_gui: null
@@ -43,7 +41,7 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
     if (visible) {
       // fetchDonHang();
       fetchBenXe();
-      fetchXe();
+      fetchTaiXe();
     }
   }, [visible, filters]);
 
@@ -58,14 +56,13 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
     }
   };
 
-  const fetchXe = async () => {
+  const fetchTaiXe = async () => {
     try {
-      const response = await XeService.getAllVehicles();
-      console.log('response xe', response);
-      setListXe(Array.isArray(response.DT) ? response.DT : []);
+      const response = await TaiXeService.getAllTaiXe();
+      setListTaiXe(Array.isArray(response.DT) ? response.DT : []);
     } catch (error) {
-      console.error('Lỗi khi tải danh sách xe', error);
-      showError('Lỗi khi tải danh sách xe');
+      console.error('Lỗi khi tải danh sách tài xe', error);
+      showError('Lỗi khi tải danh sách tài xe');
     }
   };
 
@@ -134,17 +131,17 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
           </div>
 
           <div className="p-col-12">
-            <label htmlFor="id_xe" className="p-d-block p-mb-2">
-              Chọn xe
+            <label htmlFor="id_tai_xe" className="p-d-block p-mb-2">
+              Chọn tài xế
             </label>
             <Dropdown
               id="id_xe"
-              value={formData.id_xe}
-              options={listXe}
-              optionLabel="bien_so"
+              value={formData.id_tai_xe}
+              options={listTaiXe}
+              optionLabel="nguoi_dung_id"
               optionValue="id"
-              onChange={(e) => onInputChange({ target: { value: e.value } }, 'id_xe')}
-              placeholder="Chọn xe"
+              onChange={(e) => onInputChange({ target: { value: e.value } }, 'id_tai_xe')}
+              placeholder="Chọn tài xế"
               className="p-inputtext-sm"
               style={{ width: '100%' }}
             />
@@ -155,4 +152,4 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
   );
 };
 
-export default PhanCongXeDialog;
+export default PhanCongTaiXeDialog;

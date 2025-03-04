@@ -7,7 +7,7 @@ const VehicleAssignmentService = {
             const response = await axiosInstance.get(`${API_URL}/phancongxe`);
             return response.data;
         } catch (error) {
-            console.error('Error fetching vehicles:', error);
+            console.error('Error fetching vehicle assignments:', error);
             throw error;
         }
     },
