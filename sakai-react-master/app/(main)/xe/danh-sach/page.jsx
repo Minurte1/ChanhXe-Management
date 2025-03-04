@@ -17,7 +17,6 @@ const DanhSachXe = () => {
     const [formData, setFormData] = useState({
         ten_xe: '',
         bien_so: '',
-
         suc_chua: '',
         loai_xe: '',
         trang_thai: ''
@@ -64,7 +63,6 @@ const DanhSachXe = () => {
         setFormData({
             ten_xe: '',
             bien_so: '',
-
             suc_chua: '',
             loai_xe: '',
             trang_thai: ''
@@ -74,7 +72,7 @@ const DanhSachXe = () => {
     };
 
     const openPhanCongForm = () => {
-        setFormData({
+        setAssignData({
             ben_xe: '',
         });
         setDisplayAssignDialog(true);
@@ -86,6 +84,16 @@ const DanhSachXe = () => {
         setDisplayDialog(true);
     };
 
+    const confirmDeleteXe = (id) => {
+        confirmDialog({
+            message: 'Bạn có chắc chắn muốn xóa xe này không?',
+            header: 'Xác nhận xóa',
+            icon: 'pi pi-exclamation-triangle',
+            accept: () => deleteXe(id),
+            reject: () => showError('Hủy thao tác xóa')
+        });
+    };
+
     const deleteXe = async (id) => {
         try {
             await VehicleService.deleteVehicle(id);
@@ -95,8 +103,6 @@ const DanhSachXe = () => {
             showError('Lỗi khi xóa xe');
         }
     };
-
-    console.log('form', formData);
 
     const saveXe = async () => {
         const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = formData;
@@ -146,8 +152,8 @@ const DanhSachXe = () => {
                 <div className="card">
                     <h1>Danh Sách Xe</h1>
                     <div style={{ marginBottom: '10px' }}>
-                    <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew} style={{ marginRight: '10px' }} />
-                    <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm} />
+                        <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew} style={{ marginRight: '10px' }} />
+                        <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm} />
                     </div>
                     <DataTable value={xeList} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}>
                         <Column field="bien_so" header="Biển Số"></Column>
@@ -158,7 +164,7 @@ const DanhSachXe = () => {
                             body={(rowData) => (
                                 <>
                                     <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editXe(rowData)} />
-                                    <Button icon="pi pi-trash" style={{ marginLeft: '5px' }} className="p-button-rounded p-button-warning" onClick={() => deleteXe(rowData.id)} />
+                                    <Button icon="pi pi-trash" className="p-button-rounded p-button-warning" onClick={() => confirmDeleteXe(rowData.id)} />
                                 </>
                             )}
                         />
