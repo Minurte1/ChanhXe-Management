@@ -16,40 +16,30 @@ const getMenuItems = (role, selectedRole = null) => {
       },
       {
         label: "Thông tin nhân viên",
-        icon: "pi pi-users", // Icon đại diện cho nhóm nhân viên
+        icon: "pi pi-user",
         items: [
           {
             label: "Danh sách nhân viên",
             url: "/nhan-vien/danh-sach",
-            icon: "pi pi-id-card", // Icon thẻ nhân viên
+            icon: "pi pi-user",
           },
           {
             label: "Danh sách tài xế",
             url: "/nhan-vien/tai-xe",
-            icon: "pi pi-truck", // Icon xe tải cho tài xế
-          },
-          {
-            label: "Danh sách xe",
-            url: "/xe/danh-sach",
-            icon: "pi pi-car", // Icon xe ô tô
-          },
-          {
-            label: "Danh sách bến xe",
-            url: "/ben-xe/danh-sach",
-            icon: "pi pi-map-marker", // Icon vị trí bến xe
+            icon: "pi pi-user",
           },
         ],
       },
-      // {
-      //   label: "Danh sách các loại xe",
-      //   icon: "pi pi-car",
-      //   items: [{ label: "Danh sách xe", url: "/xe/danh-sach" }],
-      // },
-      // {
-      //   label: "Danh sách các bến xe",
-      //   icon: "pi pi-car",
-      //   items: [{ label: "Danh sách bến xe", url: "/ben-xe/danh-sach" }],
-      // },
+      {
+        label: "Danh sách các loại xe",
+        icon: "pi pi-car",
+        items: [{ label: "Danh sách xe", url: "/xe/danh-sach" }],
+      },
+      {
+        label: "Danh sách các bến xe",
+        icon: "pi pi-car",
+        items: [{ label: "Danh sách bến xe", url: "/ben-xe/danh-sach" }],
+      },
       {
         label: "Quản lý phân quyền",
         icon: "pi pi-user",
