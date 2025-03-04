@@ -62,6 +62,10 @@ app.use("/", chuyenXeRoute);
 app.use("/", donHangChuyenXeRoute);
 app.use("/auth", authRoutes);
 //
+const provincesRoute = require("./routers/provincesRoute.js");
+app.use("/", provincesRoute);
+
+
 
 app.use("/", donHangRoute);
 // Socket.IO logic
