@@ -2,6 +2,7 @@ const pool = require("../config/database"); // Kết nối cơ sở dữ liệu
 const moment = require("moment");
 // Lấy tất cả chuyến xe
 const getAllTrips = async (req, res) => {
+  // #swagger.tags = ['Chuyến xe']
   try {
     const query = `
       SELECT 
@@ -108,6 +109,7 @@ module.exports = { getAllTrips };
 
 // Lấy chuyến xe theo ID
 const getTripById = async (req, res) => {
+  // #swagger.tags = ['Chuyến xe']
   try {
     const { id } = req.params;
     const [rows] = await pool.query("SELECT * FROM chuyen_xe WHERE id = ?", [
@@ -131,6 +133,7 @@ const getTripById = async (req, res) => {
 
 // Thêm mới chuyến xe
 const createTrip = async (req, res) => {
+  // #swagger.tags = ['Chuyến xe']
   try {
     const {
       xe_id,
@@ -194,6 +197,7 @@ const createTrip = async (req, res) => {
 };
 // Cập nhật chuyến xe
 const updateTrip = async (req, res) => {
+  // #swagger.tags = ['Chuyến xe']
   try {
     const { id } = req.params;
     const updates = req.body;
@@ -238,6 +242,7 @@ const updateTrip = async (req, res) => {
 
 // Xóa chuyến xe
 const deleteTrip = async (req, res) => {
+  // #swagger.tags = ['Chuyến xe']
   try {
     const { id } = req.params;
     const [result] = await pool.query("DELETE FROM chuyen_xe WHERE id = ?", [

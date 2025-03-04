@@ -2,6 +2,7 @@ const pool = require("../config/database");
 
 // Lấy tất cả bản ghi trong don_hang_chuyen_xe
 const getAllDonHangChuyenXe = async (req, res) => {
+  // #swagger.tags = ['Đơn hàng chuyến xe']
   try {
     const [rows] = await pool.query("SELECT * FROM don_hang_chuyen_xe");
     return res.status(200).json({
@@ -21,6 +22,7 @@ const getAllDonHangChuyenXe = async (req, res) => {
 
 // Lấy bản ghi theo ID
 const getDonHangChuyenXeById = async (req, res) => {
+  // #swagger.tags = ['Đơn hàng chuyến xe']
   try {
     const { id } = req.params;
     const [rows] = await pool.query(
@@ -51,6 +53,7 @@ const getDonHangChuyenXeById = async (req, res) => {
 
 // Thêm nhiều đơn hàng vào một chuyến xe
 const createDonHangChuyenXe = async (req, res) => {
+  // #swagger.tags = ['Đơn hàng chuyến xe']
   try {
     const { don_hang_ids, don_hang_chuyen_xe_id } = req.body;
     const id_nguoi_cap_nhat = req.user?.id;
@@ -235,6 +238,7 @@ const createDonHangChuyenXe = async (req, res) => {
 
 // Cập nhật bản ghi don_hang_chuyen_xe
 const updateDonHangChuyenXe = async (req, res) => {
+  // #swagger.tags = ['Đơn hàng chuyến xe']
   try {
     const { id } = req.params;
     let updates = req.body;
@@ -295,6 +299,7 @@ const updateDonHangChuyenXe = async (req, res) => {
 
 // Xóa bản ghi don_hang_chuyen_xe
 const deleteDonHangChuyenXe = async (req, res) => {
+  // #swagger.tags = ['Đơn hàng chuyến xe']
   try {
     const { id } = req.params;
     const [result] = await pool.query(

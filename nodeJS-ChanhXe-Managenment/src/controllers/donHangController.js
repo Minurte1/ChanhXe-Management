@@ -2,6 +2,7 @@ const pool = require("../config/database"); // Kết nối cơ sở dữ liệu
 
 // Lấy tất cả đơn hàng với truy vấn động và thông tin từ bảng ben_xe
 const getAllOrders = async (req, res) => {
+  // #swagger.tags = ['Đơn hàng']
   try {
     // Lấy tất cả tham số từ query string
     const {
@@ -150,6 +151,7 @@ const getAllOrders = async (req, res) => {
 
 // Lấy đơn hàng theo ID
 const getOrderById = async (req, res) => {
+  // #swagger.tags = ['Đơn hàng']
   try {
     const { id } = req.params;
     const [rows] = await pool.query("SELECT * FROM don_hang WHERE id = ?", [
@@ -173,6 +175,7 @@ const getOrderById = async (req, res) => {
 
 // Thêm mới đơn hàng
 const createOrder = async (req, res) => {
+  // #swagger.tags = ['Đơn hàng']
   try {
     const {
       ma_van_don,
@@ -244,6 +247,7 @@ const createOrder = async (req, res) => {
 
 // Cập nhật đơn hàng
 const updateOrder = async (req, res) => {
+  // #swagger.tags = ['Đơn hàng']
   try {
     const { id } = req.params;
     const updates = req.body;
@@ -288,6 +292,7 @@ const updateOrder = async (req, res) => {
 
 // Xóa đơn hàng
 const deleteOrder = async (req, res) => {
+  // #swagger.tags = ['Đơn hàng']
   try {
     const { id } = req.params;
     const [result] = await pool.query("DELETE FROM don_hang WHERE id = ?", [

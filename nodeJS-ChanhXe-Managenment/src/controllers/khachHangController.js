@@ -11,6 +11,7 @@ const crypto = require("crypto");
 const otpStorage = new Map();
 // Lấy tất cả khách hàng
 const getAllCustomers = async (req, res) => {
+  // #swagger.tags = ['Khách hàng']
   try {
     const [rows] = await pool.query("SELECT * FROM khach_hang");
     return res
@@ -26,6 +27,7 @@ const getAllCustomers = async (req, res) => {
 
 // Lấy khách hàng theo ID
 const getCustomerById = async (req, res) => {
+  // #swagger.tags = ['Khách hàng']
   try {
     const { id } = req.params;
     const [rows] = await pool.query("SELECT * FROM khach_hang WHERE id = ?", [
@@ -49,6 +51,7 @@ const getCustomerById = async (req, res) => {
 
 // Thêm mới khách hàng
 const createCustomer = async (req, res) => {
+  // #swagger.tags = ['Khách hàng']
   try {
     const { ho_ten, so_dien_thoai, dia_chi, mat_khau } = req.body;
     const id_nguoi_cap_nhat = req.user?.id;
@@ -84,6 +87,7 @@ const createCustomer = async (req, res) => {
 
 // Cập nhật khách hàng
 const updateCustomer = async (req, res) => {
+  // #swagger.tags = ['Khách hàng']
   try {
     const { id } = req.params;
     const updates = req.body;
@@ -149,6 +153,7 @@ const updateCustomer = async (req, res) => {
 
 // Xóa khách hàng
 const deleteCustomer = async (req, res) => {
+  // #swagger.tags = ['Khách hàng']
   try {
     const { id } = req.params;
     const [result] = await pool.query("DELETE FROM khach_hang WHERE id = ?", [

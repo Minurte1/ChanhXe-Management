@@ -1,6 +1,7 @@
 const pool = require("../config/database");
 
 const getProvincesAll = async (req, res) => {
+  // #swagger.tags = ['Địa chỉ']
   try {
     // Kết nối và thực thi query
     const [rows] = await pool.query("SELECT * FROM provinces");
@@ -20,6 +21,7 @@ const getProvincesAll = async (req, res) => {
 };
 // Lấy danh sách quận/huyện theo ID tỉnh
 const getDistricts_ProvincesId = async (req, res) => {
+  // #swagger.tags = ['Địa chỉ']
   try {
     const { id } = req.params; // Lấy ID tỉnh từ tham số URL
 
@@ -53,6 +55,7 @@ const getDistricts_ProvincesId = async (req, res) => {
 
 // Lấy danh sách phường/xã theo ID quận/huyện
 const getWards_DistrictsId = async (req, res) => {
+  // #swagger.tags = ['Địa chỉ']
   try {
     const { id } = req.params; // Lấy ID quận/huyện từ tham số URL
 

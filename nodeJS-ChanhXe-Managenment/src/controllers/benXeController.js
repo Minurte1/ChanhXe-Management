@@ -2,6 +2,7 @@ const pool = require("../config/database");
 
 // Lấy tất cả bến xe
 const getAllBenXe = async (req, res) => {
+  // #swagger.tags = ['Bến xe']
   try {
     const [rows] = await pool.query("SELECT * FROM ben_xe");
     return res
@@ -17,6 +18,7 @@ const getAllBenXe = async (req, res) => {
 
 // Lấy bến xe theo ID
 const getBenXeById = async (req, res) => {
+  // #swagger.tags = ['Bến xe']
   try {
     const { id } = req.params;
     const [rows] = await pool.query("SELECT * FROM ben_xe WHERE id = ?", [id]);
@@ -38,6 +40,7 @@ const getBenXeById = async (req, res) => {
 
 // Thêm mới bến xe
 const createBenXe = async (req, res) => {
+  // #swagger.tags = ['Bến xe']
   try {
     const { dia_chi, ten_ben_xe, tinh, huyen, xa, duong } = req.body;
     console.log("req", req.body);
@@ -69,6 +72,7 @@ const createBenXe = async (req, res) => {
 
 // Cập nhật bến xe
 const updateBenXe = async (req, res) => {
+  // #swagger.tags = ['Bến xe']
   try {
     const { id } = req.params;
     let updates = req.body;
@@ -119,6 +123,7 @@ const updateBenXe = async (req, res) => {
 
 // Xóa bến xe
 const deleteBenXe = async (req, res) => {
+  // #swagger.tags = ['Bến xe']
   try {
     const { id } = req.params;
     const [result] = await pool.query("DELETE FROM ben_xe WHERE id = ?", [id]);

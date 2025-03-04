@@ -13,25 +13,10 @@ const {
     checkUserPermission,
 } = require("../middleware/JWTaction");
 
-router.get("/phancongtaixe", checkUserJWT, checkUserPermission("admin"), getAllDriverAssignments);
-router.get(
-    "/phancongtaixe/:id",
-    checkUserJWT,
-    checkUserPermission("admin"),
-    getDriverAssignmentById
-);
-router.post("/phancongtaixe", checkUserJWT, checkUserPermission("admin"), createDriverAssignment);
-router.put(
-    "/phancongtaixe/:id",
-    checkUserJWT,
-    checkUserPermission("admin"),
-    updateDriverAssignment,
-);
-router.delete(
-    "/phancongtaixe/:id",
-    checkUserJWT,
-    checkUserPermission("admin"),
-    deleteDriverAssignment,
-);
+router.get("/phancongtaixe", getAllDriverAssignments);
+router.get("/phancongtaixe/:id", getDriverAssignmentById);
+router.post("/phancongtaixe", createDriverAssignment);
+router.put("/phancongtaixe/:id", updateDriverAssignment);
+router.delete("/phancongtaixe/:id", deleteDriverAssignment);
 
 module.exports = router;

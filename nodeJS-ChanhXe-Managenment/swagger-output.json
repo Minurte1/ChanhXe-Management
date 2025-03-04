@@ -39,6 +39,9 @@
     },
     "/orders": {
       "get": {
+        "tags": [
+          "Đơn hàng"
+        ],
         "description": "",
         "parameters": [
           {
@@ -160,6 +163,9 @@
         }
       },
       "post": {
+        "tags": [
+          "Đơn hàng"
+        ],
         "description": "",
         "parameters": [
           {
@@ -241,6 +247,9 @@
     },
     "/orders/{id}": {
       "get": {
+        "tags": [
+          "Đơn hàng"
+        ],
         "description": "",
         "parameters": [
           {
@@ -266,6 +275,9 @@
         }
       },
       "put": {
+        "tags": [
+          "Đơn hàng"
+        ],
         "description": "",
         "parameters": [
           {
@@ -297,6 +309,9 @@
         }
       },
       "delete": {
+        "tags": [
+          "Đơn hàng"
+        ],
         "description": "",
         "parameters": [
           {
@@ -629,6 +644,9 @@
     },
     "/verify-admin": {
       "post": {
+        "tags": [
+          "Người dùng"
+        ],
         "description": "",
         "parameters": [
           {
@@ -776,6 +794,9 @@
     },
     "/menu": {
       "get": {
+        "tags": [
+          "Menu"
+        ],
         "description": "",
         "parameters": [
           {
@@ -799,6 +820,9 @@
     },
     "/xe": {
       "get": {
+        "tags": [
+          "Xe"
+        ],
         "description": "",
         "parameters": [
           {
@@ -855,6 +879,9 @@
         }
       },
       "post": {
+        "tags": [
+          "Xe"
+        ],
         "description": "",
         "parameters": [
           {
@@ -897,6 +924,9 @@
     },
     "/xe/{id}": {
       "get": {
+        "tags": [
+          "Xe"
+        ],
         "description": "",
         "parameters": [
           {
@@ -922,6 +952,9 @@
         }
       },
       "put": {
+        "tags": [
+          "Xe"
+        ],
         "description": "",
         "parameters": [
           {
@@ -953,6 +986,9 @@
         }
       },
       "delete": {
+        "tags": [
+          "Xe"
+        ],
         "description": "",
         "parameters": [
           {
@@ -980,6 +1016,9 @@
     },
     "/ben-xe": {
       "get": {
+        "tags": [
+          "Bến xe"
+        ],
         "description": "",
         "parameters": [],
         "responses": {
@@ -992,6 +1031,9 @@
         }
       },
       "post": {
+        "tags": [
+          "Bến xe"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1040,6 +1082,9 @@
     },
     "/ben-xe/{id}": {
       "get": {
+        "tags": [
+          "Bến xe"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1062,6 +1107,9 @@
         }
       },
       "put": {
+        "tags": [
+          "Bến xe"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1111,6 +1159,9 @@
         }
       },
       "delete": {
+        "tags": [
+          "Bến xe"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1138,6 +1189,9 @@
     },
     "/customers": {
       "get": {
+        "tags": [
+          "Khách hàng"
+        ],
         "description": "",
         "parameters": [],
         "responses": {
@@ -1153,6 +1207,9 @@
         }
       },
       "post": {
+        "tags": [
+          "Khách hàng"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1195,6 +1252,9 @@
     },
     "/customers/{id}": {
       "get": {
+        "tags": [
+          "Khách hàng"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1220,6 +1280,9 @@
         }
       },
       "put": {
+        "tags": [
+          "Khách hàng"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1263,6 +1326,9 @@
         }
       },
       "delete": {
+        "tags": [
+          "Khách hàng"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1375,6 +1441,9 @@
           "200": {
             "description": "OK"
           },
+          "401": {
+            "description": "Unauthorized"
+          },
           "500": {
             "description": "Internal Server Error"
           }
@@ -1409,6 +1478,9 @@
           "201": {
             "description": "Created"
           },
+          "401": {
+            "description": "Unauthorized"
+          },
           "403": {
             "description": "Forbidden"
           },
@@ -1428,6 +1500,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "500": {
             "description": "Internal Server Error"
@@ -1452,6 +1527,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "404": {
             "description": "Not Found"
@@ -1493,6 +1571,9 @@
           "400": {
             "description": "Bad Request"
           },
+          "401": {
+            "description": "Unauthorized"
+          },
           "403": {
             "description": "Forbidden"
           },
@@ -1521,6 +1602,9 @@
           "200": {
             "description": "OK"
           },
+          "401": {
+            "description": "Unauthorized"
+          },
           "404": {
             "description": "Not Found"
           },
@@ -1532,6 +1616,9 @@
     },
     "/trips": {
       "get": {
+        "tags": [
+          "Chuyến xe"
+        ],
         "description": "",
         "parameters": [],
         "responses": {
@@ -1547,6 +1634,9 @@
         }
       },
       "post": {
+        "tags": [
+          "Chuyến xe"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1601,6 +1691,9 @@
     },
     "/trips/{id}": {
       "get": {
+        "tags": [
+          "Chuyến xe"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1626,6 +1719,9 @@
         }
       },
       "put": {
+        "tags": [
+          "Chuyến xe"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1657,6 +1753,9 @@
         }
       },
       "delete": {
+        "tags": [
+          "Chuyến xe"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1684,6 +1783,9 @@
     },
     "/don-hang-chuyen-xe": {
       "get": {
+        "tags": [
+          "Đơn hàng chuyến xe"
+        ],
         "description": "",
         "parameters": [],
         "responses": {
@@ -1696,6 +1798,9 @@
         }
       },
       "post": {
+        "tags": [
+          "Đơn hàng chuyến xe"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1735,6 +1840,9 @@
     },
     "/don-hang-chuyen-xe/{id}": {
       "get": {
+        "tags": [
+          "Đơn hàng chuyến xe"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1757,6 +1865,9 @@
         }
       },
       "put": {
+        "tags": [
+          "Đơn hàng chuyến xe"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1806,6 +1917,9 @@
         }
       },
       "delete": {
+        "tags": [
+          "Đơn hàng chuyến xe"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1833,6 +1947,9 @@
     },
     "/provinces": {
       "get": {
+        "tags": [
+          "Địa chỉ"
+        ],
         "description": "",
         "parameters": [],
         "responses": {
@@ -1847,6 +1964,9 @@
     },
     "/districts/{id}": {
       "get": {
+        "tags": [
+          "Địa chỉ"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1871,6 +1991,9 @@
     },
     "/wards/{id}": {
       "get": {
+        "tags": [
+          "Địa chỉ"
+        ],
         "description": "",
         "parameters": [
           {
@@ -1886,6 +2009,408 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/phancongxe": {
+      "get": {
+        "tags": [
+          "Phân công xe"
+        ],
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Phân công xe"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id_ben": {
+                  "example": "any"
+                },
+                "id_xe": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/phancongxe/{id}": {
+      "get": {
+        "tags": [
+          "Phân công xe"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Phân công xe"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Phân công xe"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/phancongtaixe": {
+      "get": {
+        "tags": [
+          "Phân công tài xế"
+        ],
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Phân công tài xế"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id_ben": {
+                  "example": "any"
+                },
+                "id_tai_xe": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/phancongtaixe/{id}": {
+      "get": {
+        "tags": [
+          "Phân công tài xế"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Phân công tài xế"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Phân công tài xế"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/phancongnguoidung": {
+      "get": {
+        "tags": [
+          "Phân công người dùng"
+        ],
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Phân công người dùng"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id_ben": {
+                  "example": "any"
+                },
+                "id_nguoi_dung": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/phancongnguoidung/{id}": {
+      "get": {
+        "tags": [
+          "Phân công người dùng"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Phân công người dùng"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Phân công người dùng"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"

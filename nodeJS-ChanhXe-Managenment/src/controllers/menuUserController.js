@@ -2,6 +2,7 @@ const pool = require("../config/database"); // Kết nối cơ sở dữ liệu
 const { getMenuItems } = require("../services/menuService");
 
 const getMenuUser = async (req, res) => {
+  // #swagger.tags = ['Menu']
   const roleUser = req.user.vai_tro;
   const selectedRole = req.query.selectedRole || null;
 

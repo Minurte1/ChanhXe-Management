@@ -2,6 +2,7 @@ const pool = require("../config/database"); // Kết nối cơ sở dữ liệu
 
 // Lấy tất cả phân công địa điểm xe
 const getAllVehicleAssignments = async (req, res) => {
+  // #swagger.tags = ['Phân công xe']
   try {
     const [rows] = await pool.query("SELECT * FROM phan_cong_dia_diem_xe");
     return res.status(200).json({ EM: "Lấy danh sách phân công thành công", EC: 1, DT: rows });
@@ -13,6 +14,7 @@ const getAllVehicleAssignments = async (req, res) => {
 
 // Lấy phân công theo ID
 const getVehicleAssignmentById = async (req, res) => {
+  // #swagger.tags = ['Phân công xe']
   try {
     const { id } = req.params;
     const [rows] = await pool.query("SELECT * FROM phan_cong_dia_diem_xe WHERE id = ?", [id]);
@@ -28,6 +30,7 @@ const getVehicleAssignmentById = async (req, res) => {
 
 // Thêm mới phân công
 const createVehicleAssignment = async (req, res) => {
+  // #swagger.tags = ['Phân công xe']
   try {
     const { id_ben, id_xe } = req.body;
     const id_nguoi_cap_nhat = req.user?.id;
@@ -48,6 +51,7 @@ const createVehicleAssignment = async (req, res) => {
 
 // Cập nhật phân công
 const updateVehicleAssignment = async (req, res) => {
+  // #swagger.tags = ['Phân công xe']
   try {
     const { id } = req.params;
     const updates = req.body;
@@ -79,6 +83,7 @@ const updateVehicleAssignment = async (req, res) => {
 
 // Xóa phân công
 const deleteVehicleAssignment = async (req, res) => {
+  // #swagger.tags = ['Phân công xe']
   try {
     const { id } = req.params;
     const [result] = await pool.query("DELETE FROM phan_cong_dia_diem_xe WHERE id = ?", [id]);

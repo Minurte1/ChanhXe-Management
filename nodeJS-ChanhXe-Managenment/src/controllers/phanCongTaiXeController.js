@@ -2,6 +2,7 @@ const pool = require("../config/database"); // Kết nối cơ sở dữ liệu
 
 // Lấy tất cả phân công địa điểm tài xế
 const getAllDriverAssignments = async (req, res) => {
+  // #swagger.tags = ['Phân công tài xế']
   try {
     const [rows] = await pool.query("SELECT * FROM phan_cong_dia_diem_tai_xe");
     return res.status(200).json({ EM: "Lấy danh sách phân công thành công", EC: 1, DT: rows });
@@ -13,6 +14,7 @@ const getAllDriverAssignments = async (req, res) => {
 
 // Lấy phân công theo ID
 const getDriverAssignmentById = async (req, res) => {
+  // #swagger.tags = ['Phân công tài xế']
   try {
     const { id } = req.params;
     const [rows] = await pool.query("SELECT * FROM phan_cong_dia_diem_tai_xe WHERE id = ?", [id]);
@@ -28,6 +30,7 @@ const getDriverAssignmentById = async (req, res) => {
 
 // Thêm mới phân công
 const createDriverAssignment = async (req, res) => {
+  // #swagger.tags = ['Phân công tài xế']
   try {
     const { id_ben, id_tai_xe } = req.body;
     const id_nguoi_cap_nhat = req.user?.id;
@@ -48,6 +51,7 @@ const createDriverAssignment = async (req, res) => {
 
 // Cập nhật phân công
 const updateDriverAssignment = async (req, res) => {
+  // #swagger.tags = ['Phân công tài xế']
   try {
     const { id } = req.params;
     const updates = req.body;
@@ -79,6 +83,7 @@ const updateDriverAssignment = async (req, res) => {
 
 // Xóa phân công
 const deleteDriverAssignment = async (req, res) => {
+  // #swagger.tags = ['Phân công tài xế']
   try {
     const { id } = req.params;
     const [result] = await pool.query("DELETE FROM phan_cong_dia_diem_tai_xe WHERE id = ?", [id]);

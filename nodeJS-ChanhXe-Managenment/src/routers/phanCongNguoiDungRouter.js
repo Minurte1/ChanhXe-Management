@@ -13,25 +13,10 @@ const {
     checkUserPermission,
 } = require("../middleware/JWTaction");
 
-router.get("/phancongnguoidung", checkUserJWT, checkUserPermission("admin"), getAllUserAssignments);
-router.get(
-    "/phancongnguoidung/:id",
-    checkUserJWT,
-    checkUserPermission("admin"),
-    getUserAssignmentById
-);
-router.post("/phancongtaixe", checkUserJWT, checkUserPermission("admin"), createUserAssignment);
-router.put(
-    "/phancongnguoidung/:id",
-    checkUserJWT,
-    checkUserPermission("admin"),
-    updateUserAssignment,
-);
-router.delete(
-    "/phancongnguoidung/:id",
-    checkUserJWT,
-    checkUserPermission("admin"),
-    deleteUserAssignment,
-);
+router.get("/phancongnguoidung", getAllUserAssignments);
+router.get("/phancongnguoidung/:id", getUserAssignmentById);
+router.post("/phancongnguoidung", createUserAssignment);
+router.put("/phancongnguoidung/:id", updateUserAssignment );
+router.delete("/phancongnguoidung/:id", deleteUserAssignment);
 
 module.exports = router;

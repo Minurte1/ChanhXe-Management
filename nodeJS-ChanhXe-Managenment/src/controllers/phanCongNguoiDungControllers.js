@@ -2,6 +2,7 @@ const pool = require("../config/database"); // Kết nối cơ sở dữ liệu
 
 // Lấy tất cả phân công địa điểm người dùng
 const getAllUserAssignments = async (req, res) => {
+  // #swagger.tags = ['Phân công người dùng']
   try {
     const [rows] = await pool.query("SELECT * FROM phan_cong_dia_diem_nguoi_dung");
     return res.status(200).json({ EM: "Lấy danh sách phân công thành công", EC: 1, DT: rows });
@@ -13,6 +14,7 @@ const getAllUserAssignments = async (req, res) => {
 
 // Lấy phân công theo ID
 const getUserAssignmentById = async (req, res) => {
+  // #swagger.tags = ['Phân công người dùng']
   try {
     const { id } = req.params;
     const [rows] = await pool.query("SELECT * FROM phan_cong_dia_diem_nguoi_dung WHERE id = ?", [id]);
@@ -28,6 +30,7 @@ const getUserAssignmentById = async (req, res) => {
 
 // Thêm mới phân công
 const createUserAssignment = async (req, res) => {
+  // #swagger.tags = ['Phân công người dùng']
   try {
     const { id_ben, id_nguoi_dung } = req.body;
     const id_nguoi_cap_nhat = req.user?.id;
@@ -48,6 +51,7 @@ const createUserAssignment = async (req, res) => {
 
 // Cập nhật phân công
 const updateUserAssignment = async (req, res) => {
+  // #swagger.tags = ['Phân công người dùng']
   try {
     const { id } = req.params;
     const updates = req.body;
@@ -79,6 +83,7 @@ const updateUserAssignment = async (req, res) => {
 
 // Xóa phân công
 const deleteUserAssignment = async (req, res) => {
+  // #swagger.tags = ['Phân công người dùng']
   try {
     const { id } = req.params;
     const [result] = await pool.query("DELETE FROM phan_cong_dia_diem_nguoi_dung WHERE id = ?", [id]);

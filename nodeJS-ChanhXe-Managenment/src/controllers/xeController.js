@@ -2,6 +2,7 @@ const pool = require("../config/database"); // Kết nối cơ sở dữ liệu
 
 // Lấy tất cả xe với search động
 const getAllVehicles = async (req, res) => {
+  // #swagger.tags = ['Xe']
   try {
     const {
       id,
@@ -87,6 +88,7 @@ const getAllVehicles = async (req, res) => {
 
 // Lấy xe theo ID
 const getVehicleById = async (req, res) => {
+  // #swagger.tags = ['Xe']
   try {
     const { id } = req.params;
     const [rows] = await pool.query("SELECT * FROM xe WHERE id = ?", [id]);
@@ -106,6 +108,7 @@ const getVehicleById = async (req, res) => {
 
 // Thêm mới xe
 const createVehicle = async (req, res) => {
+  // #swagger.tags = ['Xe']
   try {
     const { bien_so, loai_xe, suc_chua, trang_thai } = req.body;
     const id_nguoi_cap_nhat = req.user?.id;
@@ -133,6 +136,7 @@ const createVehicle = async (req, res) => {
 
 // Cập nhật xe
 const updateVehicle = async (req, res) => {
+  // #swagger.tags = ['Xe']
   try {
     const { id } = req.params;
     const updates = req.body;
@@ -179,6 +183,7 @@ const updateVehicle = async (req, res) => {
 
 // Xóa xe (Nếu vướng khóa ngoại thì cập nhật trạng_thai thành 'ngung_hoat_dong')
 const deleteVehicle = async (req, res) => {
+  // #swagger.tags = ['Xe']
   try {
     const { id } = req.params;
     const [result] = await pool.query("DELETE FROM xe WHERE id = ?", [id]);
