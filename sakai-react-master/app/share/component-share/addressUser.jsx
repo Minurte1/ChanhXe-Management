@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Dropdown } from 'primereact/dropdown';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import axios from 'axios';
-
+const API_URL = process.env.NEXT_PUBLIC_URL_SERVER;
 const AddressSelector = ({ selectedProvince, selectedDistrict, selectedWards, setSelectedProvince, setSelectedDistrict, setSelectedWards }) => {
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
@@ -15,7 +15,7 @@ const AddressSelector = ({ selectedProvince, selectedDistrict, selectedWards, se
     const fetchProvinces = async () => {
       setLoadingProvinces(true);
       try {
-        const response = await axios.get('http://localhost:3003/provinces');
+        const response = await axios.get(`${API_URL}/provinces`);
         setProvinces(response.data.data || []);
       } catch (error) {
         console.error('Error fetching provinces:', error);
@@ -31,7 +31,7 @@ const AddressSelector = ({ selectedProvince, selectedDistrict, selectedWards, se
       const fetchDistricts = async () => {
         setLoadingDistricts(true);
         try {
-          const response = await axios.get(`http://localhost:3003/districts/${selectedProvince.code}`);
+          const response = await axios.get(`${API_URL}/districts/${selectedProvince.code}`);
           setDistricts(response.data.data || []);
         } catch (error) {
           console.error('Error fetching districts:', error);
@@ -50,7 +50,7 @@ const AddressSelector = ({ selectedProvince, selectedDistrict, selectedWards, se
       const fetchWards = async () => {
         setLoadingWards(true);
         try {
-          const response = await axios.get(`http://localhost:3003/wards/${selectedDistrict.code}`);
+          const response = await axios.get(`${API_URL}/wards/${selectedDistrict.code}`);
           setWards(response.data.data || []);
         } catch (error) {
           console.error('Error fetching wards:', error);

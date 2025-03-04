@@ -9,7 +9,8 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const hostname = process.env.HOST_NAME || "localhost";
 const authRoutes = require("./routers/auth.js");
-
+const swaggerUi = require("swagger-ui-express");
+const fs = require("fs");
 // Middleware để gắn `io` vào `req`
 const http = require("http");
 const { Server } = require("socket.io");
@@ -26,9 +27,7 @@ app.use((req, res, next) => {
 });
 //setting
 const corsOptions = {
-  origin: (origin, callback) => {
-    callback(null, true); // Allow all origins dynamically
-  },
+  origin: ["http://localhost:3000", "https://chanh-xe-management.vercel.app"],
   credentials: true,
 };
 
@@ -40,30 +39,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+const apiRoutes = require("./routers/apiRouters.js");
+app.use("/", apiRoutes);
 
-const menuService = require("./services/menuService");
-
-// //api user
-const donHangRoute = require("./routers/donHangRouter.js");
-const nguoiDungRoute = require("./routers/nguoiDungRouter.js");
-const xeRoute = require("./routers/xeRouter.js");
-const benXeRoute = require("./routers/benXeRouter.js");
-const khachHangRoute = require("./routers/khachHangRouter.js");
-const taiXeRoute = require("./routers/taiXeRouter.js");
-const chuyenXeRoute = require("./routers/chuyenXeRouter.js");
-const donHangChuyenXeRoute = require("./routers/donHangChuyenXeRouter.js");
-// app.use("/", userRoute);
-app.use("/", nguoiDungRoute);
-app.use("/", xeRoute);
-app.use("/", benXeRoute);
-app.use("/", khachHangRoute);
-app.use("/", taiXeRoute);
-app.use("/", chuyenXeRoute);
-app.use("/", donHangChuyenXeRoute);
-app.use("/auth", authRoutes);
-//
-
-app.use("/", donHangRoute);
 // Socket.IO logic
 const userSockets = {}; // Lưu trữ socket.id của từng user theo userId
 
@@ -100,6 +78,14 @@ io.on("connection", (socket) => {
 
 const configViewEngine = require("./config/viewEngine");
 configViewEngine(app);
+
+// Read the generated Swagger JSON file
+const swaggerDocument = JSON.parse(
+  fs.readFileSync("./swagger-output.json", "utf8")
+);
+
+// Serve Swagger UI
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 server.listen(port, hostname, () => {
   console.log(`${hostname}Example app listening on port ${port}`);

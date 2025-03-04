@@ -38,7 +38,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       </head>
 
       <body>
-        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}>
+        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
           <Provider store={store}>
             <PrimeReactProvider>
               <LayoutProvider>
@@ -58,7 +58,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           </Provider>{' '}
         </GoogleOAuthProvider>
       </body>
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-rbsA2VBKQIeJ2Y3dG7XnjF2FZKC1KYHoq55tCe0JG5FqNTFd1G5J4c6NDCi6t5D0" crossOrigin="anonymous"></script>
+      <script async src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-rbsA2VBKQIeJ2Y3dG7XnjF2FZKC1KYHoq55tCe0JG5FqNTFd1G5J4c6NDCi6t5D0" crossOrigin="anonymous"></script>
     </html>
   );
 }

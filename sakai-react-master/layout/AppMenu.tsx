@@ -10,9 +10,18 @@ import { useRouter } from 'next/navigation';
 
 const AppMenu = () => {
   const { layoutConfig } = useContext(LayoutContext);
-  const [menuData, setMenuData] = useState([]);
+  interface MenuItem {
+    label: string;
+    icon: string;
+    to?: string;
+    items?: MenuItem[];
+    admin?: string;
+    role?: string;
+  }
+
+  const [menuData, setMenuData] = useState<MenuItem[]>([]);
   const accessToken = typeof window !== 'undefined' ? Cookies.get('accessToken') : null;
-  const [selectedRole, setSelectedRole] = useState(null);
+  const [selectedRole, setSelectedRole] = useState<string | undefined>(undefined);
   const router = useRouter();
   useEffect(() => {
     const fetchMenu = async () => {
@@ -25,11 +34,11 @@ const AppMenu = () => {
           });
 
           if (response.data.EC === 1) {
-            const formattedMenu = response.data.DT.map((item) => ({
+            const formattedMenu = response.data.DT.map((item: any) => ({
               label: item.label,
               icon: item.icon,
               to: item.url || undefined,
-              items: item.items?.map((subItem) => ({
+              items: item.items?.map((subItem: any) => ({
                 label: subItem.label,
                 to: subItem.url || undefined,
                 icon: item.icon,
@@ -40,7 +49,7 @@ const AppMenu = () => {
             setMenuData(formattedMenu);
           }
         } catch (error) {
-          if (error.response.data.EC === -1) {
+          if (axios.isAxiosError(error) && error.response?.data.EC === -1) {
             Cookies.remove('accessToken');
             router.push('/auth/login');
           }
@@ -52,7 +61,7 @@ const AppMenu = () => {
     fetchMenu();
   }, [accessToken, selectedRole]);
 
-  const handleRoleChange = (role) => {
+  const handleRoleChange = (role: any) => {
     setSelectedRole(role);
   };
 
@@ -67,6 +76,8 @@ const AppMenu = () => {
             key={item.label}
             selectedRole={selectedRole}
             onRoleChange={handleRoleChange} // Xác nhận callback được truyền
+            parentKey={undefined}
+            className={undefined}
           />
         ))}
       </ul>

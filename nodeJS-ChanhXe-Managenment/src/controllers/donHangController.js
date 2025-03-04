@@ -131,7 +131,8 @@ const getAllOrders = async (req, res) => {
 
     // Thực thi câu truy vấn
     const [rows] = await pool.query(query, queryParams);
-
+    console.log("query", query);
+    console.log("rows", rows);
     return res.status(200).json({
       EM: "Lấy danh sách đơn hàng thành công",
       EC: 1,

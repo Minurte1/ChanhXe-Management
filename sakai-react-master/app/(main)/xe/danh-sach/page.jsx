@@ -4,6 +4,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import VehicleService from '../../../services/xeSerivces';
 import PhanCongXeServie from '../../../services/phanCongXeSerivces';
 import XeDialog from '../../../modal/XeDialog';
@@ -25,51 +26,26 @@ const DanhSachXe = () => {
         ben_xe: ''
     });
 
-    const toast = useRef(null);
+  const showSuccess = (message) => {
+    toast.current.show({
+      severity: 'success',
+      summary: 'Thành công',
+      detail: message,
+      life: 3000
+    });
+  };
 
-    useEffect(() => {
-        fetchXe();
-    }, []);
-
-    const fetchXe = async () => {
-        try {
-            const response = await VehicleService.getAllVehicles();
-
-            setXeList(Array.isArray(response.DT) ? response.DT : []);
-        } catch (error) {
-            showError('Lỗi khi tải danh sách xe');
-        }
-    };
-
-    const showError = (message) => {
-        toast.current.show({
-            severity: 'error',
-            summary: 'Lỗi',
-            detail: message,
-            life: 3000
-        });
-    };
-
-    const showSuccess = (message) => {
-        toast.current.show({
-            severity: 'success',
-            summary: 'Thành công',
-            detail: message,
-            life: 3000
-        });
-    };
-
-    const openNew = () => {
-        setFormData({
-            ten_xe: '',
-            bien_so: '',
-            suc_chua: '',
-            loai_xe: '',
-            trang_thai: ''
-        });
-        setIsNew(true);
-        setDisplayDialog(true);
-    };
+  const openNew = () => {
+    setFormData({
+      ten_xe: '',
+      bien_so: '',
+      suc_chua: '',
+      loai_xe: '',
+      trang_thai: ''
+    });
+    setIsNew(true);
+    setDisplayDialog(true);
+  };
 
     const openPhanCongForm = () => {
         setAssignData({
@@ -175,7 +151,7 @@ const DanhSachXe = () => {
             <XeDialog visible={displayDialog} onHide={() => setDisplayDialog(false)} isNew={isNew} formData={formData} onInputChange={onInputChange} onSave={saveXe} />
             <PhanCongDialog visible={displayAssignDialog} onHide={() => setDisplayAssignDialog(false)} formData={formData} onInputChange={onInputChange} onSave={savePhanCong} />
         </div>
-    );
+  );
 };
 
 export default DanhSachXe;
