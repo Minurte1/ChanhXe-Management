@@ -9,7 +9,7 @@ import { createUser, deleteUser, getAllUsers, updateUser } from '../../../servic
 import NhanVienDialog from '../../../modal/NhanVienDialog';
 import PhanCongNguoiDungDialog from '../../../modal/PhanCongNguoiDungDialog';
 import PhanCongNguoiDungService from '../../../services/phanCongNguoiDungServices';
-
+import spServices from '../../../share/share-services/sp-services';
 const DanhSachNhanVien = () => {
   const [nhanVien, setNhanVien] = useState([]);
   const [displayDialog, setDisplayDialog] = useState(false);
@@ -26,7 +26,7 @@ const DanhSachNhanVien = () => {
   const [assignData, setAssignData] = useState({
     id_ben: '',
     id_nguoi_dung: ''
-});
+  });
 
   const toast = useRef(null);
 
@@ -37,7 +37,9 @@ const DanhSachNhanVien = () => {
   const fetchNhanVien = async () => {
     try {
       const response = await getAllUsers();
-      setNhanVien(response.DT);
+      const updatedNhanVien = spServices.formatData(response?.DT);
+
+      setNhanVien(updatedNhanVien);
     } catch (error) {
       showError('Lỗi khi tải danh sách nhân viên');
     }
@@ -76,12 +78,12 @@ const DanhSachNhanVien = () => {
 
   const openPhanCongForm = () => {
     setAssignData({
-        id_ben: '',
-        id_xe: ''
+      id_ben: '',
+      id_xe: ''
     });
     setIsNew(true);
     setDisplayAssignDialog(true);
-};
+  };
 
   const editNhanVien = (nhanVien) => {
     setFormData({ ...nhanVien });
@@ -131,18 +133,18 @@ const DanhSachNhanVien = () => {
   const savePhanCong = async () => {
     const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = assignData;
     try {
-        if (isNew) {
-            await PhanCongNguoiDungService.createUserAssignment(assignData);
-        } else {
-            await PhanCongNguoiDungService.updateUserAssignment(filteredData.id, filteredData);
-        }
-        fetchNhanVien();
-        setDisplayAssignDialog(false);
-        showSuccess(isNew ? 'Thêm phân công thành công' : 'Cập nhật phân công thành công');
+      if (isNew) {
+        await PhanCongNguoiDungService.createUserAssignment(assignData);
+      } else {
+        await PhanCongNguoiDungService.updateUserAssignment(filteredData.id, filteredData);
+      }
+      fetchNhanVien();
+      setDisplayAssignDialog(false);
+      showSuccess(isNew ? 'Thêm phân công thành công' : 'Cập nhật phân công thành công');
     } catch (error) {
-        showError(isNew ? 'Lỗi khi thêm phân công' : 'Lỗi khi cập nhật phân công');
+      showError(isNew ? 'Lỗi khi thêm phân công' : 'Lỗi khi cập nhật phân công');
     }
-};
+  };
 
   const onInputChange = (e, name) => {
     const val = (e.target && e.target.value) || '';
@@ -155,8 +157,8 @@ const DanhSachNhanVien = () => {
   const onAssignInputChange = (e, name) => {
     const val = (e.target && e.target.value) || '';
     setAssignData((prevData) => ({
-        ...prevData,
-        [name]: val
+      ...prevData,
+      [name]: val
     }));
   };
 
@@ -167,9 +169,9 @@ const DanhSachNhanVien = () => {
       <div className="p-col-12">
         <div className="card">
           <h1>Danh Sách Nhân Viên</h1>
-          <div style={{ marginBottom: '10px' }} >
-          <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew}  style={{ marginRight: '10px' }} />
-          <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm}/>
+          <div style={{ marginBottom: '10px' }}>
+            <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew} style={{ marginRight: '10px' }} />
+            <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm} />
           </div>
           <DataTable
             value={nhanVien}
@@ -182,8 +184,8 @@ const DanhSachNhanVien = () => {
             <Column field="ho_ten" header="Họ Tên"></Column>
             <Column field="so_dien_thoai" header="Số Điện Thoại"></Column>
             <Column field="email" header="Email"></Column>
-            <Column field="vai_tro" header="Vai Trò"></Column>
-            <Column field="trang_thai" header="Trạng Thái"></Column>
+            <Column field="labelVaiTro" header="Vai Trò"></Column>
+            <Column field="labelTrangThai" header="Trạng Thái"></Column>
             <Column
               body={(rowData) => (
                 <>

@@ -7,6 +7,7 @@ import { Toast } from 'primereact/toast';
 import TripService from '../../../services/chuyenXeServices'; // Đường dẫn tới TripService
 import TripDialog from '../../../modal/ChuyenXeDialog'; // Đường dẫn tới TripDialog
 import DonHangChuyenXeDialog from '../../../modal/DonHangChuyenXeDialog';
+import spServices from '@/app/share/share-services/sp-services';
 const DanhSachChuyenXe = () => {
   const [tripList, setTripList] = useState([]);
   const [displayDialog, setDisplayDialog] = useState(false);
@@ -33,7 +34,9 @@ const DanhSachChuyenXe = () => {
   const fetchTrips = async () => {
     try {
       const response = await TripService.getAllTrips();
-      setTripList(Array.isArray(response.DT) ? response.DT : []);
+      const output = spServices.formatData(response?.DT);
+      console.log('output', output);
+      setTripList(Array.isArray(output) ? output : []);
     } catch (error) {
       showError('Lỗi khi tải danh sách chuyến xe');
     }
@@ -89,12 +92,13 @@ const DanhSachChuyenXe = () => {
   };
 
   const saveTrip = async () => {
+    console.log('formData', formData);
     const { id, ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = formData;
     try {
       if (isNew) {
         await TripService.createTrip(filteredData);
       } else {
-        await TripService.updateTrip(formData.id, filteredData);
+        await TripService.updateTrip(formData.chuyen_xe_id, filteredData);
       }
       fetchTrips();
       setDisplayDialog(false);
@@ -116,6 +120,7 @@ const DanhSachChuyenXe = () => {
     setSelectedChuyenXe(chuyenXe);
     setDisplayDonHangDialog(true);
   };
+
   return (
     <div className="p-grid">
       <Toast ref={toast} />
@@ -130,7 +135,7 @@ const DanhSachChuyenXe = () => {
             <Column field="tai_xe_phu_ho_ten" header="Tài Xế Phụ" sortable body={(rowData) => rowData.tai_xe_phu_ho_ten || 'Không có'} />
             <Column field="thoi_gian_xuat_ben" header="Thời Gian Xuất Bến" sortable body={(rowData) => new Date(rowData.thoi_gian_xuat_ben).toLocaleString('vi-VN')} />
             <Column field="thoi_gian_cap_ben" header="Thời Gian Cập Bến" sortable body={(rowData) => (rowData.thoi_gian_cap_ben ? new Date(rowData.thoi_gian_cap_ben).toLocaleString('vi-VN') : 'Chưa cập bến')} />
-            <Column field="chuyen_xe_trang_thai" header="Trạng Thái" sortable />
+            <Column field="labelTrangThai" header="Trạng Thái" sortable />
             <Column field="ben_xe_nhan_ten" header="Bến Xe Nhận" sortable />
             <Column field="ben_xe_gui_ten" header="Bến Xe Gửi" sortable />
             <Column
