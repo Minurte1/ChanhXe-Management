@@ -13,33 +13,15 @@ import phanCongNguoiDungService from '../services/phanCongNguoiDungServices';
 
 const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, onInputChange, onSave, }) => {
   const [listBenXe, setListBenXe] = useState([]);
-  const [listXe, setListXe] = useState([]);
+  const [listNguoiDung, setListNguoiDung] = useState([]);
   const [filters, setFilters] = useState({
     // id_ben_xe_nhan: null,
     // id_ben_xe_gui: null
   });
   const toast = useRef(null);
 
-  // Chuyển đổi dữ liệu bến xe thành định dạng Dropdown
-  const benXeOptions = [
-    { label: 'Tất cả', value: null },
-    ...listBenXe.map((benXe) => ({
-      label: benXe.ten_ben_xe,
-      value: benXe.id
-    }))
-  ];
-
-  const xeOptions = [
-    { label: 'Tất cả', value: null },
-    ...listXe.map((Xe) => ({
-      label: Xe.bien_so,
-      value: Xe.id
-    }))
-  ];
-
   useEffect(() => {
     if (visible) {
-      // fetchDonHang();
       fetchBenXe();
       fetchUser();
     }
@@ -59,10 +41,17 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
   const fetchUser = async () => {
     try {
       const response = await getAllUsers();
-      setListNguoiDung(Array.isArray(response.DT) ? response.DT : []);
+      const allUsers = Array.isArray(response.DT) ? response.DT : [];
+      const filters = { vai_tro: ['tai_xe', 'tai_xe_phu'] };
+
+      const filteredUsers = allUsers.filter(user => 
+        !filters.vai_tro.includes(user.vai_tro)
+      );
+
+      setListNguoiDung(filteredUsers);
     } catch (error) {
-      console.error('Lỗi khi tải danh sách xe', error);
-      showError('Lỗi khi tải danh sách xe');
+      console.error('Lỗi khi tải danh sách người dùng', error);
+      showError('Lỗi khi tải danh sách người dùng');
     }
   };
 
@@ -102,7 +91,7 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
 
   return (
     <Dialog
-      header={`Phân công bến xe cho xe`}
+      header={`Phân công bến xe cho người dùng`}
       visible={visible}
       style={{ width: '40vw', maxWidth: '600px' }}
       footer={dialogFooter}
@@ -125,6 +114,7 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
               optionValue="id"
               onChange={(e) => onInputChange({ target: { value: e.value } }, 'id_ben')}
               placeholder="Chọn bến"
+              filter filterBy="label"
               className="p-inputtext-sm"
               style={{ width: '100%' }}
             />
@@ -137,11 +127,12 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
             <Dropdown
               id="id_nguoi_dung"
               value={formData.id_nguoi_dung}
-              options={listXe}
+              options={listNguoiDung}
               optionLabel="ho_ten"
               optionValue="id"
               onChange={(e) => onInputChange({ target: { value: e.value } }, 'id_nguoi_dung')}
               placeholder="Chọn người dùng"
+              filter filterBy="label"
               className="p-inputtext-sm"
               style={{ width: '100%' }}
             />
