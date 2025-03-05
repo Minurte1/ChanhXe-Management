@@ -108,6 +108,7 @@ const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formDat
               optionValue="id"
               onChange={(e) => onInputChange({ target: { value: e.value } }, 'id_ben')}
               placeholder="Chọn bến"
+              filter filterBy="label"
               className="p-inputtext-sm"
               style={{ width: '100%' }}
             />
@@ -125,6 +126,7 @@ const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formDat
               optionValue="nguoi_dung_id"
               onChange={(e) => onInputChange({ target: { value: e.value } }, 'id_tai_xe')}
               placeholder="Chọn tài xế"
+              filter filterBy="label"
               className="p-inputtext-sm"
               style={{ width: '100%' }}
             />

@@ -160,9 +160,9 @@ const DanhSachTaiXe = () => {
       <div className="p-col-12">
         <div className="card">
           <h1>Danh Sách Tài Xế</h1>
-          <div>
-          <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew} style={{ marginBottom: '10px' }} />
-          <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm} style={{ marginBottom: '10px' }} />
+          <div style={{ marginBottom: '10px' }} >
+          <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew}  style={{ marginRight: '10px' }} />
+          <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm}/>
           </div>
           <DataTable value={taiXeList} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}>
             <Column field="nguoi_dung_id" header="ID Người Dùng" sortable />
