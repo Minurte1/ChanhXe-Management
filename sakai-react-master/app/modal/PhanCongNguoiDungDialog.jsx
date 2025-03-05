@@ -20,26 +20,8 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
   });
   const toast = useRef(null);
 
-  // Chuyển đổi dữ liệu bến xe thành định dạng Dropdown
-  const benXeOptions = [
-    { label: 'Tất cả', value: null },
-    ...listBenXe.map((benXe) => ({
-      label: benXe.ten_ben_xe,
-      value: benXe.id
-    }))
-  ];
-
-  const xeOptions = [
-    { label: 'Tất cả', value: null },
-    ...listXe.map((Xe) => ({
-      label: Xe.bien_so,
-      value: Xe.id
-    }))
-  ];
-
   useEffect(() => {
     if (visible) {
-      // fetchDonHang();
       fetchBenXe();
       fetchUser();
     }
@@ -59,10 +41,17 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
   const fetchUser = async () => {
     try {
       const response = await getAllUsers();
-      setListNguoiDung(Array.isArray(response.DT) ? response.DT : []);
+      const allUsers = Array.isArray(response.DT) ? response.DT : [];
+      // const filters = { vai_tro: ['tai_xe', 'tai_xe_phu'] };
+
+      // const filteredUsers = allUsers.filter(user => 
+      //   !filters.vai_tro.includes(user.vai_tro)
+      // );
+
+      setListNguoiDung(allUsers);
     } catch (error) {
-      console.error('Lỗi khi tải danh sách xe', error);
-      showError('Lỗi khi tải danh sách xe');
+      console.error('Lỗi khi tải danh sách người dùng', error);
+      showError('Lỗi khi tải danh sách người dùng');
     }
   };
 

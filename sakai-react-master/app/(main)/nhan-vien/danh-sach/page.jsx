@@ -169,7 +169,7 @@ const DanhSachNhanVien = () => {
           <h1>Danh Sách Nhân Viên</h1>
           <div>
           <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew} style={{ marginBottom: '10px' }} />
-          <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm} />
+          <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm} style={{ marginBottom: '10px' }} />
           </div>
           <DataTable
             value={nhanVien}

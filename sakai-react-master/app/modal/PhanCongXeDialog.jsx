@@ -128,6 +128,7 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
               optionValue="id"
               onChange={(e) => onInputChange({ target: { value: e.value } }, 'id_ben')}
               placeholder="Chọn bến"
+              filter filterBy="label"
               className="p-inputtext-sm"
               style={{ width: '100%' }}
             />
@@ -145,6 +146,7 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
               optionValue="id"
               onChange={(e) => onInputChange({ target: { value: e.value } }, 'id_xe')}
               placeholder="Chọn xe"
+              filter filterBy="label"
               className="p-inputtext-sm"
               style={{ width: '100%' }}
             />

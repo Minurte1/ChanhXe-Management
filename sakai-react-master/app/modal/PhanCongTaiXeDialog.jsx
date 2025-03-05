@@ -8,38 +8,21 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { Dropdown } from 'primereact/dropdown';
 import BenXeService from '../services/benXeServices';
-import TaiXeService from '../services/xeSerivces';
+import TaiXeService from '../services/taiXeServices';
 import phanCongTaiXeService from '../services/phanCongTaiXeServices';
 
 const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, onInputChange, onSave, }) => {
   const [listBenXe, setListBenXe] = useState([]);
   const [listTaiXe, setListTaiXe] = useState([]);
+  const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
     // id_ben_xe_nhan: null,
     // id_ben_xe_gui: null
   });
   const toast = useRef(null);
 
-  // Chuyển đổi dữ liệu bến xe thành định dạng Dropdown
-  const benXeOptions = [
-    { label: 'Tất cả', value: null },
-    ...listBenXe.map((benXe) => ({
-      label: benXe.ten_ben_xe,
-      value: benXe.id
-    }))
-  ];
-
-  const xeOptions = [
-    { label: 'Tất cả', value: null },
-    ...listXe.map((Xe) => ({
-      label: Xe.bien_so,
-      value: Xe.id
-    }))
-  ];
-
   useEffect(() => {
     if (visible) {
-      // fetchDonHang();
       fetchBenXe();
       fetchTaiXe();
     }
@@ -58,7 +41,7 @@ const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formDat
 
   const fetchTaiXe = async () => {
     try {
-      const response = await TaiXeService.getAllTaiXe();
+      const response = await TaiXeService.getAllDrivers({ trang_thai_tai_xe: 'hoat_dong' });
       setListTaiXe(Array.isArray(response.DT) ? response.DT : []);
     } catch (error) {
       console.error('Lỗi khi tải danh sách tài xe', error);
@@ -102,7 +85,7 @@ const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formDat
 
   return (
     <Dialog
-      header={`Phân công bến xe cho xe`}
+      header={`Phân công bến xe cho tài xế`}
       visible={visible}
       style={{ width: '40vw', maxWidth: '600px' }}
       footer={dialogFooter}
@@ -135,11 +118,11 @@ const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formDat
               Chọn tài xế
             </label>
             <Dropdown
-              id="id_xe"
+              id="id_tai_xe"
               value={formData.id_tai_xe}
               options={listTaiXe}
-              optionLabel="nguoi_dung_id"
-              optionValue="id"
+              optionLabel="ho_ten"
+              optionValue="nguoi_dung_id"
               onChange={(e) => onInputChange({ target: { value: e.value } }, 'id_tai_xe')}
               placeholder="Chọn tài xế"
               className="p-inputtext-sm"
