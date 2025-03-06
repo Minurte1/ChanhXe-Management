@@ -126,33 +126,42 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
         <InputText id="ma_qr_code" value={formData.ma_qr_code || ''} disabled className="mt-2 h-10" placeholder="QR-12345678" />
       </div>
 
-      <Button label="Khách Hàng Mới" onClick={handleToggleDiv} icon="pi pi-plus" className="p-button-success" style={{ width: '20%' }} />
-      {isDivVisible ? (
-        <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
-          <label htmlFor="nguoi_gui_id">Người gửi</label>
-          <Dropdown
-            id="nguoi_gui_id"
-            value={formData.nguoi_gui_id}
-            options={users}
-            optionLabel="ho_ten"
-            optionValue="id"
-            onChange={(e) => onInputChange({ target: { value: e.value } }, 'nguoi_gui_id')}
-            filter
-            placeholder="Tìm kiếm khách hàng"
-            showClear
-            className="w-100 mt-2"
-          />
+      <div className="p-field" style={{ margin: '8px 0', minHeight: '70px', display: 'flex', alignItems: 'center' }}>
+        <div style={{ flex: 1 }}>
+          {isDivVisible ? (
+            <div>
+              <label htmlFor="nguoi_gui_id">Người gửi</label>
+              <Dropdown
+                id="nguoi_gui_id"
+                value={formData.nguoi_gui_id}
+                options={users}
+                optionLabel="ho_ten"
+                optionValue="id"
+                onChange={(e) => onInputChange({ target: { value: e.value } }, 'nguoi_gui_id')}
+                filter
+                placeholder="Tìm kiếm khách hàng"
+                showClear
+                className="w-100 mt-2"
+              />
+            </div>
+          ) : (<div></div>)}
         </div>
+        <Button label="Khách Hàng Mới" onClick={handleToggleDiv} icon="pi pi-plus" className="p-button-success" style={{ width: '20%', marginTop: '25px', marginLeft: '10px' }} />
+      </div>
+
+      {isDivVisible ? (
+        <div></div>
       ) : (
-        <KhachHangDialog
-          isEditing={false}
-          visible={khachHangDialogVisible}
-          onHide={() => setKhachHangDialogVisible(false)}
-          isNew={true}
-          formData={formData}
-          onInputChange={handleInputChange}
-          onSave={handleSave}
-        />
+        // <KhachHangDialog
+        //   isEditing={false}
+        //   visible={khachHangDialogVisible}
+        //   onHide={() => setKhachHangDialogVisible(false)}
+        //   isNew={true}
+        //   formData={formData}
+        //   onInputChange={handleInputChange}
+        //   onSave={handleSave}
+        // />
+        <div>asdsgdhasgdasg</div>
       )}
 
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>

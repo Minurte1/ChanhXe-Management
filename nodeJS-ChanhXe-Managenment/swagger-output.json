@@ -548,15 +548,6 @@
                 },
                 "labelTrangThai": {
                   "example": "any"
-                },
-                "mat_khau": {
-                  "example": "any"
-                },
-                "id_nguoi_cap_nhat": {
-                  "example": "any"
-                },
-                "ngay_cap_nhat": {
-                  "example": "any"
                 }
               }
             }
