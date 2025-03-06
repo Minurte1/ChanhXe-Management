@@ -6,6 +6,7 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import khachHangService from '../../../services/khachHangServices';
 import KhachHangDialog from '../../../modal/KhachHangDialog';
+import { useAxios } from '@/app/authentication/useAxiosClient';
 
 const DanhSachKhachHang = () => {
   const [khachHangList, setKhachHangList] = useState([]);
@@ -20,14 +21,16 @@ const DanhSachKhachHang = () => {
   });
 
   const toast = useRef(null);
-
+  //
+  const axiosInstance = useAxios();
+  const KhachHangService = khachHangService(axiosInstance);
   useEffect(() => {
     fetchKhachHang();
   }, []);
 
   const fetchKhachHang = async () => {
     try {
-      const response = await khachHangService.getAllCustomers();
+      const response = await KhachHangService.getAllCustomers();
       setKhachHangList(Array.isArray(response.DT) ? response.DT : []);
     } catch (error) {
       showError('Lỗi khi tải danh sách khách hàng');
@@ -74,7 +77,7 @@ const DanhSachKhachHang = () => {
 
   const deleteKhachHang = async (id) => {
     try {
-      await khachHangService.deleteCustomer(id);
+      await KhachHangService.deleteCustomer(id);
       fetchKhachHang();
       showSuccess('Xóa khách hàng thành công');
     } catch (error) {
@@ -86,9 +89,9 @@ const DanhSachKhachHang = () => {
     const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = formData;
     try {
       if (isNew) {
-        await khachHangService.createCustomer(filteredData);
+        await KhachHangService.createCustomer(filteredData);
       } else {
-        await khachHangService.updateCustomer(filteredData.id, filteredData);
+        await KhachHangService.updateCustomer(filteredData.id, filteredData);
       }
       fetchKhachHang();
       setDisplayDialog(false);
