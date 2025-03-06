@@ -7,6 +7,7 @@ import { Calendar } from 'primereact/calendar';
 import xeService from '../services/xeSerivces';
 import taiXeServices from '../services/taiXeServices';
 import BenXeService from '../services/benXeServices';
+import { useAxios } from '../authentication/useAxiosClient';
 
 const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }) => {
   const [taiXeList, setTaiXeList] = useState([]);
@@ -14,7 +15,10 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
   const [xeList, setXeList] = useState([]);
   const [listBenXe, setListBenXe] = useState([]);
   const [error, setError] = useState(null);
-
+  const axiosInstance = useAxios();
+  const TaiXeService = taiXeServices(axiosInstance);
+  const XeService = xeService(axiosInstance);
+  const benXeService = BenXeService(axiosInstance);
   // Danh sách trạng thái ban đầu
   const trangThaiOptions = [
     { label: 'Chờ xuất bến', value: 'cho_xuat_ben' },
@@ -69,7 +73,7 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [xeResponse, taiXeResponse, benXeResponse] = await Promise.all([xeService.getAllVehicles({ trang_thai: 'hoat_dong' }), taiXeServices.getAllDrivers({ trang_thai_tai_xe: 'hoat_dong' }), BenXeService.getAllBenXe()]);
+        const [xeResponse, taiXeResponse, benXeResponse] = await Promise.all([XeService.getAllVehicles({ trang_thai: 'hoat_dong' }), TaiXeService.getAllDrivers({ trang_thai_tai_xe: 'hoat_dong' }), benXeService.getAllBenXe()]);
 
         const allTaiXe = Array.isArray(taiXeResponse.DT) ? taiXeResponse.DT : [];
         const taiXeChinh = allTaiXe.filter((taiXe) => taiXe.vai_tro === 'tai_xe');

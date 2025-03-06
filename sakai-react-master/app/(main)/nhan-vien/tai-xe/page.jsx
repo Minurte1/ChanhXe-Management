@@ -5,11 +5,12 @@ import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
-import taiXeServices from '../../../services/taiXeServices';
+import taiXeService from '../../../services/taiXeServices';
 import TaiXeDialog from '../../../modal/TaiXeDialog';
 import PhanCongTaiXeDialog from '../../../modal/PhanCongTaiXeDialog';
 import phanCongTaiXeService from '../../../services/phanCongTaiXeServices';
 import spServices from '@/app/share/share-services/sp-services';
+import { useAxios } from '@/app/authentication/useAxiosClient';
 
 const DanhSachTaiXe = () => {
   const [taiXeList, setTaiXeList] = useState([]);
@@ -21,7 +22,8 @@ const DanhSachTaiXe = () => {
     bang_lai: '',
     trang_thai: ''
   });
-
+  const axiosInstance = useAxios();
+  const TaiXeServices = taiXeService(axiosInstance);
   const [assignData, setAssignData] = useState({
     id_ben: '',
     id_tai_xe: ''
@@ -35,7 +37,7 @@ const DanhSachTaiXe = () => {
 
   const fetchTaiXe = async () => {
     try {
-      const response = await taiXeServices.getAllDrivers();
+      const response = await TaiXeServices.getAllDrivers();
       const updatedTaiXe = spServices.formatData(response?.DT);
       setTaiXeList(updatedTaiXe);
     } catch (error) {
@@ -99,7 +101,7 @@ const DanhSachTaiXe = () => {
 
   const deleteTaiXe = async (id) => {
     try {
-      await taiXeServices.deleteDriver(id);
+      await TaiXeServices.deleteDriver(id);
       fetchTaiXe();
       showSuccess('Xóa tài xế thành công');
     } catch (error) {
@@ -111,9 +113,9 @@ const DanhSachTaiXe = () => {
     const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = formData;
     try {
       if (isNew) {
-        await taiXeServices.createDriver(filteredData);
+        await TaiXeServices.createDriver(filteredData);
       } else {
-        await taiXeServices.updateDriver(formData.tai_xe_id, filteredData);
+        await TaiXeServices.updateDriver(formData.tai_xe_id, filteredData);
       }
       fetchTaiXe();
       setDisplayDialog(false);

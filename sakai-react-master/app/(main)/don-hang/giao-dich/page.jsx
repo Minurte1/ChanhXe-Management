@@ -7,6 +7,7 @@ import { Toast } from 'primereact/toast';
 import OrderService from '../../../services/donHangSevices'; // Cập nhật tên service
 import OrderDialog from '../../../modal/DonHangDialog';
 import spServices from '@/app/share/share-services/sp-services';
+import { useAxios } from '@/app/authentication/useAxiosClient';
 
 const DanhSachDonHang = () => {
   const [orders, setOrders] = useState([]);
@@ -33,14 +34,16 @@ const DanhSachDonHang = () => {
   });
 
   const toast = useRef(null);
-
+  const axiosInstance = useAxios();
+  const orderService = OrderService(axiosInstance);
+  axiosInstance;
   useEffect(() => {
     fetchOrders();
   }, []);
 
   const fetchOrders = async () => {
     try {
-      const response = await OrderService.getAllOrders();
+      const response = await orderService.getAllOrders();
       const output = spServices.formatData(response?.DT);
       setOrders(Array.isArray(output) ? output : []);
     } catch (error) {

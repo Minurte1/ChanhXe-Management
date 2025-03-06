@@ -7,19 +7,23 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { Dropdown } from 'primereact/dropdown';
 import BenXeService from '../services/benXeServices';
-import TaiXeService from '../services/taiXeServices';
-import phanCongTaiXeService from '../services/phanCongTaiXeServices';
 
-const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, onInputChange, onSave, }) => {
+import phanCongTaiXeService from '../services/phanCongTaiXeServices';
+import { useAxios } from '../authentication/useAxiosClient';
+import taiXeService from '../services/taiXeServices';
+
+const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, onInputChange, onSave }) => {
   const [listBenXe, setListBenXe] = useState([]);
   const [listTaiXe, setListTaiXe] = useState([]);
   const [listPhanCongTaiXe, setListPhanCongTaiXe] = useState([]);
   const [selectedBenXe, setSelectedBenXe] = useState([]);
-  const [filters, setFilters] = useState({
-
-  });
+  const [filters, setFilters] = useState({});
   const toast = useRef(null);
-
+  //
+  const axiosInstance = useAxios();
+  const benXeService = BenXeService(axiosInstance);
+  const TaiXeServices = taiXeService(axiosInstance);
+  const phanCongTaiXeServices = phanCongTaiXeService(axiosInstance);
   useEffect(() => {
     if (visible) {
       fetchBenXe();
@@ -30,7 +34,7 @@ const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formDat
 
   const fetchBenXe = async () => {
     try {
-      const response = await BenXeService.getAllBenXe();
+      const response = await benXeService.getAllBenXe();
       console.log('response ben xe', response);
       setListBenXe(Array.isArray(response.DT) ? response.DT : []);
     } catch (error) {
@@ -41,7 +45,7 @@ const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formDat
 
   const fetchTaiXe = async () => {
     try {
-      const response = await TaiXeService.getAllDrivers({ trang_thai_tai_xe: 'hoat_dong' });
+      const response = await TaiXeServices.getAllDrivers({ trang_thai_tai_xe: 'hoat_dong' });
       setListTaiXe(Array.isArray(response.DT) ? response.DT : []);
     } catch (error) {
       console.error('Lỗi khi tải danh sách tài xe', error);
@@ -51,7 +55,7 @@ const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formDat
 
   const fetchPhanCongTaiXe = async () => {
     try {
-      const response = await phanCongTaiXeService.getAllDriverAssignments();
+      const response = await phanCongTaiXeServices.getAllDriverAssignments();
       console.log('response phan cong tai xe', response);
       setListPhanCongTaiXe(Array.isArray(response.DT) ? response.DT : []);
     } catch (error) {
@@ -90,11 +94,9 @@ const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formDat
   const handleInputChange = async (e, field) => {
     const value = e.value;
     if (field === 'id_ben') {
-      const response = await TaiXeService.getAllDrivers({ trang_thai_tai_xe: 'hoat_dong' });
+      const response = await TaiXeServices.getAllDrivers({ trang_thai_tai_xe: 'hoat_dong' });
       const updatedListTaiXe = Array.isArray(response.DT) ? response.DT : [];
-      const assignedDriver = listPhanCongTaiXe
-        .filter((assignment) => assignment.id_ben === value)
-        .map((assignment) => assignment.id_tai_xe);
+      const assignedDriver = listPhanCongTaiXe.filter((assignment) => assignment.id_ben === value).map((assignment) => assignment.id_tai_xe);
       const filteredTaiXeOptions = updatedListTaiXe.filter((driver) => !assignedDriver.includes(driver.nguoi_dung_id));
       setSelectedBenXe(value);
       setListTaiXe(filteredTaiXeOptions);
@@ -111,14 +113,7 @@ const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formDat
   );
 
   return (
-    <Dialog
-      header={`Phân công bến xe cho tài xế`}
-      visible={visible}
-      style={{ width: '40vw', maxWidth: '600px' }}
-      footer={dialogFooter}
-      onHide={onHide}
-      className="p-dialog-custom"
-    >
+    <Dialog header={`Phân công bến xe cho tài xế`} visible={visible} style={{ width: '40vw', maxWidth: '600px' }} footer={dialogFooter} onHide={onHide} className="p-dialog-custom">
       <Toast ref={toast} />
 
       <div className="p-mb-4">
@@ -135,7 +130,8 @@ const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formDat
               optionValue="id"
               onChange={(e) => handleInputChange(e, 'id_ben')}
               placeholder="Chọn bến"
-              filter filterBy="ten_ben_xe"
+              filter
+              filterBy="ten_ben_xe"
               className="p-inputtext-sm"
               style={{ width: '100%' }}
             />
@@ -153,7 +149,8 @@ const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formDat
               optionValue="nguoi_dung_id"
               onChange={(e) => handleInputChange(e, 'id_tai_xe')}
               placeholder="Chọn bến xe trước khi chọn tài xế"
-              filter filterBy="ho_ten"
+              filter
+              filterBy="ho_ten"
               className="p-inputtext-sm"
               style={{ width: '100%' }}
               disabled={!formData.id_ben}

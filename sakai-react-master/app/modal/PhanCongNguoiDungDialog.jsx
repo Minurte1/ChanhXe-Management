@@ -17,8 +17,10 @@ const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, for
   const [listPhanCongNguoiDung, setListPhanCongNguoiDung] = useState([]);
   const [filters, setFilters] = useState({});
   const toast = useRef(null);
+  //
   const axiosInstance = useAxios();
   const userService = UserService(axiosInstance);
+  const benXeService = BenXeService(axiosInstance);
   useEffect(() => {
     if (visible) {
       fetchPhanCongNguoiDung();
@@ -29,7 +31,7 @@ const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, for
 
   const fetchBenXe = async () => {
     try {
-      const response = await BenXeService.getAllBenXe();
+      const response = await benXeService.getAllBenXe();
       console.log('response ben xe', response);
       setListBenXe(Array.isArray(response.DT) ? response.DT : []);
     } catch (error) {

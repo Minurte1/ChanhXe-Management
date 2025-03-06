@@ -33,6 +33,8 @@ const DanhSachNhanVien = () => {
   const toast = useRef(null);
   const axiosInstance = useAxios();
   const userService = UserService(axiosInstance);
+  const phanCongNguoiDungService = PhanCongNguoiDungService(axiosInstance);
+
   useEffect(() => {
     fetchNhanVien();
   }, []);
@@ -136,14 +138,15 @@ const DanhSachNhanVien = () => {
     const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = assignData;
     try {
       if (isNew) {
-        await PhanCongNguoiDungService.createUserAssignment(assignData);
+        await phanCongNguoiDungService.createUserAssignment(assignData);
       } else {
-        await PhanCongNguoiDungService.updateUserAssignment(filteredData.id, filteredData);
+        await phanCongNguoiDungService.updateUserAssignment(filteredData.id, filteredData);
       }
       fetchNhanVien();
       setDisplayAssignDialog(false);
       showSuccess(isNew ? 'Thêm phân công thành công' : 'Cập nhật phân công thành công');
     } catch (error) {
+      console.log('error', error);
       showError(isNew ? 'Lỗi khi thêm phân công' : 'Lỗi khi cập nhật phân công');
     }
   };
