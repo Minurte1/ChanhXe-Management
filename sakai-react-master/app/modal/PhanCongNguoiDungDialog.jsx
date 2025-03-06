@@ -21,6 +21,7 @@ const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, for
   const axiosInstance = useAxios();
   const userService = UserService(axiosInstance);
   const benXeService = BenXeService(axiosInstance);
+  const PhanCongNguoiDungService = phanCongNguoiDungService(axiosInstance);
   useEffect(() => {
     if (visible) {
       fetchPhanCongNguoiDung();
@@ -57,7 +58,7 @@ const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, for
 
   const fetchPhanCongNguoiDung = async () => {
     try {
-      const response = await phanCongNguoiDungService.getAllUserAssignments();
+      const response = await PhanCongNguoiDungService.getAllUserAssignments();
       console.log('response phan cong nguoi dung', response);
       setListPhanCongNguoiDung(Array.isArray(response.DT) ? response.DT : []);
     } catch (error) {

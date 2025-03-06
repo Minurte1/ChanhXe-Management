@@ -27,7 +27,7 @@ const getAllDrivers = async (req, res) => {
   SELECT 
     tai_xe.id AS tai_xe_id,
     tai_xe.bang_lai,
-    tai_xe.trang_thai AS trang_thai_tai_xe,
+    tai_xe.trang_thai ,
     tai_xe.id_nguoi_cap_nhat AS id_nguoi_cap_nhat_tai_xe,
     tai_xe.ngay_cap_nhat AS ngay_cap_nhat_tai_xe,
     tai_xe.ngay_tao AS ngay_tao_tai_xe,
@@ -38,26 +38,20 @@ const getAllDrivers = async (req, res) => {
     nguoi_dung.email,
     nguoi_dung.vai_tro,
     nguoi_dung.trang_thai AS trang_thai_nguoi_dung,
-    nguoi_dung.id_nguoi_cap_nhat AS id_nguoi_cap_nhat_nguoi_dung,
-    nguoi_dung.ngay_cap_nhat AS ngay_cap_nhat_nguoi_dung,
-    nguoi_dung.ngay_tao AS ngay_tao_nguoi_dung,
+
 
     phan_cong_dia_diem_tai_xe.id AS phan_cong_id,
     phan_cong_dia_diem_tai_xe.id_ben,
     phan_cong_dia_diem_tai_xe.id_tai_xe,
-    phan_cong_dia_diem_tai_xe.id_nguoi_cap_nhat AS id_nguoi_cap_nhat_phan_cong,
-    phan_cong_dia_diem_tai_xe.ngay_tao AS ngay_tao_phan_cong,
-    phan_cong_dia_diem_tai_xe.ngay_cap_nhat AS ngay_cap_nhat_phan_cong,
+
 
     ben_xe.id AS ben_xe_id,
     ben_xe.dia_chi,
     ben_xe.ten_ben_xe,
     ben_xe.tinh,
     ben_xe.huyen,
-    ben_xe.xa,
-    ben_xe.id_nguoi_cap_nhat AS id_nguoi_cap_nhat_ben_xe,
-    ben_xe.ngay_tao AS ngay_tao_ben_xe,
-    ben_xe.ngay_cap_nhat AS ngay_cap_nhat_ben_xe
+    ben_xe.xa
+
 
   FROM tai_xe
   INNER JOIN nguoi_dung ON tai_xe.nguoi_dung_id = nguoi_dung.id

@@ -26,7 +26,18 @@ const getAllUsers = async (req, res) => {
       ngay_tao,
     } = req.query;
 
-    let query = "SELECT * FROM nguoi_dung WHERE 1=1";
+    let query = `
+      SELECT 
+        nd.*, 
+        pcd.id AS phan_cong_id, pcd.id_ben, pcd.id_nguoi_dung, pcd.id_nguoi_cap_nhat AS phan_cong_id_nguoi_cap_nhat, 
+        pcd.ngay_tao AS phan_cong_ngay_tao, pcd.ngay_cap_nhat AS phan_cong_ngay_cap_nhat,
+        bx.id AS ben_xe_id, bx.dia_chi, bx.ten_ben_xe, bx.tinh, bx.huyen, bx.xa, 
+        bx.id_nguoi_cap_nhat AS ben_xe_id_nguoi_cap_nhat, bx.ngay_tao AS ben_xe_ngay_tao, bx.ngay_cap_nhat AS ben_xe_ngay_cap_nhat
+      FROM nguoi_dung nd
+      LEFT JOIN phan_cong_dia_diem_nguoi_dung pcd ON nd.id = pcd.id_nguoi_dung
+      LEFT JOIN ben_xe bx ON pcd.id_ben = bx.id
+      WHERE 1=1
+    `;
     let queryParams = [];
 
     if (id) {

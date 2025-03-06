@@ -171,6 +171,8 @@ const DanhSachTaiXe = () => {
           </div>
           <DataTable value={taiXeList} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}>
             <Column field="ho_ten" header="Họ Tên" sortable />
+            <Column field="ten_ben_xe" header="Địa điểm công tác" sortable body={(rowData) => rowData.ten_ben_xe || '(Chưa được phân công)'} />
+
             <Column field="so_dien_thoai" header="Số Điện Thoại" sortable />
             <Column field="email" header="Email" sortable />
             <Column field="labelVaiTro" header="Vai Trò" sortable />
