@@ -10,6 +10,7 @@ import XeDialog from '../../../modal/XeDialog';
 import PhanCongDialog from '../../../modal/PhanCongXeDialog';
 import VehicleAssignmentService from '../../../services/phanCongXeServices';
 import spServices from '@/app/share/share-services/sp-services';
+import { useAxios } from '@/app/authentication/useAxiosClient';
 
 const DanhSachXe = () => {
   const [xeList, setXeList] = useState([]);
@@ -27,7 +28,9 @@ const DanhSachXe = () => {
     id_ben: '',
     id_xe: ''
   });
-
+  //
+  const axiosInstance = useAxios();
+  const vehicleService = VehicleService(axiosInstance);
   const toast = useRef(null);
 
   useEffect(() => {
@@ -36,7 +39,7 @@ const DanhSachXe = () => {
 
   const fetchXe = async () => {
     try {
-      const response = await VehicleService.getAllVehicles();
+      const response = await vehicleService.getAllVehicles();
       const output = spServices.formatData(response?.DT);
       setXeList(output);
     } catch (error) {
@@ -101,7 +104,7 @@ const DanhSachXe = () => {
 
   const deleteXe = async (id) => {
     try {
-      await VehicleService.deleteVehicle(id);
+      await vehicleService.deleteVehicle(id);
       fetchXe();
       showSuccess('Xóa xe thành công');
     } catch (error) {
@@ -113,9 +116,9 @@ const DanhSachXe = () => {
     const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, labelTrangThai, ...filteredData } = formData;
     try {
       if (isNew) {
-        await VehicleService.createVehicle(formData);
+        await vehicleService.createVehicle(formData);
       } else {
-        await VehicleService.updateVehicle(filteredData.id, filteredData);
+        await vehicleService.updateVehicle(filteredData.id, filteredData);
       }
       fetchXe();
       setDisplayDialog(false);

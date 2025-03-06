@@ -8,6 +8,7 @@ import BenXeService from '../services/benXeServices';
 import khachHangService from '../services/khachHangServices';
 import { v4 as uuidv4 } from 'uuid';
 import { Autocomplete, TextField } from '@mui/material';
+import { useAxios } from '../authentication/useAxiosClient';
 
 const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, isLoggedIn }) => {
   const [listBenXe, setListBenXe] = useState([]);
@@ -20,6 +21,9 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
       fetchBenXe();
     }
   }, [visible]);
+  const axiosInstance = useAxios();
+
+  const KhachHangService = khachHangService(axiosInstance);
 
   const trangThaiOptions = [
     { label: 'Chờ xử lý', value: 'cho_xu_ly' },
@@ -55,7 +59,7 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
 
   const fetchUsers = async () => {
     try {
-      const response = await khachHangService.getAllCustomers();
+      const response = await KhachHangService.getAllCustomers();
       console.log('response users', response);
       setUsers(Array.isArray(response.DT) ? response.DT : []);
     } catch (error) {

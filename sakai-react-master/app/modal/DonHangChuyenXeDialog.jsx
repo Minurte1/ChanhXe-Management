@@ -10,6 +10,7 @@ import { Dropdown } from 'primereact/dropdown';
 import DonHangService from '../services/donHangSevices';
 import DonHangChuyenXeService from '../services/DonHangChuyenXeService';
 import BenXeService from '../services/benXeServices';
+import { useAxios } from '../authentication/useAxiosClient';
 
 const DonHangChuyenXeDialog = ({ visible, onHide, selectedChuyenXe }) => {
   const [donHangList, setDonHangList] = useState([]);
@@ -20,7 +21,10 @@ const DonHangChuyenXeDialog = ({ visible, onHide, selectedChuyenXe }) => {
     id_ben_xe_gui: null
   });
   const toast = useRef(null);
-  console.log('selectedChuyenXe', selectedChuyenXe);
+  const axiosInstance = useAxios();
+  const benXeService = BenXeService(axiosInstance);
+  const donHangService = DonHangService(axiosInstance);
+  const donHangChuyenXeService = DonHangChuyenXeService(axiosInstance);
   // Chuyển đổi dữ liệu bến xe thành định dạng Dropdown
   const benXeOptions = [
     { label: 'Tất cả', value: null },
@@ -45,7 +49,7 @@ const DonHangChuyenXeDialog = ({ visible, onHide, selectedChuyenXe }) => {
         id_ben_xe_nhan: selectedChuyenXe.id_ben_xe_nhan,
         id_ben_xe_gui: selectedChuyenXe.id_ben_xe_gui
       };
-      const response = await DonHangService.getAllOrders(params);
+      const response = await donHangService.getAllOrders(params);
       setDonHangList(Array.isArray(response.DT) ? response.DT : []);
     } catch (error) {
       showError('Lỗi khi tải danh sách đơn hàng');
@@ -55,7 +59,7 @@ const DonHangChuyenXeDialog = ({ visible, onHide, selectedChuyenXe }) => {
   // Lấy danh sách bến xe từ API
   const fetchBenXe = async () => {
     try {
-      const response = await BenXeService.getAllBenXe();
+      const response = await benXeService.getAllBenXe();
       console.log('response ben xe', response);
       setListBenXe(Array.isArray(response.DT) ? response.DT : []);
     } catch (error) {
@@ -91,7 +95,7 @@ const DonHangChuyenXeDialog = ({ visible, onHide, selectedChuyenXe }) => {
 
     const don_hang_ids = selectedDonHang.map((donHang) => donHang.id);
     try {
-      await DonHangChuyenXeService.createDonHangChuyenXe({
+      await donHangChuyenXeService.createDonHangChuyenXe({
         don_hang_ids,
         don_hang_chuyen_xe_id: selectedChuyenXe?.chuyen_xe_id
       });

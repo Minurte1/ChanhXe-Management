@@ -1,7 +1,6 @@
-import axiosInstance from '../authentication/axiosInstance';
 const API_URL = process.env.NEXT_PUBLIC_URL_SERVER;
 
-const OrderService = {
+const OrderService = (axiosInstance) => ({
   getAllOrders: async (params = {}) => {
     try {
       const response = await axiosInstance.get(`${API_URL}/orders`, { params });
@@ -50,6 +49,6 @@ const OrderService = {
       throw error;
     }
   }
-};
+});
 
 export default OrderService;

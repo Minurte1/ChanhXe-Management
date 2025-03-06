@@ -1,7 +1,7 @@
 import axiosInstance from '../authentication/axiosInstance';
 const API_URL = process.env.NEXT_PUBLIC_URL_SERVER;
 
-const VehicleService = {
+const VehicleService = (axiosInstance) => ({
   getAllVehicles: async (params = {}) => {
     try {
       const response = await axiosInstance.get(`${API_URL}/xe`, {
@@ -53,6 +53,6 @@ const VehicleService = {
       throw error;
     }
   }
-};
+});
 
 export default VehicleService;

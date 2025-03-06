@@ -1,8 +1,6 @@
-import axiosInstance from '../authentication/axiosInstance';
-
 const API_URL = `${process.env.NEXT_PUBLIC_URL_SERVER}/don-hang-chuyen-xe`;
 
-const DonHangChuyenXeService = {
+const DonHangChuyenXeService = (axiosInstance) => ({
   // Lấy tất cả bản ghi trong don_hang_chuyen_xe
   getAllDonHangChuyenXe: async () => {
     try {
@@ -55,6 +53,6 @@ const DonHangChuyenXeService = {
       throw error;
     }
   }
-};
+});
 
 export default DonHangChuyenXeService;

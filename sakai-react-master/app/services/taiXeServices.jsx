@@ -1,7 +1,6 @@
-import axiosInstance from '../authentication/axiosInstance';
 const API_URL = process.env.NEXT_PUBLIC_URL_SERVER;
 
-const taiXeService = {
+const taiXeService = (axiosInstance) => ({
   getAllDrivers: async (params = {}) => {
     // Thêm params mặc định là object rỗng
     try {
@@ -65,6 +64,6 @@ const taiXeService = {
       throw error;
     }
   }
-};
+});
 
 export default taiXeService;

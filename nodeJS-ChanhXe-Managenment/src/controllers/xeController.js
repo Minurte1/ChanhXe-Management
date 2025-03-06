@@ -141,22 +141,49 @@ const updateVehicle = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
     const id_nguoi_cap_nhat = req.user?.id;
+
     if (!id_nguoi_cap_nhat) {
       return res
         .status(403)
         .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
     }
+
     if (Object.keys(updates).length === 0) {
       return res
         .status(400)
         .json({ EM: "Không có dữ liệu cập nhật", EC: -1, DT: {} });
     }
 
+    // Danh sách các trường hợp lệ trong bảng `xe`
+    const validFields = [
+      "bien_so",
+      "loai_xe",
+      "suc_chua",
+      "trang_thai",
+      "id_nguoi_cap_nhat",
+      "ngay_cap_nhat",
+      "ngay_tao",
+    ];
+
+    // Lọc các trường cập nhật hợp lệ
+    const filteredUpdates = Object.keys(updates)
+      .filter((key) => validFields.includes(key))
+      .reduce((obj, key) => {
+        obj[key] = updates[key];
+        return obj;
+      }, {});
+
+    if (Object.keys(filteredUpdates).length === 0) {
+      return res
+        .status(400)
+        .json({ EM: "Không có trường hợp lệ để cập nhật", EC: -1, DT: {} });
+    }
+
     // Tạo danh sách cập nhật, thêm `ngay_cap_nhat = NOW()` và `id_nguoi_cap_nhat`
-    const fields = Object.keys(updates)
+    const fields = Object.keys(filteredUpdates)
       .map((key) => `${key} = ?`)
       .join(", ");
-    const values = Object.values(updates);
+    const values = Object.values(filteredUpdates);
 
     // Thêm `ngay_cap_nhat` và `id_nguoi_cap_nhat`
     const updateQuery = `UPDATE xe SET ${fields}, ngay_cap_nhat = NOW(), id_nguoi_cap_nhat = ? WHERE id = ?`;
