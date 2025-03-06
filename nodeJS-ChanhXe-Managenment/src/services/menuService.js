@@ -1,6 +1,7 @@
 const getMenuItems = (role, selectedRole = null) => {
   const menus = {
     admin: [
+      { label: "Trang chủ", url: "/" },
       {
         label: "Thống kê cơ bản",
         icon: "pi pi-chart-bar",
@@ -81,7 +82,7 @@ const getMenuItems = (role, selectedRole = null) => {
         icon: "pi pi-box",
         items: [
           // { label: "Nhập đơn hàng", url: "/orders/create" },
-          { label: "Cập nhật trạng thái đơn hàng", url: "/orders/status" },
+          { label: "Cập nhật trạng thái đơn hàng", url: "/" },
           { label: "Tra cứu đơn hàng", url: "/orders/search" },
         ],
       },
@@ -92,6 +93,7 @@ const getMenuItems = (role, selectedRole = null) => {
         label: "Quản lý điều phối",
         icon: "pi pi-cog",
         items: [
+          { label: "Trang chủ", url: "/" },
           { label: "Phân công chuyến xe", url: "/dieu-phoi/chuyen-xe" },
           { label: "Ghi nhận xe xuất bến", url: "/dieu-phoi/departure" },
           { label: "Phân công tài xế", url: "/dieu-phoi/assign-driver" },
@@ -111,6 +113,7 @@ const getMenuItems = (role, selectedRole = null) => {
       },
     ],
     tai_xe_phu: [
+      { label: "Trang chủ", url: "/" },
       {
         label: "Lịch trình vận chuyển",
         icon: "pi pi-map",
@@ -123,6 +126,7 @@ const getMenuItems = (role, selectedRole = null) => {
         icon: "pi pi-map",
 
         items: [
+          { label: "Trang chủ", url: "/" },
           { label: "Giao dịch", url: "/don-hang/giao-dich" },
           { label: "Thêm khách hàng", url: "/don-hang/khach-hang" },
         ],

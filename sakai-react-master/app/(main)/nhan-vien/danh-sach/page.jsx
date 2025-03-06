@@ -38,7 +38,6 @@ const DanhSachNhanVien = () => {
     try {
       const response = await getAllUsers();
       const updatedNhanVien = spServices.formatData(response?.DT);
-
       setNhanVien(updatedNhanVien);
     } catch (error) {
       showError('Lỗi khi tải danh sách nhân viên');

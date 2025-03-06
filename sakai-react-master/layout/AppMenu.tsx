@@ -7,6 +7,7 @@ import Link from 'next/link';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
+import { useAxios } from '@/app/authentication/useAxiosClient';
 
 const AppMenu = () => {
   const { layoutConfig } = useContext(LayoutContext);
@@ -23,13 +24,14 @@ const AppMenu = () => {
   const accessToken = typeof window !== 'undefined' ? Cookies.get('accessToken') : null;
   const [selectedRole, setSelectedRole] = useState<string | undefined>(undefined);
   const router = useRouter();
+  const axiosInstance = useAxios();
   useEffect(() => {
     const fetchMenu = async () => {
       if (accessToken) {
         try {
           const url = `${process.env.NEXT_PUBLIC_URL_SERVER}/menu${selectedRole ? `?selectedRole=${selectedRole}` : ''}`;
 
-          const response = await axios.get(url, {
+          const response = await axiosInstance.get(url, {
             headers: { Authorization: `Bearer ${accessToken}` }
           });
 
