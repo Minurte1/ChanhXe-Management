@@ -179,7 +179,9 @@ const updateUser = async (req, res) => {
     console.log("id", id);
 
     let updates = req.body;
-
+    // Loại bỏ các trường không cần thiết
+    delete updates.labelVaiTro;
+    delete updates.labelTrangThai;
     if (Object.keys(updates).length === 0) {
       return res
         .status(400)
@@ -665,7 +667,13 @@ const verifyAdmin = async (req, res) => {
 
     const roleUser = rows[0].vai_tro;
     const menuUser = getMenuItems(roleUser); // Lấy danh sách menu của vai trò
-
+    if (roleUser === "admin") {
+      return res.status(200).json({
+        EM: "Role verified successfully",
+        EC: 200,
+        DT: { role: roleUser },
+      });
+    }
     // Hàm đệ quy để tìm pathName trong danh sách menu
     const findPathInMenu = (menus, path) => {
       for (const item of menus) {

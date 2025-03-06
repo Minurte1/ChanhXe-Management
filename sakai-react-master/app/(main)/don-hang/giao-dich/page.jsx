@@ -6,6 +6,7 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import OrderService from '../../../services/donHangSevices'; // Cập nhật tên service
 import OrderDialog from '../../../modal/DonHangDialog';
+import spServices from '@/app/share/share-services/sp-services';
 
 const DanhSachDonHang = () => {
   const [orders, setOrders] = useState([]);
@@ -40,7 +41,8 @@ const DanhSachDonHang = () => {
   const fetchOrders = async () => {
     try {
       const response = await OrderService.getAllOrders();
-      setOrders(Array.isArray(response.DT) ? response.DT : []);
+      const output = spServices.formatData(response?.DT);
+      setOrders(Array.isArray(output) ? output : []);
     } catch (error) {
       showError('Lỗi khi tải danh sách đơn hàng');
     }
@@ -129,8 +131,8 @@ const DanhSachDonHang = () => {
             <Column field="ma_van_don" header="Mã Vận Đơn" />
             <Column field="ten_nguoi_nhan" header="Tên Người Nhận" />
             <Column field="so_dien_thoai_nhan" header="Số Điện Thoại Nhận" />
-            <Column field="loai_hang_hoa" header="Loại Hàng Hóa" />
-            <Column field="trang_thai" header="Trạng Thái" />
+            <Column field="labelLoaiHangHoa" header="Loại Hàng Hóa" />
+            <Column field="labelTrangThaiDonHang" header="Trạng Thái" />
             <Column
               body={(rowData) => (
                 <>

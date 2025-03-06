@@ -9,6 +9,7 @@ import taiXeServices from '../../../services/taiXeServices';
 import TaiXeDialog from '../../../modal/TaiXeDialog';
 import PhanCongTaiXeDialog from '../../../modal/PhanCongTaiXeDialog';
 import phanCongTaiXeService from '../../../services/phanCongTaiXeServices';
+import spServices from '@/app/share/share-services/sp-services';
 
 const DanhSachTaiXe = () => {
   const [taiXeList, setTaiXeList] = useState([]);
@@ -35,7 +36,8 @@ const DanhSachTaiXe = () => {
   const fetchTaiXe = async () => {
     try {
       const response = await taiXeServices.getAllDrivers();
-      setTaiXeList(Array.isArray(response.DT) ? response.DT : []);
+      const updatedTaiXe = spServices.formatData(response?.DT);
+      setTaiXeList(updatedTaiXe);
     } catch (error) {
       showError('Lỗi khi tải danh sách tài xế');
     }
@@ -70,12 +72,12 @@ const DanhSachTaiXe = () => {
 
   const openPhanCongForm = () => {
     setAssignData({
-        id_ben: '',
-        id_tai_xe: ''
+      id_ben: '',
+      id_tai_xe: ''
     });
     setIsNew(true);
     setDisplayAssignDialog(true);
-};
+  };
 
   const editTaiXe = (taiXe) => {
     setFormData({ ...taiXe });
@@ -124,16 +126,16 @@ const DanhSachTaiXe = () => {
   const savePhanCong = async () => {
     const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = assignData;
     try {
-        if (isNew) {
-            await phanCongTaiXeService.createDriverAssignment(assignData);
-        } else {
-            await phanCongTaiXeService.createDriverAssignment(filteredData.id, filteredData);
-        }
-        fetchTaiXe();
-        setDisplayAssignDialog(false);
-        showSuccess(isNew ? 'Thêm phân công tài xe thành công' : 'Cập nhật phân công tài xe thành công');
+      if (isNew) {
+        await phanCongTaiXeService.createDriverAssignment(assignData);
+      } else {
+        await phanCongTaiXeService.createDriverAssignment(filteredData.id, filteredData);
+      }
+      fetchTaiXe();
+      setDisplayAssignDialog(false);
+      showSuccess(isNew ? 'Thêm phân công tài xe thành công' : 'Cập nhật phân công tài xe thành công');
     } catch (error) {
-        showError(isNew ? 'Lỗi khi thêm phân công tài xe' : 'Lỗi khi cập nhật phân công tài xe');
+      showError(isNew ? 'Lỗi khi thêm phân công tài xe' : 'Lỗi khi cập nhật phân công tài xe');
     }
   };
 
@@ -148,10 +150,10 @@ const DanhSachTaiXe = () => {
   const onAssignInputChange = (e, name) => {
     const val = (e.target && e.target.value) || '';
     setAssignData((prevData) => ({
-        ...prevData,
-        [name]: val
+      ...prevData,
+      [name]: val
     }));
-};
+  };
 
   return (
     <div className="p-grid">
@@ -160,17 +162,17 @@ const DanhSachTaiXe = () => {
       <div className="p-col-12">
         <div className="card">
           <h1>Danh Sách Tài Xế</h1>
-          <div style={{ marginBottom: '10px' }} >
-          <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew}  style={{ marginRight: '10px' }} />
-          <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm}/>
+          <div style={{ marginBottom: '10px' }}>
+            <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew} style={{ marginRight: '10px' }} />
+            <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm} />
           </div>
           <DataTable value={taiXeList} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}>
             <Column field="nguoi_dung_id" header="ID Người Dùng" sortable />
             <Column field="ho_ten" header="Họ Tên" sortable />
             <Column field="so_dien_thoai" header="Số Điện Thoại" sortable />
             <Column field="email" header="Email" sortable />
-            <Column field="vai_tro" header="Vai Trò" sortable />
-            <Column field="trang_thai" header="Trạng Thái" sortable />
+            <Column field="labelVaiTro" header="Vai Trò" sortable />
+            <Column field="labelTrangThai" header="Trạng Thái" sortable />
             <Column field="bang_lai" header="Bằng Lái" sortable />
             <Column
               header="Hành Động"

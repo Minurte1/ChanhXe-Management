@@ -10,7 +10,7 @@ const getAllTrips = async (req, res) => {
         cx.xe_id,
         cx.thoi_gian_xuat_ben,
         cx.thoi_gian_cap_ben,
-        cx.trang_thai AS chuyen_xe_trang_thai,
+        cx.trang_thai ,
         cx.id_nguoi_cap_nhat AS cx_id_nguoi_cap_nhat,
         cx.ngay_cap_nhat AS cx_ngay_cap_nhat,
         cx.ngay_tao AS cx_ngay_tao,
@@ -196,39 +196,95 @@ const createTrip = async (req, res) => {
   }
 };
 // Cập nhật chuyến xe
+
 const updateTrip = async (req, res) => {
   // #swagger.tags = ['Chuyến xe']
   try {
     const { id } = req.params;
     const updates = req.body;
     const id_nguoi_cap_nhat = req.user?.id;
+
+    // Kiểm tra quyền thực hiện
     if (!id_nguoi_cap_nhat) {
       return res
         .status(403)
         .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
     }
+
+    // Kiểm tra dữ liệu cập nhật
     if (Object.keys(updates).length === 0) {
       return res
         .status(400)
         .json({ EM: "Không có dữ liệu cập nhật", EC: -1, DT: {} });
     }
 
-    const fields = Object.keys(updates)
+    // Danh sách các trường được phép cập nhật
+    const allowedFields = [
+      "xe_id",
+      "tai_xe",
+      "tai_xe_phu_id",
+      "thoi_gian_xuat_ben",
+      "thoi_gian_cap_ben",
+      "trang_thai",
+      "id_ben_xe_nhan",
+      "id_ben_xe_gui",
+    ];
+
+    // Lọc các trường cập nhật hợp lệ
+    const validUpdates = {};
+    for (const key of Object.keys(updates)) {
+      if (allowedFields.includes(key)) {
+        // Xử lý trường hợp giá trị là null
+        if (updates[key] === null) {
+          validUpdates[key] = null; // Giữ nguyên giá trị null
+        } else if (
+          key === "thoi_gian_xuat_ben" ||
+          key === "thoi_gian_cap_ben"
+        ) {
+          // Chuyển đổi định dạng thời gian nếu giá trị không phải null
+          validUpdates[key] = moment(updates[key]).format(
+            "YYYY-MM-DD HH:mm:ss"
+          );
+        } else {
+          validUpdates[key] = updates[key];
+        }
+      }
+    }
+
+    // Kiểm tra nếu không có trường hợp lệ nào
+    if (Object.keys(validUpdates).length === 0) {
+      return res
+        .status(400)
+        .json({ EM: "Không có trường hợp lệ để cập nhật", EC: -1, DT: {} });
+    }
+
+    // Xây dựng câu lệnh SQL động
+    const fields = Object.keys(validUpdates)
       .map((key) => `${key} = ?`)
       .join(", ");
-    const values = Object.values(updates);
+    const values = Object.values(validUpdates);
 
-    const updateQuery = `UPDATE chuyen_xe SET ${fields}, ngay_cap_nhat = NOW(), id_nguoi_cap_nhat = ? WHERE id = ?`;
+    // Thêm id_nguoi_cap_nhat và id vào mảng giá trị
     values.push(id_nguoi_cap_nhat, id);
 
+    // Câu lệnh SQL cập nhật
+    const updateQuery = `
+      UPDATE chuyen_xe 
+      SET ${fields}, ngay_cap_nhat = NOW(), id_nguoi_cap_nhat = ? 
+      WHERE id = ?
+    `;
+
+    // Thực thi câu lệnh SQL
     const [result] = await pool.query(updateQuery, values);
 
+    // Kiểm tra kết quả cập nhật
     if (result.affectedRows === 0) {
       return res
         .status(404)
         .json({ EM: "Không tìm thấy chuyến xe để cập nhật", EC: -1, DT: {} });
     }
 
+    // Trả về kết quả thành công
     return res
       .status(200)
       .json({ EM: "Cập nhật chuyến xe thành công", EC: 1, DT: {} });

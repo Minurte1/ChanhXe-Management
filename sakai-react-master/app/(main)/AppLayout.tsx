@@ -18,6 +18,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const patchName = usePathname();
+
   useEffect(() => {
     const checkUserRole = async () => {
       const accessToken = Cookies.get('accessToken');
@@ -30,18 +31,28 @@ export default function AppLayout({ children }: AppLayoutProps) {
       }
 
       try {
-        const role = await verifyAdmin(accessToken, patchName);
-        setUserRole(role);
+        const response = await verifyAdmin(accessToken, patchName);
+        if (response.EC === 200) {
+          setUserRole(response.DT.role);
+        } else {
+          enqueueSnackbar('Bạn không có quyền truy cập vào trang này', {
+            variant: 'info'
+          });
+          router.push('/'); // Redirect nếu không có quyền
+        }
       } catch (error) {
-        setUserRole(null);
+        enqueueSnackbar('Có lỗi xảy ra, vui lòng thử lại', {
+          variant: 'error'
+        });
+        router.push('/');
       }
       setLoading(false);
     };
 
     checkUserRole();
-  }, []);
-  console.log('patchName', patchName);
-  if (loading)
+  }, [patchName, router]);
+
+  if (loading) {
     return (
       <Box
         sx={{
@@ -54,6 +65,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
         <CircularProgress />
       </Box>
     );
-
-  return <Layout>{children}</Layout>;
+  } else {
+    return <Layout>{children}</Layout>;
+  }
 }
