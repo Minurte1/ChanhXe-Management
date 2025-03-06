@@ -10,7 +10,7 @@ import UserService from '../services/userAccountService';
 import phanCongNguoiDungService from '../services/phanCongNguoiDungServices';
 import { useAxios } from '../authentication/useAxiosClient';
 
-const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, onInputChange, onSave }) => {
+const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, onInputChange, onSave }) => {
   const [listBenXe, setListBenXe] = useState([]);
   const [listNguoiDung, setListNguoiDung] = useState([]);
   const [selectedBenXe, setSelectedBenXe] = useState([]);
@@ -168,4 +168,4 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
   );
 };
 
-export default PhanCongXeDialog;
+export default PhanCongNguoiDungDialog;
