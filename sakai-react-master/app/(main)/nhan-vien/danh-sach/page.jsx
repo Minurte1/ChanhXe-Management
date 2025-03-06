@@ -5,11 +5,13 @@ import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
-import { createUser, deleteUser, getAllUsers, updateUser } from '../../../services/userAccountService';
+
 import NhanVienDialog from '../../../modal/NhanVienDialog';
 import PhanCongNguoiDungDialog from '../../../modal/PhanCongNguoiDungDialog';
 import PhanCongNguoiDungService from '../../../services/phanCongNguoiDungServices';
 import spServices from '../../../share/share-services/sp-services';
+import UserService from '@/app/services/userAccountService';
+import { useAxios } from '@/app/authentication/useAxiosClient';
 const DanhSachNhanVien = () => {
   const [nhanVien, setNhanVien] = useState([]);
   const [displayDialog, setDisplayDialog] = useState(false);
@@ -29,14 +31,15 @@ const DanhSachNhanVien = () => {
   });
 
   const toast = useRef(null);
-
+  const axiosInstance = useAxios();
+  const userService = UserService(axiosInstance);
   useEffect(() => {
     fetchNhanVien();
   }, []);
 
   const fetchNhanVien = async () => {
     try {
-      const response = await getAllUsers();
+      const response = await userService.getAllUsers();
       const updatedNhanVien = spServices.formatData(response?.DT);
       setNhanVien(updatedNhanVien);
     } catch (error) {
@@ -103,7 +106,7 @@ const DanhSachNhanVien = () => {
 
   const deleteNhanVien = async (id) => {
     try {
-      await deleteUser(id);
+      await userService.deleteUser(id);
       fetchNhanVien();
       showSuccess('Xóa nhân viên thành công');
     } catch (error) {
@@ -116,9 +119,9 @@ const DanhSachNhanVien = () => {
       const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = formData;
 
       if (isNew) {
-        await createUser(filteredData);
+        await userService.createUser(filteredData);
       } else {
-        await updateUser(filteredData.id, filteredData);
+        await userService.updateUser(filteredData.id, filteredData);
       }
 
       fetchNhanVien();

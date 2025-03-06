@@ -36,6 +36,7 @@ const DanhSachBenXe = () => {
       const response = await benXeService.getAllBenXe();
       setBenXe(response.DT);
     } catch (error) {
+      console.log('ero', error);
       showError('Lỗi khi tải danh sách bến xe');
     }
   };

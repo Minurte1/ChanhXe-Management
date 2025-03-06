@@ -4,7 +4,7 @@ import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
-import { getAllUsers } from '../services/userAccountService';
+
 import taiXeService from '../services/taiXeServices';
 
 const TaiXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }) => {

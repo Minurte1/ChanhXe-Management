@@ -6,19 +6,19 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { Dropdown } from 'primereact/dropdown';
 import BenXeService from '../services/benXeServices';
-import { getAllUsers } from '../services/userAccountService';
+import UserService from '../services/userAccountService';
 import phanCongNguoiDungService from '../services/phanCongNguoiDungServices';
+import { useAxios } from '../authentication/useAxiosClient';
 
-const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, onInputChange, onSave, }) => {
+const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, onInputChange, onSave }) => {
   const [listBenXe, setListBenXe] = useState([]);
   const [listNguoiDung, setListNguoiDung] = useState([]);
   const [selectedBenXe, setSelectedBenXe] = useState([]);
   const [listPhanCongNguoiDung, setListPhanCongNguoiDung] = useState([]);
-  const [filters, setFilters] = useState({
-
-  });
+  const [filters, setFilters] = useState({});
   const toast = useRef(null);
-
+  const axiosInstance = useAxios();
+  const userService = UserService(axiosInstance);
   useEffect(() => {
     if (visible) {
       fetchPhanCongNguoiDung();
@@ -40,13 +40,11 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
 
   const fetchUser = async () => {
     try {
-      const response = await getAllUsers();
+      const response = await userService.getAllUsers();
       const allUsers = Array.isArray(response.DT) ? response.DT : [];
       const filters = { vai_tro: ['tai_xe', 'tai_xe_phu'] };
 
-      const filteredUsers = allUsers.filter(user => 
-        !filters.vai_tro.includes(user.vai_tro)
-      );
+      const filteredUsers = allUsers.filter((user) => !filters.vai_tro.includes(user.vai_tro));
 
       setListNguoiDung(filteredUsers);
     } catch (error) {
@@ -96,17 +94,13 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
   const handleInputChange = async (e, field) => {
     const value = e.value;
     if (field === 'id_ben') {
-      const response = await getAllUsers();
+      const response = await userService.getAllUsers();
       const allUsers = Array.isArray(response.DT) ? response.DT : [];
       const filters = { vai_tro: ['tai_xe', 'tai_xe_phu'], trang_thai: 'hoat_dong' };
 
-      const filteredUsers = allUsers.filter(user => 
-        !filters.vai_tro.includes(user.vai_tro) && user.trang_thai === filters.trang_thai
-      );
+      const filteredUsers = allUsers.filter((user) => !filters.vai_tro.includes(user.vai_tro) && user.trang_thai === filters.trang_thai);
 
-      const assignedUser = listPhanCongNguoiDung
-        .filter((assignment) => assignment.id_ben === value)
-        .map((assignment) => assignment.id_nguoi_dung);
+      const assignedUser = listPhanCongNguoiDung.filter((assignment) => assignment.id_ben === value).map((assignment) => assignment.id_nguoi_dung);
       const filteredNguoiDungOptions = filteredUsers.filter((user) => !assignedUser.includes(user.id));
       setSelectedBenXe(value);
       setListNguoiDung(filteredNguoiDungOptions);
@@ -123,19 +117,12 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
   );
 
   return (
-    <Dialog
-      header={`Phân công bến xe cho người dùng`}
-      visible={visible}
-      style={{ width: '40vw', maxWidth: '600px' }}
-      footer={dialogFooter}
-      onHide={onHide}
-      className="p-dialog-custom"
-    >
+    <Dialog header={`Phân công bến xe cho người dùng`} visible={visible} style={{ width: '40vw', maxWidth: '600px' }} footer={dialogFooter} onHide={onHide} className="p-dialog-custom">
       <Toast ref={toast} />
 
       <div className="p-mb-4">
         <div className="p-grid p-align-center">
-        <div className="p-col-12" style={{ marginBottom: '2rem' }}>
+          <div className="p-col-12" style={{ marginBottom: '2rem' }}>
             <label htmlFor="id_ben" className="p-d-block p-mb-2">
               Chọn bến
             </label>
@@ -147,7 +134,8 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
               optionValue="id"
               onChange={(e) => handleInputChange(e, 'id_ben')}
               placeholder="Chọn bến"
-              filter filterBy="ten_ben_xe"
+              filter
+              filterBy="ten_ben_xe"
               className="p-inputtext-sm"
               style={{ width: '100%' }}
             />
@@ -165,7 +153,8 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
               optionValue="id"
               onChange={(e) => handleInputChange(e, 'id_nguoi_dung')}
               placeholder="Chọn bến se trước khi chọn người dùng"
-              filter filterBy="ho_ten"
+              filter
+              filterBy="ho_ten"
               className="p-inputtext-sm"
               style={{ width: '100%' }}
               disabled={!formData.id_ben}
