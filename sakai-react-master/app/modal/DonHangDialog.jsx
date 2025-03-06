@@ -36,7 +36,7 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
     { label: 'Hàng nguy hiểm', value: 'hang_nguy_hiem' },
     { label: 'Hàng thông thường', value: 'hang_thong_thuong' }
   ];
-
+  console.log('form', formData);
   useEffect(() => {
     if (isNew && visible) {
       onInputChange({ target: { value: generateCode() } }, 'ma_van_don');

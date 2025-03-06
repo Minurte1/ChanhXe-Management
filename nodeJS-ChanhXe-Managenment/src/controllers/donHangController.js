@@ -252,33 +252,84 @@ const updateOrder = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
     const id_nguoi_cap_nhat = req.user?.id;
+
+    // Kiểm tra quyền thực hiện
     if (!id_nguoi_cap_nhat) {
       return res
         .status(403)
         .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
     }
+
+    // Kiểm tra dữ liệu cập nhật
     if (Object.keys(updates).length === 0) {
       return res
         .status(400)
         .json({ EM: "Không có dữ liệu cập nhật", EC: -1, DT: {} });
     }
 
-    const fields = Object.keys(updates)
+    // Danh sách các trường được phép cập nhật
+    const allowedFields = [
+      "ma_van_don",
+      "ma_qr_code",
+      "nguoi_gui_id",
+      "id_ben_xe_nhan",
+      "id_ben_xe_gui",
+      "loai_hang_hoa",
+      "trong_luong",
+      "kich_thuoc",
+      "so_kien",
+      "gia_tri_hang",
+      "cuoc_phi",
+      "phi_bao_hiem",
+      "phu_phi",
+      "trang_thai",
+      "ten_nguoi_nhan",
+      "so_dien_thoai_nhan",
+      "email_nhan",
+    ];
+
+    // Lọc các trường cập nhật hợp lệ
+    const validUpdates = {};
+    for (const key of Object.keys(updates)) {
+      if (allowedFields.includes(key)) {
+        validUpdates[key] = updates[key];
+      }
+    }
+
+    // Kiểm tra nếu không có trường hợp lệ nào
+    if (Object.keys(validUpdates).length === 0) {
+      return res
+        .status(400)
+        .json({ EM: "Không có trường hợp lệ để cập nhật", EC: -1, DT: {} });
+    }
+
+    // Xây dựng câu lệnh SQL động
+    const fields = Object.keys(validUpdates)
       .map((key) => `${key} = ?`)
       .join(", ");
-    const values = Object.values(updates);
+    const values = Object.values(validUpdates);
 
-    const updateQuery = `UPDATE don_hang SET ${fields}, ngay_cap_nhat = NOW(), id_nguoi_cap_nhat = ? WHERE id = ?`;
+    // Thêm id_nguoi_cap_nhat và id vào mảng giá trị
     values.push(id_nguoi_cap_nhat, id);
 
+    // Câu lệnh SQL cập nhật
+    const updateQuery = `
+      UPDATE don_hang 
+      SET ${fields}, ngay_cap_nhat = NOW(), id_nguoi_cap_nhat = ? 
+      WHERE id = ?
+    `;
+
+    // Thực thi câu lệnh SQL
     const [result] = await pool.query(updateQuery, values);
 
+    // Kiểm tra kết quả cập nhật
     if (result.affectedRows === 0) {
       return res
         .status(404)
         .json({ EM: "Không tìm thấy đơn hàng để cập nhật", EC: -1, DT: {} });
     }
 
+    // Trả về kết quả thành công
     return res
       .status(200)
       .json({ EM: "Cập nhật đơn hàng thành công", EC: 1, DT: {} });

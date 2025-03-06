@@ -100,7 +100,7 @@ export const verifyAdmin = async (accessToken, pathName) => {
 
     console.log('response.data admin:', response.data.DT.role);
 
-    return response.data.DT.role;
+    return response.data;
   } catch (error) {
     enqueueSnackbar('Bạn không có quyền truy cập vào trang này', {
       variant: 'info'
