@@ -8,7 +8,8 @@ const getMenuUser = async (req, res) => {
 
   try {
     const menuUser = await getMenuItems(roleUser, selectedRole);
-
+    console.log("roleUser", roleUser);
+    console.log("menuUser", menuUser);
     return res.status(200).json({
       EM: "Lấy menu thành công",
       EC: 1,

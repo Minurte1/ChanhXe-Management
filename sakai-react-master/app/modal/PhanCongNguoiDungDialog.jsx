@@ -2,26 +2,26 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Dialog } from 'primereact/dialog';
-import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { Dropdown } from 'primereact/dropdown';
 import BenXeService from '../services/benXeServices';
-import { getAllUsers } from '../services/userAccountService';
+import UserService from '../services/userAccountService';
 import phanCongNguoiDungService from '../services/phanCongNguoiDungServices';
+import { useAxios } from '../authentication/useAxiosClient';
 
-const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, onInputChange, onSave, }) => {
+const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, onInputChange, onSave }) => {
   const [listBenXe, setListBenXe] = useState([]);
   const [listNguoiDung, setListNguoiDung] = useState([]);
-  const [filters, setFilters] = useState({
-    // id_ben_xe_nhan: null,
-    // id_ben_xe_gui: null
-  });
+  const [selectedBenXe, setSelectedBenXe] = useState([]);
+  const [listPhanCongNguoiDung, setListPhanCongNguoiDung] = useState([]);
+  const [filters, setFilters] = useState({});
   const toast = useRef(null);
-
+  const axiosInstance = useAxios();
+  const userService = UserService(axiosInstance);
   useEffect(() => {
     if (visible) {
+      fetchPhanCongNguoiDung();
       fetchBenXe();
       fetchUser();
     }
@@ -40,18 +40,27 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
 
   const fetchUser = async () => {
     try {
-      const response = await getAllUsers();
+      const response = await userService.getAllUsers();
       const allUsers = Array.isArray(response.DT) ? response.DT : [];
       const filters = { vai_tro: ['tai_xe', 'tai_xe_phu'] };
 
-      const filteredUsers = allUsers.filter(user => 
-        !filters.vai_tro.includes(user.vai_tro)
-      );
+      const filteredUsers = allUsers.filter((user) => !filters.vai_tro.includes(user.vai_tro));
 
       setListNguoiDung(filteredUsers);
     } catch (error) {
       console.error('Lỗi khi tải danh sách người dùng', error);
       showError('Lỗi khi tải danh sách người dùng');
+    }
+  };
+
+  const fetchPhanCongNguoiDung = async () => {
+    try {
+      const response = await phanCongNguoiDungService.getAllUserAssignments();
+      console.log('response phan cong nguoi dung', response);
+      setListPhanCongNguoiDung(Array.isArray(response.DT) ? response.DT : []);
+    } catch (error) {
+      console.error('Lỗi khi tải danh sách phân công nguoi dung', error);
+      showError('Lỗi khi tải danh sách phân công nguoi dung');
     }
   };
 
@@ -81,6 +90,24 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
     }));
   };
 
+  // Xử lý thay đổi đầu vào
+  const handleInputChange = async (e, field) => {
+    const value = e.value;
+    if (field === 'id_ben') {
+      const response = await userService.getAllUsers();
+      const allUsers = Array.isArray(response.DT) ? response.DT : [];
+      const filters = { vai_tro: ['tai_xe', 'tai_xe_phu'], trang_thai: 'hoat_dong' };
+
+      const filteredUsers = allUsers.filter((user) => !filters.vai_tro.includes(user.vai_tro) && user.trang_thai === filters.trang_thai);
+
+      const assignedUser = listPhanCongNguoiDung.filter((assignment) => assignment.id_ben === value).map((assignment) => assignment.id_nguoi_dung);
+      const filteredNguoiDungOptions = filteredUsers.filter((user) => !assignedUser.includes(user.id));
+      setSelectedBenXe(value);
+      setListNguoiDung(filteredNguoiDungOptions);
+    }
+    onInputChange(e, field);
+  };
+
   // Footer của modal
   const dialogFooter = (
     <div>
@@ -90,19 +117,12 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
   );
 
   return (
-    <Dialog
-      header={`Phân công bến xe cho người dùng`}
-      visible={visible}
-      style={{ width: '40vw', maxWidth: '600px' }}
-      footer={dialogFooter}
-      onHide={onHide}
-      className="p-dialog-custom"
-    >
+    <Dialog header={`Phân công bến xe cho người dùng`} visible={visible} style={{ width: '40vw', maxWidth: '600px' }} footer={dialogFooter} onHide={onHide} className="p-dialog-custom">
       <Toast ref={toast} />
 
       <div className="p-mb-4">
         <div className="p-grid p-align-center">
-        <div className="p-col-12">
+          <div className="p-col-12" style={{ marginBottom: '2rem' }}>
             <label htmlFor="id_ben" className="p-d-block p-mb-2">
               Chọn bến
             </label>
@@ -112,15 +132,16 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
               options={listBenXe}
               optionLabel="ten_ben_xe"
               optionValue="id"
-              onChange={(e) => onInputChange({ target: { value: e.value } }, 'id_ben')}
+              onChange={(e) => handleInputChange(e, 'id_ben')}
               placeholder="Chọn bến"
-              filter filterBy="label"
+              filter
+              filterBy="ten_ben_xe"
               className="p-inputtext-sm"
               style={{ width: '100%' }}
             />
           </div>
 
-          <div className="p-col-12">
+          <div className="p-col-12" style={{ marginBottom: '2rem' }}>
             <label htmlFor="id_nguoi_dung" className="p-d-block p-mb-2">
               Chọn người dùng
             </label>
@@ -130,11 +151,13 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
               options={listNguoiDung}
               optionLabel="ho_ten"
               optionValue="id"
-              onChange={(e) => onInputChange({ target: { value: e.value } }, 'id_nguoi_dung')}
-              placeholder="Chọn người dùng"
-              filter filterBy="label"
+              onChange={(e) => handleInputChange(e, 'id_nguoi_dung')}
+              placeholder="Chọn bến se trước khi chọn người dùng"
+              filter
+              filterBy="ho_ten"
               className="p-inputtext-sm"
               style={{ width: '100%' }}
+              disabled={!formData.id_ben}
             />
           </div>
         </div>

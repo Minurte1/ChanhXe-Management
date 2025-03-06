@@ -487,6 +487,12 @@
             "schema": {
               "type": "object",
               "properties": {
+                "labelVaiTro": {
+                  "example": "any"
+                },
+                "labelTrangThai": {
+                  "example": "any"
+                },
                 "mat_khau": {
                   "example": "any"
                 },
@@ -2016,7 +2022,7 @@
         }
       }
     },
-    "/phancongxe": {
+    "/phan-cong-xe": {
       "get": {
         "tags": [
           "Phân công xe"
@@ -2073,7 +2079,7 @@
         }
       }
     },
-    "/phancongxe/{id}": {
+    "/phan-cong-xe/{id}": {
       "get": {
         "tags": [
           "Phân công xe"
@@ -2165,7 +2171,7 @@
         }
       }
     },
-    "/phancongtaixe": {
+    "/phan-cong-tai-xe": {
       "get": {
         "tags": [
           "Phân công tài xế"
@@ -2175,6 +2181,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "500": {
             "description": "Internal Server Error"
@@ -2207,6 +2216,9 @@
           "201": {
             "description": "Created"
           },
+          "401": {
+            "description": "Unauthorized"
+          },
           "403": {
             "description": "Forbidden"
           },
@@ -2216,7 +2228,7 @@
         }
       }
     },
-    "/phancongtaixe/{id}": {
+    "/phan-cong-tai-xe/{id}": {
       "get": {
         "tags": [
           "Phân công tài xế"
@@ -2233,6 +2245,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "404": {
             "description": "Not Found"
@@ -2262,6 +2277,9 @@
           "400": {
             "description": "Bad Request"
           },
+          "401": {
+            "description": "Unauthorized"
+          },
           "403": {
             "description": "Forbidden"
           },
@@ -2290,6 +2308,9 @@
           "200": {
             "description": "OK"
           },
+          "401": {
+            "description": "Unauthorized"
+          },
           "404": {
             "description": "Not Found"
           },
@@ -2299,7 +2320,7 @@
         }
       }
     },
-    "/phancongnguoidung": {
+    "/phan-cong-nguoi-dung": {
       "get": {
         "tags": [
           "Phân công người dùng"
@@ -2309,6 +2330,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "500": {
             "description": "Internal Server Error"
@@ -2341,6 +2365,9 @@
           "201": {
             "description": "Created"
           },
+          "401": {
+            "description": "Unauthorized"
+          },
           "403": {
             "description": "Forbidden"
           },
@@ -2350,7 +2377,7 @@
         }
       }
     },
-    "/phancongnguoidung/{id}": {
+    "/phan-cong-nguoi-dung/{id}": {
       "get": {
         "tags": [
           "Phân công người dùng"
@@ -2367,6 +2394,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "404": {
             "description": "Not Found"
@@ -2396,6 +2426,9 @@
           "400": {
             "description": "Bad Request"
           },
+          "401": {
+            "description": "Unauthorized"
+          },
           "403": {
             "description": "Forbidden"
           },
@@ -2423,6 +2456,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "404": {
             "description": "Not Found"

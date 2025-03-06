@@ -4,7 +4,7 @@ const API_URL = process.env.NEXT_PUBLIC_URL_SERVER;
 const UserAssignmentService = {
     getAllUserAssignments: async () => {
         try {
-            const response = await axiosInstance.get(`${API_URL}/phancongnguoidung`);
+            const response = await axiosInstance.get(`${API_URL}/phan-cong-nguoi-dung`);
             return response.data;
         } catch (error) {
             console.error('Error fetching user assignments:', error);
@@ -14,7 +14,7 @@ const UserAssignmentService = {
 
     getUserAssignmentById: async (id) => {
         try {
-            const response = await axiosInstance.get(`${API_URL}/phancongnguoidung/${id}`);
+            const response = await axiosInstance.get(`${API_URL}/phan-cong-nguoi-dung/${id}`);
             return response.data;
         } catch (error) {
             console.error('Error fetching user assignment:', error);
@@ -24,7 +24,7 @@ const UserAssignmentService = {
 
     createUserAssignment: async (vehicleAssignmentData) => {
         try {
-            const response = await axiosInstance.post(`${API_URL}/phancongnguoidung`, vehicleAssignmentData);
+            const response = await axiosInstance.post(`${API_URL}/phan-cong-nguoi-dung`, vehicleAssignmentData);
             return response.data;
         } catch (error) {
             console.error('Error creating user assignment:', error);
@@ -34,7 +34,7 @@ const UserAssignmentService = {
 
     updateUserAssignment: async (id, updatedData) => {
         try {
-            const response = await axiosInstance.put(`${API_URL}/phancongnguoidung/${id}`, updatedData);
+            const response = await axiosInstance.put(`${API_URL}/phan-cong-nguoi-dung/${id}`, updatedData);
             return response.data;
         } catch (error) {
             console.error('Error updating user assignment:', error);
@@ -44,7 +44,7 @@ const UserAssignmentService = {
 
     deleteUserAssignment: async (id) => {
         try {
-            const response = await axiosInstance.delete(`${API_URL}/phancongxe/${id}`);
+            const response = await axiosInstance.delete(`${API_URL}/phan-cong-nguoi-dung/${id}`);
             return response.data;
         } catch (error) {
             console.error('Error deleting User assignment:', error);

@@ -365,6 +365,104 @@ const deleteOrder = async (req, res) => {
   }
 };
 
+const createOrderAndUser = async (req, res) => {
+  // #swagger.tags = ['Đơn hàng']
+  const connection = await pool.getConnection();
+  try {
+    const {
+      ma_van_don,
+      ma_qr_code,
+      nguoi_gui_id,
+      id_ben_xe_nhan,
+      id_ben_xe_gui,
+      loai_hang_hoa,
+      trong_luong,
+      kich_thuoc,
+      so_kien,
+      gia_tri_hang,
+      cuoc_phi,
+      phi_bao_hiem,
+      phu_phi,
+      trang_thai,
+      ten_nguoi_nhan,
+      so_dien_thoai_nhan,
+      email_nhan,
+
+      ho_ten,
+      so_dien_thoai,
+      dia_chi,
+      mat_khau
+    } = req.body;
+
+    const id_nguoi_cap_nhat = req.user?.id;
+    if (!id_nguoi_cap_nhat) {
+      return res
+        .status(403)
+        .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
+    }
+
+    // Mã hóa mật khẩu trước khi lưu
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(mat_khau, saltRounds);
+
+    await connection.beginTransaction();
+
+    // Insert into khach_hang table
+    const [khachHangResult] = await connection.query(
+      `INSERT INTO khach_hang (ho_ten, so_dien_thoai, dia_chi, mat_khau, ngay_tao, ngay_cap_nhat) 
+      VALUES (?, ?, ?, ?, NOW(), NOW())`,
+      [ho_ten, so_dien_thoai, dia_chi, hashedPassword]
+    );
+
+    const khachHangId = khachHangResult.insertId;
+
+    // Insert into don_hang table
+    const [donHangResult] = await connection.query(
+      `INSERT INTO don_hang 
+      (ma_van_don, ma_qr_code, nguoi_gui_id, id_ben_xe_nhan, id_ben_xe_gui, loai_hang_hoa, 
+      trong_luong, kich_thuoc, so_kien, gia_tri_hang, cuoc_phi, phi_bao_hiem, phu_phi, 
+      trang_thai, ten_nguoi_nhan, so_dien_thoai_nhan, email_nhan, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+      [
+        ma_van_don,
+        ma_qr_code,
+        khachHangId, // Use the newly inserted khach_hang ID
+        id_ben_xe_nhan,
+        id_ben_xe_gui,
+        loai_hang_hoa,
+        trong_luong,
+        kich_thuoc,
+        so_kien,
+        gia_tri_hang,
+        cuoc_phi,
+        phi_bao_hiem,
+        phu_phi,
+        trang_thai,
+        ten_nguoi_nhan,
+        so_dien_thoai_nhan,
+        email_nhan,
+        id_nguoi_cap_nhat,
+      ]
+    );
+
+    await connection.commit();
+
+    return res.status(201).json({
+      EM: "Tạo đơn hàng và khách hàng thành công",
+      EC: 1,
+      DT: { donHangId: donHangResult.insertId, khachHangId },
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error in createOrderAndUser:", error);
+    return res
+      .status(500)
+      .json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
+  } finally {
+    connection.release();
+  }
+};
+
 module.exports = {
   getAllOrders,
   getOrderById,
