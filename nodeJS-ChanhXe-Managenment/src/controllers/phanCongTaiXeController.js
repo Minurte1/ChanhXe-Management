@@ -1,14 +1,89 @@
 const pool = require("../config/database"); // Kết nối cơ sở dữ liệu
 
-// Lấy tất cả phân công địa điểm tài xế
+// Lấy tất cả phân công địa điểm tài xế với điều kiện động
 const getAllDriverAssignments = async (req, res) => {
   // #swagger.tags = ['Phân công tài xế']
   try {
-    const [rows] = await pool.query("SELECT * FROM phan_cong_dia_diem_tai_xe");
-    return res.status(200).json({ EM: "Lấy danh sách phân công thành công", EC: 1, DT: rows });
+    const {
+      id,
+      id_ben,
+      id_tai_xe,
+      id_nguoi_cap_nhat,
+      ngay_tao,
+      ngay_cap_nhat,
+    } = req.query;
+
+    let query = `
+      SELECT 
+        pcdt.id AS id_phan_cong,
+        pcdt.id_ben,
+        pcdt.id_tai_xe AS tai_xe_id,
+        pcdt.id_nguoi_cap_nhat AS id_nguoi_cap_nhat_phan_cong,
+        pcdt.ngay_tao AS ngay_tao_phan_cong,
+        pcdt.ngay_cap_nhat AS ngay_cap_nhat_phan_cong,
+        ben_xe.ten_ben_xe,
+        ben_xe.dia_chi,
+        ben_xe.tinh,
+        ben_xe.huyen,
+        ben_xe.xa,
+        tai_xe.bang_lai,
+        tai_xe.trang_thai AS trang_thai_tai_xe,
+        nguoi_dung.ho_ten,
+        nguoi_dung.vai_tro,
+        nguoi_dung.so_dien_thoai,
+        nguoi_dung.email
+      FROM phan_cong_dia_diem_tai_xe pcdt
+      LEFT JOIN ben_xe ON pcdt.id_ben = ben_xe.id
+      LEFT JOIN tai_xe ON pcdt.id_tai_xe = tai_xe.id
+      LEFT JOIN nguoi_dung ON tai_xe.nguoi_dung_id = nguoi_dung.id
+      WHERE 1=1
+    `;
+    let queryParams = [];
+
+    // Điều kiện tìm kiếm động
+    if (id) {
+      query += " AND pcdt.id = ?";
+      queryParams.push(id);
+    }
+    if (id_ben) {
+      query += " AND pcdt.id_ben = ?";
+      queryParams.push(id_ben);
+    }
+    if (id_tai_xe) {
+      query += " AND pcdt.id_tai_xe = ?";
+      queryParams.push(id_tai_xe);
+    }
+    if (id_nguoi_cap_nhat) {
+      query += " AND pcdt.id_nguoi_cap_nhat = ?";
+      queryParams.push(id_nguoi_cap_nhat);
+    }
+    if (ngay_tao) {
+      query += " AND DATE(pcdt.ngay_tao) = ?";
+      queryParams.push(ngay_tao);
+    }
+    if (ngay_cap_nhat) {
+      query += " AND DATE(pcdt.ngay_cap_nhat) = ?";
+      queryParams.push(ngay_cap_nhat);
+    }
+
+    // Sắp xếp theo ngày cập nhật mới nhất
+    query += " ORDER BY pcdt.ngay_cap_nhat DESC";
+
+    // Thực thi truy vấn
+    const [rows] = await pool.query(query, queryParams);
+
+    return res.status(200).json({
+      EM: "Lấy danh sách phân công thành công",
+      EC: 1,
+      DT: rows,
+    });
   } catch (error) {
-    console.error("Error in getAllAssignments:", error);
-    return res.status(500).json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: [] });
+    console.error("Error in getAllDriverAssignments:", error);
+    return res.status(500).json({
+      EM: `Lỗi: ${error.message}`,
+      EC: -1,
+      DT: [],
+    });
   }
 };
 
@@ -17,14 +92,23 @@ const getDriverAssignmentById = async (req, res) => {
   // #swagger.tags = ['Phân công tài xế']
   try {
     const { id } = req.params;
-    const [rows] = await pool.query("SELECT * FROM phan_cong_dia_diem_tai_xe WHERE id = ?", [id]);
+    const [rows] = await pool.query(
+      "SELECT * FROM phan_cong_dia_diem_tai_xe WHERE id = ?",
+      [id]
+    );
     if (rows.length === 0) {
-      return res.status(404).json({ EM: "Không tìm thấy phân công", EC: -1, DT: {} });
+      return res
+        .status(404)
+        .json({ EM: "Không tìm thấy phân công", EC: -1, DT: {} });
     }
-    return res.status(200).json({ EM: "Lấy phân công thành công", EC: 1, DT: rows[0] });
+    return res
+      .status(200)
+      .json({ EM: "Lấy phân công thành công", EC: 1, DT: rows[0] });
   } catch (error) {
     console.error("Error in getAssignmentById:", error);
-    return res.status(500).json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
+    return res
+      .status(500)
+      .json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
   }
 };
 
@@ -35,17 +119,25 @@ const createDriverAssignment = async (req, res) => {
     const { id_ben, id_tai_xe } = req.body;
     const id_nguoi_cap_nhat = req.user?.id;
     if (!id_nguoi_cap_nhat) {
-      return res.status(403).json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
+      return res
+        .status(403)
+        .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
     }
     const [result] = await pool.query(
       "INSERT INTO phan_cong_dia_diem_tai_xe (id_ben, id_tai_xe, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat) VALUES (?, ?, ?, NOW(), NOW())",
       [id_ben, id_tai_xe, id_nguoi_cap_nhat]
     );
 
-    return res.status(201).json({ EM: "Tạo phân công thành công", EC: 1, DT: { id: result.insertId } });
+    return res.status(201).json({
+      EM: "Tạo phân công thành công",
+      EC: 1,
+      DT: { id: result.insertId },
+    });
   } catch (error) {
     console.error("Error in createAssignment:", error);
-    return res.status(500).json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
+    return res
+      .status(500)
+      .json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
   }
 };
 
@@ -57,13 +149,19 @@ const updateDriverAssignment = async (req, res) => {
     const updates = req.body;
     const id_nguoi_cap_nhat = req.user?.id;
     if (!id_nguoi_cap_nhat) {
-      return res.status(403).json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
+      return res
+        .status(403)
+        .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
     }
     if (Object.keys(updates).length === 0) {
-      return res.status(400).json({ EM: "Không có dữ liệu cập nhật", EC: -1, DT: {} });
+      return res
+        .status(400)
+        .json({ EM: "Không có dữ liệu cập nhật", EC: -1, DT: {} });
     }
 
-    const fields = Object.keys(updates).map((key) => `${key} = ?`).join(", ");
+    const fields = Object.keys(updates)
+      .map((key) => `${key} = ?`)
+      .join(", ");
     const values = Object.values(updates);
     values.push(id_nguoi_cap_nhat, id);
 
@@ -71,13 +169,19 @@ const updateDriverAssignment = async (req, res) => {
     const [result] = await pool.query(updateQuery, values);
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ EM: "Không tìm thấy phân công để cập nhật", EC: -1, DT: {} });
+      return res
+        .status(404)
+        .json({ EM: "Không tìm thấy phân công để cập nhật", EC: -1, DT: {} });
     }
 
-    return res.status(200).json({ EM: "Cập nhật phân công thành công", EC: 1, DT: {} });
+    return res
+      .status(200)
+      .json({ EM: "Cập nhật phân công thành công", EC: 1, DT: {} });
   } catch (error) {
     console.error("Error in updateAssignment:", error);
-    return res.status(500).json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
+    return res
+      .status(500)
+      .json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
   }
 };
 
@@ -86,14 +190,23 @@ const deleteDriverAssignment = async (req, res) => {
   // #swagger.tags = ['Phân công tài xế']
   try {
     const { id } = req.params;
-    const [result] = await pool.query("DELETE FROM phan_cong_dia_diem_tai_xe WHERE id = ?", [id]);
+    const [result] = await pool.query(
+      "DELETE FROM phan_cong_dia_diem_tai_xe WHERE id = ?",
+      [id]
+    );
     if (result.affectedRows === 0) {
-      return res.status(404).json({ EM: "Không tìm thấy phân công để xóa", EC: -1, DT: {} });
+      return res
+        .status(404)
+        .json({ EM: "Không tìm thấy phân công để xóa", EC: -1, DT: {} });
     }
-    return res.status(200).json({ EM: "Xóa phân công thành công", EC: 1, DT: {} });
+    return res
+      .status(200)
+      .json({ EM: "Xóa phân công thành công", EC: 1, DT: {} });
   } catch (error) {
     console.error("Error in deleteAssignment:", error);
-    return res.status(500).json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
+    return res
+      .status(500)
+      .json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
   }
 };
 

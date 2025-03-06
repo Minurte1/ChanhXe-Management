@@ -1,6 +1,6 @@
 const pool = require("../config/database"); // Kết nối cơ sở dữ liệu
 
-// Lấy tất cả xe với search động
+// Lấy tất cả xe với search động kèm thông tin bến xe
 const getAllVehicles = async (req, res) => {
   // #swagger.tags = ['Xe']
   try {
@@ -15,60 +15,70 @@ const getAllVehicles = async (req, res) => {
       ngay_tao,
     } = req.query;
 
-    // Query cơ bản
     let query = `
       SELECT 
-        id,
-        bien_so,
-        loai_xe,
-        suc_chua,
-        trang_thai,
-        id_nguoi_cap_nhat,
-        ngay_cap_nhat,
-        ngay_tao
+        xe.id,
+        xe.bien_so,
+        xe.loai_xe,
+        xe.suc_chua,
+        xe.trang_thai,
+        xe.id_nguoi_cap_nhat,
+        xe.ngay_cap_nhat,
+        xe.ngay_tao,
+        pcdx.id AS id_phan_cong,
+        pcdx.id_ben,
+        pcdx.ngay_tao AS ngay_phan_cong,
+        pcdx.ngay_cap_nhat AS ngay_cap_nhat_phan_cong,
+        ben_xe.ten_ben_xe,
+        ben_xe.dia_chi,
+        ben_xe.tinh,
+        ben_xe.huyen,
+        ben_xe.xa
       FROM xe
+      LEFT JOIN phan_cong_dia_diem_xe pcdx ON xe.id = pcdx.id_xe
+      LEFT JOIN ben_xe ON pcdx.id_ben = ben_xe.id
       WHERE 1=1
     `;
     let queryParams = [];
 
     // Thêm điều kiện tìm kiếm động
     if (id) {
-      query += " AND id = ?";
+      query += " AND xe.id = ?";
       queryParams.push(id);
     }
     if (bien_so) {
-      query += " AND bien_so LIKE ?";
+      query += " AND xe.bien_so LIKE ?";
       queryParams.push(`%${bien_so}%`);
     }
     if (loai_xe) {
-      query += " AND loai_xe = ?";
+      query += " AND xe.loai_xe = ?";
       queryParams.push(loai_xe);
     }
     if (suc_chua) {
-      query += " AND suc_chua = ?";
+      query += " AND xe.suc_chua = ?";
       queryParams.push(suc_chua);
     }
     if (trang_thai) {
-      query += " AND trang_thai = ?";
+      query += " AND xe.trang_thai = ?";
       queryParams.push(trang_thai);
     }
     if (id_nguoi_cap_nhat) {
-      query += " AND id_nguoi_cap_nhat = ?";
+      query += " AND xe.id_nguoi_cap_nhat = ?";
       queryParams.push(id_nguoi_cap_nhat);
     }
     if (ngay_cap_nhat) {
-      query += " AND DATE(ngay_cap_nhat) = ?";
+      query += " AND DATE(xe.ngay_cap_nhat) = ?";
       queryParams.push(ngay_cap_nhat);
     }
     if (ngay_tao) {
-      query += " AND DATE(ngay_tao) = ?";
+      query += " AND DATE(xe.ngay_tao) = ?";
       queryParams.push(ngay_tao);
     }
 
-    // Sắp xếp theo ngày cập nhật (tùy chọn)
-    query += " ORDER BY ngay_cap_nhat DESC";
+    // Sắp xếp theo ngày cập nhật mới nhất
+    query += " ORDER BY xe.ngay_cap_nhat DESC";
 
-    // Thực thi query
+    // Thực thi truy vấn
     const [rows] = await pool.query(query, queryParams);
 
     return res.status(200).json({

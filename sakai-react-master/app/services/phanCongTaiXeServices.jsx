@@ -2,9 +2,11 @@ import axiosInstance from '../authentication/axiosInstance';
 const API_URL = process.env.NEXT_PUBLIC_URL_SERVER;
 
 const DriverAssignmentService = (axiosInstance) => ({
-  getAllDriverAssignments: async () => {
+  getAllDriverAssignments: async (params = {}) => {
     try {
-      const response = await axiosInstance.get(`${API_URL}/phan-cong-tai-xe`);
+      const response = await axiosInstance.get(`${API_URL}/phan-cong-tai-xe`, {
+        params // Truyền params vào request
+      });
       return response.data;
     } catch (error) {
       console.error('Error fetching driver assignment:', error);

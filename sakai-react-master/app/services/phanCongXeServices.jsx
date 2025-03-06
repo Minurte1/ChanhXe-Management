@@ -1,10 +1,9 @@
-import axiosInstance from '../authentication/axiosInstance';
 const API_URL = process.env.NEXT_PUBLIC_URL_SERVER;
 
 const VehicleAssignmentService = (axiosInstance) => ({
-  getAllVehicleAssignments: async () => {
+  getAllVehicleAssignments: async (params = {}) => {
     try {
-      const response = await axiosInstance.get(`${API_URL}/phan-cong-xe`);
+      const response = await axiosInstance.get(`${API_URL}/phan-cong-xe`, { params });
       return response.data;
     } catch (error) {
       console.error('Error fetching vehicle assignments:', error);

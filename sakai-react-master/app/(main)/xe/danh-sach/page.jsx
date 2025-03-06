@@ -173,6 +173,7 @@ const DanhSachXe = () => {
           </div>
           <DataTable value={xeList} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}>
             <Column field="bien_so" header="Biển Số"></Column>
+            <Column field="ten_ben_xe" header="Địa điểm công tác" sortable body={(rowData) => rowData.ten_ben_xe || '(Chưa được phân công)'} />
             <Column field="suc_chua" header="Sức chứa"></Column>
             <Column field="loai_xe" header="Loại Xe"></Column>
             <Column field="labelTrangThai" header="Trạng Thái"></Column>
