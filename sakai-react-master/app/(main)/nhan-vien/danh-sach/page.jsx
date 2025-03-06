@@ -187,6 +187,8 @@ const DanhSachNhanVien = () => {
             currentPageReportTemplate="Hiển thị {first} đến {last} của {totalRecords} nhân viên"
           >
             <Column field="ho_ten" header="Họ Tên"></Column>
+            <Column field="ten_ben_xe" header="Địa điểm công tác" sortable body={(rowData) => rowData.ten_ben_xe || '(Chưa được phân công)'} />
+
             <Column field="so_dien_thoai" header="Số Điện Thoại"></Column>
             <Column field="email" header="Email"></Column>
             <Column field="labelVaiTro" header="Vai Trò"></Column>

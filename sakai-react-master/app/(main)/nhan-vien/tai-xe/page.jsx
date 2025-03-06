@@ -24,6 +24,7 @@ const DanhSachTaiXe = () => {
   });
   const axiosInstance = useAxios();
   const TaiXeServices = taiXeService(axiosInstance);
+  const PhanCongTaiXeService = phanCongTaiXeService(axiosInstance);
   const [assignData, setAssignData] = useState({
     id_ben: '',
     id_tai_xe: ''
@@ -129,9 +130,9 @@ const DanhSachTaiXe = () => {
     const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = assignData;
     try {
       if (isNew) {
-        await phanCongTaiXeService.createDriverAssignment(assignData);
+        await PhanCongTaiXeService.createDriverAssignment(assignData);
       } else {
-        await phanCongTaiXeService.createDriverAssignment(filteredData.id, filteredData);
+        await PhanCongTaiXeService.createDriverAssignment(filteredData.id, filteredData);
       }
       fetchTaiXe();
       setDisplayAssignDialog(false);
@@ -169,8 +170,9 @@ const DanhSachTaiXe = () => {
             <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm} />
           </div>
           <DataTable value={taiXeList} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}>
-            <Column field="nguoi_dung_id" header="ID Người Dùng" sortable />
             <Column field="ho_ten" header="Họ Tên" sortable />
+            <Column field="ten_ben_xe" header="Địa điểm công tác" sortable body={(rowData) => rowData.ten_ben_xe || '(Chưa được phân công)'} />
+
             <Column field="so_dien_thoai" header="Số Điện Thoại" sortable />
             <Column field="email" header="Email" sortable />
             <Column field="labelVaiTro" header="Vai Trò" sortable />

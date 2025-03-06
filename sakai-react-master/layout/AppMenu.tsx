@@ -43,7 +43,7 @@ const AppMenu = () => {
               items: item.items?.map((subItem: any) => ({
                 label: subItem.label,
                 to: subItem.url || undefined,
-                icon: item.icon,
+                icon: subItem.icon ? subItem.icon : item.icon,
                 admin: subItem.admin || '0',
                 role: subItem.role || ''
               }))
