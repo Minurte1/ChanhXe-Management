@@ -4,7 +4,7 @@ const API_URL = process.env.NEXT_PUBLIC_URL_SERVER;
 const DriverAssignmentService = {
     getAllDriverAssignments: async () => {
         try {
-            const response = await axiosInstance.get(`${API_URL}/phancongtaixe`);
+            const response = await axiosInstance.get(`${API_URL}/phan-cong-tai-xe`);
             return response.data;
         } catch (error) {
             console.error('Error fetching driver assignment:', error);
@@ -14,7 +14,7 @@ const DriverAssignmentService = {
 
     getDriverAssignmentById: async (id) => {
         try {
-            const response = await axiosInstance.get(`${API_URL}/phancongtaixe/${id}`);
+            const response = await axiosInstance.get(`${API_URL}/phan-cong-tai-xe/${id}`);
             return response.data;
         } catch (error) {
             console.error('Error fetching driver assignment:', error);
@@ -24,7 +24,7 @@ const DriverAssignmentService = {
 
     createDriverAssignment: async (vehicleAssignmentData) => {
         try {
-            const response = await axiosInstance.post(`${API_URL}/phancongtaixe`, vehicleAssignmentData);
+            const response = await axiosInstance.post(`${API_URL}/phan-cong-tai-xe`, vehicleAssignmentData);
             return response.data;
         } catch (error) {
             console.error('Error creating driver assignment:', error);
@@ -34,7 +34,7 @@ const DriverAssignmentService = {
 
     updateDriverAssignment: async (id, updatedData) => {
         try {
-            const response = await axiosInstance.put(`${API_URL}/phancongxe/${id}`, updatedData);
+            const response = await axiosInstance.put(`${API_URL}/phan-cong-xe/${id}`, updatedData);
             return response.data;
         } catch (error) {
             console.error('Error updating vehicle assignment:', error);
@@ -44,7 +44,7 @@ const DriverAssignmentService = {
 
     deleteDriverAssignment: async (id) => {
         try {
-            const response = await axiosInstance.delete(`${API_URL}/phancongxe/${id}`);
+            const response = await axiosInstance.delete(`${API_URL}/phan-cong-xe/${id}`);
             return response.data;
         } catch (error) {
             console.error('Error deleting vehicle assignment:', error);

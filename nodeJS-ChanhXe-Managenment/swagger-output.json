@@ -487,6 +487,12 @@
             "schema": {
               "type": "object",
               "properties": {
+                "labelVaiTro": {
+                  "example": "any"
+                },
+                "labelTrangThai": {
+                  "example": "any"
+                },
                 "mat_khau": {
                   "example": "any"
                 },
@@ -2016,7 +2022,7 @@
         }
       }
     },
-    "/phancongxe": {
+    "/phan-cong-xe": {
       "get": {
         "tags": [
           "Phân công xe"
@@ -2073,7 +2079,7 @@
         }
       }
     },
-    "/phancongxe/{id}": {
+    "/phan-cong-xe/{id}": {
       "get": {
         "tags": [
           "Phân công xe"
@@ -2165,7 +2171,7 @@
         }
       }
     },
-    "/phancongtaixe": {
+    "/phan-cong-tai-xe": {
       "get": {
         "tags": [
           "Phân công tài xế"
@@ -2222,7 +2228,7 @@
         }
       }
     },
-    "/phancongtaixe/{id}": {
+    "/phan-cong-tai-xe/{id}": {
       "get": {
         "tags": [
           "Phân công tài xế"
@@ -2314,7 +2320,7 @@
         }
       }
     },
-    "/phancongnguoidung": {
+    "/phan-cong-nguoi-dung": {
       "get": {
         "tags": [
           "Phân công người dùng"
@@ -2371,7 +2377,7 @@
         }
       }
     },
-    "/phancongnguoidung/{id}": {
+    "/phan-cong-nguoi-dung/{id}": {
       "get": {
         "tags": [
           "Phân công người dùng"

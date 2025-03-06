@@ -2,8 +2,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Dialog } from 'primereact/dialog';
-import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { Dropdown } from 'primereact/dropdown';
@@ -14,34 +12,17 @@ import phanCongXeService from '../services/phanCongXeServices';
 const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, onInputChange, onSave, }) => {
   const [listBenXe, setListBenXe] = useState([]);
   const [listXe, setListXe] = useState([]);
+  const [listPhanCongXe, setListPhanCongXe] = useState([]);
   const [selectedBenXe, setSelectedBenXe] = useState([]);
   const [selectedXe, setSelectedXe] = useState([]);
   const [filters, setFilters] = useState({
-    // id_ben_xe_nhan: null,
-    // id_ben_xe_gui: null
+
   });
   const toast = useRef(null);
 
-  // Chuyển đổi dữ liệu bến xe thành định dạng Dropdown
-  const benXeOptions = [
-    { label: 'Tất cả', value: null },
-    ...listBenXe.map((benXe) => ({
-      label: benXe.ten_ben_xe,
-      value: benXe.id
-    }))
-  ];
-
-  const xeOptions = [
-    { label: 'Tất cả', value: null },
-    ...listXe.map((Xe) => ({
-      label: Xe.bien_so,
-      value: Xe.id
-    }))
-  ];
-
   useEffect(() => {
     if (visible) {
-      // fetchDonHang();
+      fetchPhanCongXe();
       fetchBenXe();
       fetchXe();
     }
@@ -69,6 +50,17 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
     }
   };
 
+  const fetchPhanCongXe = async () => {
+    try {
+      const response = await phanCongXeService.getAllVehicleAssignments();
+      console.log('response phan cong xe', response);
+      setListPhanCongXe(Array.isArray(response.DT) ? response.DT : []);
+    } catch (error) {
+      console.error('Lỗi khi tải danh sách phân công xe', error);
+      showError('Lỗi khi tải danh sách phân công xe');
+    }
+  };
+
   const showError = (message) => {
     toast.current.show({
       severity: 'error',
@@ -86,6 +78,23 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
       life: 3000
     });
   };
+
+  // Xử lý thay đổi đầu vào
+  const handleInputChange = async (e, field) => {
+    const value = e.value;
+    if (field === 'id_ben') {
+      const response = await XeService.getAllVehicles();
+      const updatedListXe = Array.isArray(response.DT) ? response.DT : [];
+      const assignedVehicles = listPhanCongXe
+        .filter((assignment) => assignment.id_ben === value)
+        .map((assignment) => assignment.id_xe);
+      const filteredXeOptions = updatedListXe.filter((xe) => !assignedVehicles.includes(xe.id));
+      setSelectedBenXe(value);
+      setListXe(filteredXeOptions);
+    }
+    onInputChange(e, field);
+  };
+
 
   // Xử lý thay đổi bộ lọc
   const onFilterChange = (e, field) => {
@@ -116,7 +125,7 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
 
       <div className="p-mb-4">
         <div className="p-grid p-align-center">
-        <div className="p-col-12">
+          <div className="p-col-12" style={{ marginBottom: '2rem' }}>
             <label htmlFor="id_ben" className="p-d-block p-mb-2">
               Chọn bến
             </label>
@@ -126,15 +135,15 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
               options={listBenXe}
               optionLabel="ten_ben_xe"
               optionValue="id"
-              onChange={(e) => onInputChange({ target: { value: e.value } }, 'id_ben')}
+              onChange={(e) => handleInputChange(e, 'id_ben')}
               placeholder="Chọn bến"
-              filter filterBy="label"
+              filter filterBy="ten_ben_xe"
               className="p-inputtext-sm"
               style={{ width: '100%' }}
             />
           </div>
 
-          <div className="p-col-12">
+          <div className="p-col-12" style={{ marginBottom: '2rem' }}>
             <label htmlFor="id_xe" className="p-d-block p-mb-2">
               Chọn xe
             </label>
@@ -144,11 +153,12 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
               options={listXe}
               optionLabel="bien_so"
               optionValue="id"
-              onChange={(e) => onInputChange({ target: { value: e.value } }, 'id_xe')}
-              placeholder="Chọn xe"
-              filter filterBy="label"
+              onChange={(e) => handleInputChange(e, 'id_xe')}
+              placeholder="Chọn bến xe trước khi chọn xe"
+              filter filterBy="bien_so"
               className="p-inputtext-sm"
               style={{ width: '100%' }}
+              disabled={!formData.id_ben}
             />
           </div>
         </div>
