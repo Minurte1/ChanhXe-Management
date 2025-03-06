@@ -31,6 +31,7 @@ const DanhSachXe = () => {
   //
   const axiosInstance = useAxios();
   const vehicleService = VehicleService(axiosInstance);
+  const vehicleAssignmentService = VehicleAssignmentService(axiosInstance);
   const toast = useRef(null);
 
   useEffect(() => {
@@ -132,9 +133,9 @@ const DanhSachXe = () => {
     const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = assignData;
     try {
       if (isNew) {
-        await VehicleAssignmentService.createVehicleAssignment(assignData);
+        await vehicleAssignmentService.createVehicleAssignment(assignData);
       } else {
-        await VehicleAssignmentService.createVehicleAssignment(filteredData.id, filteredData);
+        await vehicleAssignmentService.createVehicleAssignment(filteredData.id, filteredData);
       }
       fetchXe();
       setDisplayAssignDialog(false);

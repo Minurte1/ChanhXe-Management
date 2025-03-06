@@ -169,7 +169,6 @@ const DanhSachTaiXe = () => {
             <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm} />
           </div>
           <DataTable value={taiXeList} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}>
-            <Column field="nguoi_dung_id" header="ID Người Dùng" sortable />
             <Column field="ho_ten" header="Họ Tên" sortable />
             <Column field="so_dien_thoai" header="Số Điện Thoại" sortable />
             <Column field="email" header="Email" sortable />
