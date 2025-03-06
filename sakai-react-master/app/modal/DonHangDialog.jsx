@@ -15,9 +15,8 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
   const [tongTien, setTongTien] = useState(0); // State để lưu tổng tiền
   const [users, setUsers] = useState([]);
   const [isDivVisible, setIsDivVisible] = useState(true);
-  const [visible, setVisible] = React.useState(false);
-  const [formData, setFormData] = React.useState({});
   const [khachHangDialogVisible, setKhachHangDialogVisible] = useState(false);
+
   useEffect(() => {
     if (visible) {
       fetchUsers();
@@ -40,7 +39,7 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
     { label: 'Hàng nguy hiểm', value: 'hang_nguy_hiem' },
     { label: 'Hàng thông thường', value: 'hang_thong_thuong' }
   ];
-  console.log('form', formData);
+
   useEffect(() => {
     if (isNew && visible) {
       onInputChange({ target: { value: generateCode() } }, 'ma_van_don');
@@ -60,7 +59,6 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
   const fetchUsers = async () => {
     try {
       const response = await khachHangService.getAllCustomers();
-      console.log('response users', response);
       setUsers(Array.isArray(response.DT) ? response.DT : []);
     } catch (error) {
       console.error('Lỗi khi tải danh sách khách hàng', error);
@@ -70,7 +68,6 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
   const fetchBenXe = async () => {
     try {
       const response = await BenXeService.getAllBenXe();
-      console.log('response ben xe', response);
       setListBenXe(Array.isArray(response.DT) ? response.DT : []);
     } catch (error) {
       console.error('Lỗi khi tải danh sách bến xe', error);
@@ -124,10 +121,9 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
         <InputText id="ma_qr_code" value={formData.ma_qr_code || ''} disabled className="mt-2 h-10" placeholder="QR-12345678" />
       </div>
 
-      <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
       <Button label="Khách Hàng Mới" onClick={handleToggleDiv} icon="pi pi-plus" className="p-button-success" style={{ width: '20%' }} />
       {isDivVisible ? (
-        <div>
+        <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
           <label htmlFor="nguoi_gui_id">Người gửi</label>
           <Dropdown
             id="nguoi_gui_id"
@@ -153,7 +149,6 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
           onSave={handleSave}
         />
       )}
-      </div>
 
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="id_ben_xe_gui">Bến Xe Gửi</label>
