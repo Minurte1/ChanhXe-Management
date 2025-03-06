@@ -2363,6 +2363,36 @@
             "name": "x-pathname",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id_ben",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id_xe",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id_nguoi_cap_nhat",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "ngay_tao",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "ngay_cap_nhat",
+            "in": "query",
+            "type": "string"
           }
         ],
         "responses": {
@@ -2558,6 +2588,36 @@
           {
             "name": "x-pathname",
             "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id_ben",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id_tai_xe",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id_nguoi_cap_nhat",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "ngay_tao",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "ngay_cap_nhat",
+            "in": "query",
             "type": "string"
           }
         ],

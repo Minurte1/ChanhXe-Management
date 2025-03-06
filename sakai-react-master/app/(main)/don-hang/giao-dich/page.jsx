@@ -100,6 +100,7 @@ const DanhSachDonHang = () => {
   };
 
   const saveOrder = async () => {
+    // console.log('saveOrder');
     const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = formData;
     try {
       if (isNew) {
@@ -121,6 +122,10 @@ const DanhSachDonHang = () => {
       ...prevData,
       [name]: val
     }));
+  };
+
+  const Save2 = async () => {
+    console.log('Save2');
   };
 
   return (
@@ -148,7 +153,7 @@ const DanhSachDonHang = () => {
         </div>
       </div>
 
-      <OrderDialog visible={displayDialog} onHide={() => setDisplayDialog(false)} isNew={isNew} formData={formData} onInputChange={onInputChange} onSave={saveOrder} />
+      <OrderDialog visible={displayDialog} onHide={() => setDisplayDialog(false)} isNew={isNew} formData={formData} onInputChange={onInputChange} onSave={saveOrder} onSave2={Save2} />
     </div>
   );
 };

@@ -96,8 +96,9 @@ const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formDat
     if (field === 'id_ben') {
       const response = await TaiXeServices.getAllDrivers({ trang_thai_tai_xe: 'hoat_dong' });
       const updatedListTaiXe = Array.isArray(response.DT) ? response.DT : [];
-      const assignedDriver = listPhanCongTaiXe.filter((assignment) => assignment.id_ben === value).map((assignment) => assignment.id_tai_xe);
-      const filteredTaiXeOptions = updatedListTaiXe.filter((driver) => !assignedDriver.includes(driver.nguoi_dung_id));
+      const assignedDriver = listPhanCongTaiXe.filter((assignment) => assignment.id_ben === value).map((assignment) => assignment.tai_xe_id);
+      console.log('listPhanCongTaiXe', listPhanCongTaiXe);
+      const filteredTaiXeOptions = updatedListTaiXe.filter((driver) => !assignedDriver.includes(driver.tai_xe_id));
       setSelectedBenXe(value);
       setListTaiXe(filteredTaiXeOptions);
     }
@@ -146,7 +147,7 @@ const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formDat
               value={formData.id_tai_xe}
               options={listTaiXe}
               optionLabel="ho_ten"
-              optionValue="nguoi_dung_id"
+              optionValue="tai_xe_id"
               onChange={(e) => handleInputChange(e, 'id_tai_xe')}
               placeholder="Chọn bến xe trước khi chọn tài xế"
               filter
