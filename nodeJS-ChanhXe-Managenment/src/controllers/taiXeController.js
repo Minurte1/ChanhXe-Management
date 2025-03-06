@@ -22,28 +22,49 @@ const getAllDrivers = async (req, res) => {
       trang_thai_tai_xe,
     } = req.query;
 
-    // Query cơ bản với INNER JOIN, lấy từ tai_xe làm gốc
+    // Query cơ bản với INNER JOIN và LEFT JOIN
     let query = `
-      SELECT 
-        nguoi_dung.id AS nguoi_dung_id, 
-        nguoi_dung.ho_ten, 
-        nguoi_dung.so_dien_thoai, 
-        nguoi_dung.email, 
-        nguoi_dung.vai_tro, 
-        nguoi_dung.trang_thai, 
-        nguoi_dung.id_nguoi_cap_nhat AS id_nguoi_cap_nhat_nguoi_dung, 
-        nguoi_dung.ngay_cap_nhat AS ngay_cap_nhat_nguoi_dung, 
-        nguoi_dung.ngay_tao AS ngay_tao_nguoi_dung,
-        tai_xe.id AS tai_xe_id, 
-        tai_xe.bang_lai,
-           tai_xe.trang_thai,  
-        tai_xe.id_nguoi_cap_nhat AS id_nguoi_cap_nhat_tai_xe, 
-        tai_xe.ngay_cap_nhat AS ngay_cap_nhat_tai_xe, 
-        tai_xe.ngay_tao AS ngay_tao_tai_xe
-      FROM tai_xe
-      INNER JOIN nguoi_dung ON tai_xe.nguoi_dung_id = nguoi_dung.id
-      WHERE 1=1
-    `;
+  SELECT 
+    tai_xe.id AS tai_xe_id,
+    tai_xe.bang_lai,
+    tai_xe.trang_thai AS trang_thai_tai_xe,
+    tai_xe.id_nguoi_cap_nhat AS id_nguoi_cap_nhat_tai_xe,
+    tai_xe.ngay_cap_nhat AS ngay_cap_nhat_tai_xe,
+    tai_xe.ngay_tao AS ngay_tao_tai_xe,
+
+    nguoi_dung.id AS nguoi_dung_id,
+    nguoi_dung.ho_ten,
+    nguoi_dung.so_dien_thoai,
+    nguoi_dung.email,
+    nguoi_dung.vai_tro,
+    nguoi_dung.trang_thai AS trang_thai_nguoi_dung,
+    nguoi_dung.id_nguoi_cap_nhat AS id_nguoi_cap_nhat_nguoi_dung,
+    nguoi_dung.ngay_cap_nhat AS ngay_cap_nhat_nguoi_dung,
+    nguoi_dung.ngay_tao AS ngay_tao_nguoi_dung,
+
+    phan_cong_dia_diem_tai_xe.id AS phan_cong_id,
+    phan_cong_dia_diem_tai_xe.id_ben,
+    phan_cong_dia_diem_tai_xe.id_tai_xe,
+    phan_cong_dia_diem_tai_xe.id_nguoi_cap_nhat AS id_nguoi_cap_nhat_phan_cong,
+    phan_cong_dia_diem_tai_xe.ngay_tao AS ngay_tao_phan_cong,
+    phan_cong_dia_diem_tai_xe.ngay_cap_nhat AS ngay_cap_nhat_phan_cong,
+
+    ben_xe.id AS ben_xe_id,
+    ben_xe.dia_chi,
+    ben_xe.ten_ben_xe,
+    ben_xe.tinh,
+    ben_xe.huyen,
+    ben_xe.xa,
+    ben_xe.id_nguoi_cap_nhat AS id_nguoi_cap_nhat_ben_xe,
+    ben_xe.ngay_tao AS ngay_tao_ben_xe,
+    ben_xe.ngay_cap_nhat AS ngay_cap_nhat_ben_xe
+
+  FROM tai_xe
+  INNER JOIN nguoi_dung ON tai_xe.nguoi_dung_id = nguoi_dung.id
+  LEFT JOIN phan_cong_dia_diem_tai_xe ON tai_xe.id = phan_cong_dia_diem_tai_xe.id_tai_xe
+  LEFT JOIN ben_xe ON phan_cong_dia_diem_tai_xe.id_ben = ben_xe.id
+  WHERE 1=1
+`;
     let queryParams = [];
 
     // Thêm điều kiện tìm kiếm dynamic
@@ -110,7 +131,7 @@ const getAllDrivers = async (req, res) => {
       queryParams.push(trang_thai_tai_xe);
     }
 
-    // Sắp xếp theo ngày cập nhật của tai_xe (hoặc nguoi_dung nếu muốn)
+    // Sắp xếp theo ngày cập nhật của tai_xe
     query += " ORDER BY tai_xe.ngay_cap_nhat DESC";
 
     // Thực thi query

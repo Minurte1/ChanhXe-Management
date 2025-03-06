@@ -24,6 +24,7 @@ const DanhSachTaiXe = () => {
   });
   const axiosInstance = useAxios();
   const TaiXeServices = taiXeService(axiosInstance);
+  const PhanCongTaiXeService = phanCongTaiXeService(axiosInstance);
   const [assignData, setAssignData] = useState({
     id_ben: '',
     id_tai_xe: ''
@@ -129,9 +130,9 @@ const DanhSachTaiXe = () => {
     const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = assignData;
     try {
       if (isNew) {
-        await phanCongTaiXeService.createDriverAssignment(assignData);
+        await PhanCongTaiXeService.createDriverAssignment(assignData);
       } else {
-        await phanCongTaiXeService.createDriverAssignment(filteredData.id, filteredData);
+        await PhanCongTaiXeService.createDriverAssignment(filteredData.id, filteredData);
       }
       fetchTaiXe();
       setDisplayAssignDialog(false);
