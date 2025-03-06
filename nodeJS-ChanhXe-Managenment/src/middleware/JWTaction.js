@@ -1,5 +1,6 @@
 require("dotenv").config();
 var jwt = require("jsonwebtoken");
+const { getMenuItems } = require("../services/menuService");
 
 const nonSercurePaths = ["/", "/register", "/login", "/logout"];
 
@@ -52,18 +53,59 @@ const extractToken = (req) => {
   return null;
 };
 
-const checkUserJWT = (req, res, next) => {
+const checkUserJWT = async (req, res, next) => {
   if (nonSercurePaths.includes(req.path)) return next();
-  let cookie = req.cookies;
 
+  let cookie = req.cookies;
   let tokenFromHeader = extractToken(req);
 
   if ((cookie && cookie.jwt) || tokenFromHeader) {
     let token = cookie && cookie.jwt ? cookie.jwt : tokenFromHeader;
     let decoded = verifyToken(token);
+
     if (decoded && !decoded.expired) {
       req.user = decoded;
       req.token = token;
+
+      // Lấy pathname từ header
+      const pathname = req.headers["x-pathname"];
+      console.log("pathname", pathname);
+      if (!pathname) {
+        return res.status(400).json({
+          EC: -1,
+          DT: "",
+          EM: "Pathname is missing in request headers",
+        });
+      }
+
+      // Kiểm tra quyền truy cập dựa trên pathname
+      const roleUser = decoded.vai_tro;
+      const menuUser = getMenuItems(roleUser); // Hàm lấy danh sách menu theo vai trò
+
+      if (roleUser === "admin") {
+        return next(); // Admin có quyền truy cập tất cả
+      }
+
+      // Hàm đệ quy kiểm tra pathname trong menu
+      const findPathInMenu = (menus, path) => {
+        for (const item of menus) {
+          if (item.url === path) return true;
+          if (item.items && item.items.length > 0) {
+            if (findPathInMenu(item.items, path)) return true;
+          }
+        }
+        return false;
+      };
+
+      const isPathAllowed = findPathInMenu(menuUser, pathname);
+      if (!isPathAllowed) {
+        return res.status(403).json({
+          EC: -1,
+          DT: "",
+          EM: "Bạn không có quyền truy cập vào trang này.",
+        });
+      }
+
       next();
     } else if (decoded && decoded.expired) {
       return res.status(401).json({

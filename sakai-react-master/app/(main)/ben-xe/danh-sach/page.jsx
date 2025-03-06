@@ -8,11 +8,13 @@ import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
 import BenXeDialog from '../../../modal/BenXeDialog';
 import BenXeService from '../../../services/benXeServices';
+import { useAxios } from '@/app/authentication/useAxiosClient';
 
 const DanhSachBenXe = () => {
   const [benXe, setBenXe] = useState([]);
   const [displayDialog, setDisplayDialog] = useState(false);
   const [isNew, setIsNew] = useState(false);
+
   const [formData, setFormData] = useState({
     dia_chi: '',
     ten_ben_xe: '',
@@ -21,7 +23,8 @@ const DanhSachBenXe = () => {
     xa: '',
     duong: ''
   });
-
+  const axiosInstance = useAxios();
+  const benXeService = BenXeService(axiosInstance);
   const toast = useRef(null);
 
   useEffect(() => {
@@ -30,9 +33,10 @@ const DanhSachBenXe = () => {
 
   const fetchBenXe = async () => {
     try {
-      const response = await BenXeService.getAllBenXe();
+      const response = await benXeService.getAllBenXe();
       setBenXe(response.DT);
     } catch (error) {
+      console.log('ero', error);
       showError('Lỗi khi tải danh sách bến xe');
     }
   };
@@ -59,7 +63,7 @@ const DanhSachBenXe = () => {
 
   const deleteBenXeHandler = async (id) => {
     try {
-      await BenXeService.deleteBenXe(id);
+      await benXeService.deleteBenXe(id);
       fetchBenXe();
       showSuccess('Xóa bến xe thành công');
     } catch (error) {
@@ -91,9 +95,9 @@ const DanhSachBenXe = () => {
   const saveBenXe = async (dataToSave) => {
     try {
       if (isNew) {
-        await BenXeService.createBenXe(dataToSave);
+        await benXeService.createBenXe(dataToSave);
       } else {
-        await BenXeService.updateBenXe(formData.id, dataToSave);
+        await benXeService.updateBenXe(formData.id, dataToSave);
       }
       fetchBenXe();
       setDisplayDialog(false);
