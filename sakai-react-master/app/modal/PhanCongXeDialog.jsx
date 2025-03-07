@@ -35,7 +35,6 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
   const fetchBenXe = async () => {
     try {
       const response = await benXeService.getAllBenXe();
-      console.log('response ben xe', response);
       setListBenXe(Array.isArray(response.DT) ? response.DT : []);
     } catch (error) {
       console.error('Lỗi khi tải danh sách bến xe', error);
@@ -46,7 +45,6 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
   const fetchXe = async () => {
     try {
       const response = await xeService.getAllVehicles();
-      console.log('response xe', response);
       setListXe(Array.isArray(response.DT) ? response.DT : []);
     } catch (error) {
       console.error('Lỗi khi tải danh sách xe', error);

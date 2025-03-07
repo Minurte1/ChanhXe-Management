@@ -82,8 +82,8 @@ const getMenuItems = (role, selectedRole = null) => {
         label: "Quản lý đơn hàng",
         icon: "pi pi-box",
         items: [
-          // { label: "Nhập đơn hàng", url: "/orders/create" },
-          { label: "Cập nhật trạng thái đơn hàng", url: "/" },
+          { label: "Trang chủ", url: "/" },
+          { label: "Đơn hàng cập bến", url: "/kho-hang" },
           { label: "Tra cứu đơn hàng", url: "/orders/search" },
         ],
       },

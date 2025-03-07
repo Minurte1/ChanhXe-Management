@@ -48,7 +48,17 @@ const OrderService = (axiosInstance) => ({
       console.error('Error deleting order:', error);
       throw error;
     }
-  }
+  },
+
+  createOrderAndCustomer: async (orderData) => {
+    try {
+      const response = await axiosInstance.post(`${API_URL}/order-and-customer`, orderData);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating order and customer:', error);
+      throw error;
+    }
+  },
 });
 
 export default OrderService;

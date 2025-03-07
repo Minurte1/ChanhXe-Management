@@ -383,6 +383,110 @@
         }
       }
     },
+    "/order-and-customer": {
+      "post": {
+        "tags": [
+          "Đơn hàng"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ma_van_don": {
+                  "example": "any"
+                },
+                "ma_qr_code": {
+                  "example": "any"
+                },
+                "nguoi_gui_id": {
+                  "example": "any"
+                },
+                "id_ben_xe_nhan": {
+                  "example": "any"
+                },
+                "id_ben_xe_gui": {
+                  "example": "any"
+                },
+                "loai_hang_hoa": {
+                  "example": "any"
+                },
+                "trong_luong": {
+                  "example": "any"
+                },
+                "kich_thuoc": {
+                  "example": "any"
+                },
+                "so_kien": {
+                  "example": "any"
+                },
+                "gia_tri_hang": {
+                  "example": "any"
+                },
+                "cuoc_phi": {
+                  "example": "any"
+                },
+                "phi_bao_hiem": {
+                  "example": "any"
+                },
+                "phu_phi": {
+                  "example": "any"
+                },
+                "trang_thai": {
+                  "example": "any"
+                },
+                "ten_nguoi_nhan": {
+                  "example": "any"
+                },
+                "so_dien_thoai_nhan": {
+                  "example": "any"
+                },
+                "email_nhan": {
+                  "example": "any"
+                },
+                "ho_ten": {
+                  "example": "any"
+                },
+                "so_dien_thoai": {
+                  "example": "any"
+                },
+                "dia_chi": {
+                  "example": "any"
+                },
+                "mat_khau": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/users": {
       "get": {
         "tags": [

@@ -95,11 +95,12 @@ const DanhSachXe = () => {
 
   const confirmDeleteXe = (id) => {
     confirmDialog({
-      message: 'Bạn có chắc chắn muốn xóa xe này không?',
-      header: 'Xác nhận xóa',
+      message: 'Bạn có chắc chắn muốn xe này tạm ngưng hoạt động?',
+      header: 'Xác nhận',
       icon: 'pi pi-exclamation-triangle',
-      accept: () => deleteXe(id),
-      reject: () => showError('Hủy thao tác xóa')
+      acceptLabel: 'Xóa',
+      rejectLabel: 'Hủy',
+      accept: () => deleteXe(id)
     });
   };
 
@@ -164,6 +165,7 @@ const DanhSachXe = () => {
   return (
     <div className="p-grid">
       <Toast ref={toast} />
+      <ConfirmDialog /> {/* Thêm component này */}
       <div className="p-col-12">
         <div className="card">
           <h1>Danh Sách Xe</h1>
@@ -176,7 +178,28 @@ const DanhSachXe = () => {
             <Column field="ten_ben_xe" header="Địa điểm công tác" sortable body={(rowData) => rowData.ten_ben_xe || '(Chưa được phân công)'} />
             <Column field="suc_chua" header="Sức chứa"></Column>
             <Column field="loai_xe" header="Loại Xe"></Column>
-            <Column field="labelTrangThai" header="Trạng Thái"></Column>
+            <Column
+              field="labelTrangThai"
+              header="Trạng Thái"
+              sortable
+              body={(rowData) => {
+                const { text, background } = spServices.getColorTrangThai(rowData.labelTrangThai);
+                return (
+                  <span
+                    style={{
+                      color: text,
+                      backgroundColor: background,
+                      padding: '4px 8px',
+                      borderRadius: '4px',
+                      display: 'inline-block',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    {rowData.labelTrangThai}
+                  </span>
+                );
+              }}
+            />
             <Column
               body={(rowData) => (
                 <>
@@ -188,7 +211,6 @@ const DanhSachXe = () => {
           </DataTable>
         </div>
       </div>
-
       <XeDialog visible={displayDialog} onHide={() => setDisplayDialog(false)} isNew={isNew} formData={formData} onInputChange={onInputChange} onSave={saveXe} />
       <PhanCongDialog visible={displayAssignDialog} onHide={() => setDisplayAssignDialog(false)} formData={assignData} onInputChange={onAssignInputChange} onSave={savePhanCong} />
     </div>
