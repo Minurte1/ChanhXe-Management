@@ -130,7 +130,7 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
   const dialogFooter = (
     <>
       <Button label="Hủy" icon="pi pi-times" className="p-button-text" onClick={onHide} />
-      <Button label="Lưu" icon="pi pi-check" className="p-button-primary" onClick={ isNewCustomer ? onSave : onSave2} />
+      <Button label="Lưu" icon="pi pi-check" className="p-button-primary" onClick={isNewCustomer ? onSave : onSave2} />
     </>
   );
 
@@ -165,19 +165,20 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
                     className="w-100 mt-2"
                   />
                 </div>
-              ) : (<div></div>)}
+              ) : (
+                <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
+                  <label htmlFor="ho_ten">Họ Tên</label>
+                  <InputText id="ho_ten" value={formData.ho_ten || ''} onChange={(e) => onInputChange(e, 'ho_ten')} className="mt-2 h-10" />
+                </div>
+              )}
             </div>
-            <Button label={isNewCustomer ? "Khách Hàng Mới" : "Huỷ Thêm Khách Hàng"}  onClick={handleToggleDiv} icon={isNewCustomer ? "pi pi-plus" : "pi pi-minus"} className={isNewCustomer ? "p-button-success" : "p-button-fail"} style={{ width: '20%', marginTop: '25px', marginLeft: '10px' }} />
+            <Button label={isNewCustomer ? "Khách Hàng Mới" : "Huỷ Thêm Khách Hàng"} onClick={handleToggleDiv} icon={isNewCustomer ? "pi pi-plus" : "pi pi-minus"} className={isNewCustomer ? "p-button-success" : "p-button-fail"} style={{ width: '20%', marginTop: '25px', marginLeft: '10px' }} />
           </div>
 
           {isNewCustomer ? (
             <div></div>
           ) : (
             <div className="p-fluid">
-              <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
-                <label htmlFor="ho_ten">Họ Tên</label>
-                <InputText id="ho_ten" value={formData.ho_ten || ''} onChange={(e) => onInputChange(e, 'ho_ten')} className="mt-2 h-10" />
-              </div>
               <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
                 <label htmlFor="so_dien_thoai">Số Điện Thoại</label>
                 <InputText id="so_dien_thoai" value={formData.so_dien_thoai || ''} onChange={(e) => onInputChange(e, 'so_dien_thoai')} className="mt-2 h-10" />
@@ -212,7 +213,7 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
           }
         </div>
 
-      ) : ( <div className="p-field" style={{ margin: '8px 0', minHeight: '70px'}}>
+      ) : (<div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="nguoi_gui_id">Người gửi</label>
         <Dropdown
           id="nguoi_gui_id"
@@ -226,7 +227,7 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
           showClear
           className="w-100 mt-2"
         />
-      </div> )}
+      </div>)}
 
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="id_ben_xe_gui">Bến Xe Gửi</label>
