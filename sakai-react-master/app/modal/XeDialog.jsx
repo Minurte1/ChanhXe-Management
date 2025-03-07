@@ -32,19 +32,19 @@ const XeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }) =
     <Dialog visible={visible} style={{ width: '450px' }} header={isNew ? 'Thêm Xe' : 'Chỉnh Sửa Xe'} modal className="p-fluid" footer={dialogFooter} onHide={onHide}>
       <div className="p-field">
         <label htmlFor="bien_so">Biển Số</label>
-        <InputText id="bien_so" style={{ marginTop: '3px' }} value={formData.bien_so} onChange={(e) => onInputChange(e, 'bien_so')} placeholder="VD: 51A-12345" />
+        <InputText id="bien_so" style={{ marginTop: '3px' }} value={formData.bien_so} onChange={(e) => onInputChange(e, 'bien_so')} placeholder="VD: 51A-12345" required/>
       </div>
       <div className="p-field mt-2">
         <label htmlFor="loai_xe">Loại Xe</label>
-        <Dropdown id="loai_xe" style={{ marginTop: '3px' }} value={formData.loai_xe} options={loaiXeOptions} onChange={(e) => onInputChange(e, 'loai_xe')} placeholder="Chọn loại xe (VD: Xe tải, Xe con)" />
+        <Dropdown id="loai_xe" style={{ marginTop: '3px' }} value={formData.loai_xe} options={loaiXeOptions} onChange={(e) => onInputChange(e, 'loai_xe')} placeholder="Chọn loại xe (VD: Xe tải, Xe con)" required/>
       </div>
       <div className="p-field mt-2">
         <label htmlFor="suc_chua">Sức chứa</label>
-        <InputText id="suc_chua" style={{ marginTop: '3px' }} value={formData.suc_chua} onChange={(e) => onInputChange(e, 'suc_chua')} placeholder="VD: 500 kg" />
+        <InputNumber id="suc_chua" style={{ marginTop: '3px' }} value={formData.suc_chua} onValueChange={(e) => onInputChange(e, 'suc_chua')} placeholder="VD: 500 kg" min={0} required/>
       </div>
       <div className="p-field mt-2">
         <label htmlFor="trang_thai">Trạng Thái</label>
-        <Dropdown id="trang_thai" style={{ marginTop: '3px' }} value={formData.trang_thai} options={trangThaiOptions} onChange={(e) => onInputChange(e, 'trang_thai')} placeholder="Chọn trạng thái " />
+        <Dropdown id="trang_thai" style={{ marginTop: '3px' }} value={formData.trang_thai} options={trangThaiOptions} onChange={(e) => onInputChange(e, 'trang_thai')} placeholder="Chọn trạng thái " required/>
       </div>
     </Dialog>
   );

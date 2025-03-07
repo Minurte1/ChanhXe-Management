@@ -1997,6 +1997,11 @@
             "name": "x-pathname",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "trang_thai",
+            "in": "query",
+            "type": "string"
           }
         ],
         "responses": {
