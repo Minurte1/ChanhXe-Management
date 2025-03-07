@@ -129,7 +129,8 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
         onSave2();
       } else {
         setErrors(validationErrors);
-        toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng điền đầy đủ thông tin', life: 3000 });
+        // toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng điền đầy đủ thông tin', life: 3000 });
+        console.log('validationErrors', validationErrors);
       }
     } else {
       const requiredFields = ['id_ben_xe_gui', 'id_ben_xe_nhan', 'loai_hang_hoa', 'trong_luong', 'nguoi_gui_id', 'gia_tri_hang', 'cuoc_phi', 'phi_bao_hiem', 'phu_phi', 'trang_thai', 'ten_nguoi_nhan', 'so_dien_thoai_nhan', 'email_nhan'];
