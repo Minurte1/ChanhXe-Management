@@ -1,9 +1,9 @@
 const API_URL = process.env.NEXT_PUBLIC_URL_SERVER;
 
 const chuyenXeService = (axiosInstance) => ({
-  getAllTrips: async () => {
+  getAllTrips: async (params = {}) => {
     try {
-      const response = await axiosInstance.get(`${API_URL}/trips`);
+      const response = await axiosInstance.get(`${API_URL}/trips`, { params });
       return response.data;
     } catch (error) {
       console.error('Error fetching trips:', error);
