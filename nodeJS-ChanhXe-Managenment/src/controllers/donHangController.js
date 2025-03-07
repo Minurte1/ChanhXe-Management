@@ -1,4 +1,5 @@
 const pool = require("../config/database"); // Kết nối cơ sở dữ liệu
+const bcrypt = require('bcrypt');
 
 // Lấy tất cả đơn hàng với truy vấn động và thông tin từ bảng ben_xe
 const getAllOrders = async (req, res) => {
@@ -365,7 +366,7 @@ const deleteOrder = async (req, res) => {
   }
 };
 
-const createOrderAndUser = async (req, res) => {
+const createOrderAndCustomer = async (req, res) => {
   // #swagger.tags = ['Đơn hàng']
   const connection = await pool.getConnection();
   try {
@@ -409,9 +410,9 @@ const createOrderAndUser = async (req, res) => {
 
     // Insert into khach_hang table
     const [khachHangResult] = await connection.query(
-      `INSERT INTO khach_hang (ho_ten, so_dien_thoai, dia_chi, mat_khau, ngay_tao, ngay_cap_nhat) 
-      VALUES (?, ?, ?, ?, NOW(), NOW())`,
-      [ho_ten, so_dien_thoai, dia_chi, hashedPassword]
+      `INSERT INTO khach_hang (ho_ten, so_dien_thoai, dia_chi, mat_khau, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat) 
+      VALUES (?, ?, ?, ?, ?, NOW(), NOW())`,
+      [ho_ten, so_dien_thoai, dia_chi, hashedPassword, id_nguoi_cap_nhat]
     );
 
     const khachHangId = khachHangResult.insertId;
@@ -426,7 +427,7 @@ const createOrderAndUser = async (req, res) => {
       [
         ma_van_don,
         ma_qr_code,
-        khachHangId, // Use the newly inserted khach_hang ID
+        khachHangId, // Sử dụng khach_hang ID mới tạo
         id_ben_xe_nhan,
         id_ben_xe_gui,
         loai_hang_hoa,
@@ -469,4 +470,5 @@ module.exports = {
   createOrder,
   updateOrder,
   deleteOrder,
+  createOrderAndCustomer,
 };

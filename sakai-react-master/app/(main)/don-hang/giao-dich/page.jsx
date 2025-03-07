@@ -91,7 +91,7 @@ const DanhSachDonHang = () => {
 
   const deleteOrder = async (id) => {
     try {
-      await OrderService.deleteOrder(id);
+      await orderService.deleteOrder(id);
       fetchOrders();
       showSuccess('Xóa đơn hàng thành công');
     } catch (error) {
@@ -100,13 +100,12 @@ const DanhSachDonHang = () => {
   };
 
   const saveOrder = async () => {
-    // console.log('saveOrder');
     const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = formData;
     try {
       if (isNew) {
-        await OrderService.createOrder(filteredData);
+        await orderService.createOrder(filteredData);
       } else {
-        await OrderService.updateOrder(filteredData.id, filteredData);
+        await orderService.updateOrder(filteredData.id, filteredData);
       }
       fetchOrders();
       setDisplayDialog(false);
@@ -124,8 +123,21 @@ const DanhSachDonHang = () => {
     }));
   };
 
-  const Save2 = async () => {
-    console.log('Save2');
+  const SaveWithCustomer = async () => {
+    console.log('SaveWithCustomer');
+    const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = formData;
+    try {
+      if (isNew) {
+        await orderService.createOrderAndCustomer(filteredData);
+      } else {
+        console.log('Chỉ tạo mới đơn hàng và khách hàng');
+      }
+      fetchOrders();
+      setDisplayDialog(false);
+      showSuccess(isNew ? 'Thêm đơn hàng và khách hàng thành công' : '');
+    } catch (error) {
+      showError(isNew ? 'Lỗi khi thêm đơn hàng và khách hàng' : '');
+    }
   };
 
   return (
@@ -153,7 +165,7 @@ const DanhSachDonHang = () => {
         </div>
       </div>
 
-      <OrderDialog visible={displayDialog} onHide={() => setDisplayDialog(false)} isNew={isNew} formData={formData} onInputChange={onInputChange} onSave={saveOrder} onSave2={Save2} />
+      <OrderDialog visible={displayDialog} onHide={() => setDisplayDialog(false)} isNew={isNew} formData={formData} onInputChange={onInputChange} onSave={saveOrder} onSave2={SaveWithCustomer} />
     </div>
   );
 };
