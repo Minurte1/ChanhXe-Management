@@ -38,6 +38,7 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
   useEffect(() => {
     if (!visible) {
       setIsNewCustomer(true);
+      setErrors({});
     }
   }, [visible]);
 

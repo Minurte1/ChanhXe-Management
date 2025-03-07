@@ -12,6 +12,12 @@ const XeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }) =
   const [errors, setErrors] = useState({});
   const toast = React.useRef(null);
 
+  useEffect(() => {
+    if (!visible) {
+      setErrors({});
+    }
+  }, [visible]);
+
   const handleSave = () => {
     const requiredFields = ['bien_so', 'loai_xe', 'suc_chua', 'trang_thai'];
     const validationErrors = validateForm(formData, requiredFields);

@@ -23,6 +23,12 @@ const TaiXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }
     }
   }, [visible]);
 
+  useEffect(() => {
+    if (!visible) {
+      setErrors({});
+    }
+  }, [visible]);
+
   const fetchUsers = async () => {
     try {
       const response = await TaiXeServices.getUsersNotInDriverTable();

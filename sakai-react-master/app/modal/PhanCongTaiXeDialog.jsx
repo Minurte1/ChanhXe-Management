@@ -34,6 +34,12 @@ const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formDat
     }
   }, [visible, filters]);
 
+  useEffect(() => {
+    if (!visible) {
+      setErrors({});
+    }
+  }, [visible]);
+
   const fetchBenXe = async () => {
     try {
       const response = await benXeService.getAllBenXe();

@@ -11,6 +11,12 @@ const NhanVienDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
   const [errors, setErrors] = useState({});
   const toast = React.useRef(null);
 
+  useEffect(() => {
+    if (!visible) {
+      setErrors({});
+    }
+  }, [visible]);
+
   const handleSave = () => {
     const requiredFields = ['ho_ten', 'so_dien_thoai', 'email', 'mat_khau', 'vai_tro', 'trang_thai'];
     const validationErrors = validateForm(formData, requiredFields);

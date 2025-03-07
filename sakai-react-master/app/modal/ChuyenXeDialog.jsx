@@ -110,6 +110,12 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
     }
   }, [visible, formData?.id_ben_xe_gui]);
 
+  useEffect(() => {
+    if (!visible) {
+      setErrors({});
+    }
+  }, [visible]);
+
   const xeOptions = xeList.map((xe) => ({ label: `${xe.bien_so} (${xe.loai_xe})`, value: xe.id_xe }));
   const taiXeOptions = taiXeList.map((taiXe) => ({
     label: `${taiXe.ho_ten} (${taiXe.bang_lai})`,

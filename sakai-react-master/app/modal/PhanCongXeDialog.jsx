@@ -33,6 +33,12 @@ const PhanCongXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onS
     }
   }, [visible, filters]);
 
+  useEffect(() => {
+    if (!visible) {
+      setErrors({});
+    }
+  }, [visible]);
+
   const fetchBenXe = async () => {
     try {
       const response = await benXeService.getAllBenXe();

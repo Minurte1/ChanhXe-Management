@@ -17,7 +17,9 @@ const KhachHangDialog = ({ isEditing, visible, onHide, isNew, formData, onInputC
   const [address, setAddress] = useState('');
 
   useEffect(() => {
-    if (!visible) return;
+    if (!visible) {
+      setErrors({});
+    }
   }, [visible]);
 
   // Update address locally whenever street or address components change

@@ -35,6 +35,12 @@ const BenXeDialog = ({ visible, onHide, isEditing, formData, onInputChange, onSa
     }
   }, [formData, visible, isEditing]);
 
+  useEffect(() => {
+    if (!visible) {
+      setErrors({});
+    }
+  }, [visible]);
+
   // Update address locally whenever street or address components change
   useEffect(() => {
     const addressParts = [street, selectedWards?.full_name, selectedDistrict?.full_name, selectedProvince?.full_name].filter((part) => part).join(', ');
