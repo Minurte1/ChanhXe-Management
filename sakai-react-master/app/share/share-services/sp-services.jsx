@@ -26,7 +26,8 @@ const spServices = {
       da_nhan: 'Đã nhận',
       dang_van_chuyen: 'Đang vận chuyển',
       giao_thanh_cong: 'Giao thành công',
-      giao_that_bai: 'Giao thất bại'
+      giao_that_bai: 'Giao thất bại',
+      bao_tri: 'Bảo Trì'
       // Bạn tự thêm các trạng thái khác vào đây
     };
     return trangThaiMap[trangThai] || trangThai;
@@ -100,7 +101,12 @@ const spServices = {
       'Chờ xuất bến': { text: 'blue', background: 'rgba(0,0,255,0.2)' },
       'Giao thành công': { text: 'green', background: 'rgba(0,128,0,0.2)' },
       'Giao thất bại': { text: 'red', background: 'rgba(255,0,0,0.2)' },
-      'Đã cập bến': { text: 'green', background: 'rgba(0,128,0,0.2)' }
+      'Đã cập bến': { text: 'green', background: 'rgba(0,128,0,0.2)' },
+      'Hàng dễ vỡ': { text: 'purple', background: 'rgba(128,0,128,0.2)' },
+      'Hàng khô': { text: 'brown', background: 'rgba(165,42,42,0.2)' },
+      'Hàng đông lạnh': { text: 'cyan', background: 'rgba(0,255,255,0.2)' },
+      'Hàng nguy hiểm': { text: 'darkred', background: 'rgba(139,0,0,0.2)' },
+      'Hàng thông thường': { text: 'gray', background: 'rgba(128,128,128,0.2)' }
     };
     return colorMap[trangThai] || { text: 'gray', background: 'rgba(128,128,128,0.2)' }; // Mặc định nếu không có
   }

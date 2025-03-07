@@ -1,15 +1,15 @@
 'use client';
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import OrderService from '../../../services/donHangSevices'; // Cập nhật tên service
 import OrderDialog from '../../../modal/DonHangDialog';
-import spServices from '@/app/share/share-services/sp-services';
-import { useAxios } from '@/app/authentication/useAxiosClient';
+import { useAxios } from '../../../authentication/useAxiosClient';
+import spServices from '../../../share/share-services/sp-services';
 
-const DanhSachDonHang = () => {
+const DanhSachDonHangTrongKho = () => {
   const [orders, setOrders] = useState([]);
   const [displayDialog, setDisplayDialog] = useState(false);
   const [isNew, setIsNew] = useState(false);
@@ -157,13 +157,12 @@ const DanhSachDonHang = () => {
     },
     (prevProps, nextProps) => prevProps.status === nextProps.status
   );
-
   return (
     <div className="p-grid">
       <Toast ref={toast} />
       <div className="p-col-12">
         <div className="card">
-          <h1>Danh Sách Đơn Hàng</h1>
+          <h1>Danh Sách Đơn Hàng Trong Kho</h1>
           <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew} style={{ marginBottom: '10px' }} />
           <DataTable value={orders} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}>
             <Column field="ma_van_don" header="Mã Vận Đơn" />
@@ -190,4 +189,4 @@ const DanhSachDonHang = () => {
   );
 };
 
-export default DanhSachDonHang;
+export default DanhSachDonHangTrongKho;

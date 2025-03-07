@@ -1,5 +1,5 @@
 const pool = require("../config/database"); // Kết nối cơ sở dữ liệu
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 
 // Lấy tất cả đơn hàng với truy vấn động và thông tin từ bảng ben_xe
 const getAllOrders = async (req, res) => {
@@ -32,16 +32,25 @@ const getAllOrders = async (req, res) => {
 
     // Tạo câu truy vấn cơ bản với JOIN đến bảng ben_xe
     let query = `
-      SELECT 
-        dh.*, 
-        bx_nhan.ten_ben_xe AS ben_xe_nhan_ten, 
-        bx_nhan.dia_chi AS ben_xe_nhan_dia_chi,
-        bx_gui.ten_ben_xe AS ben_xe_gui_ten, 
-        bx_gui.dia_chi AS ben_xe_gui_dia_chi
-      FROM don_hang dh
-      LEFT JOIN ben_xe bx_nhan ON dh.id_ben_xe_nhan = bx_nhan.id
-      LEFT JOIN ben_xe bx_gui ON dh.id_ben_xe_gui = bx_gui.id
-      WHERE 1=1
+     SELECT 
+    dh.*, 
+    bx_nhan.ten_ben_xe AS ben_xe_nhan_ten, 
+    bx_nhan.dia_chi AS ben_xe_nhan_dia_chi,
+    bx_gui.ten_ben_xe AS ben_xe_gui_ten, 
+    bx_gui.dia_chi AS ben_xe_gui_dia_chi,
+    kh.id AS khach_hang_id,
+    kh.ho_ten AS khach_hang_ho_ten,
+    kh.so_dien_thoai AS khach_hang_so_dien_thoai,
+    kh.dia_chi AS khach_hang_dia_chi,
+    kh.id_nguoi_cap_nhat AS khach_hang_id_nguoi_cap_nhat,
+    kh.ngay_tao AS khach_hang_ngay_tao,
+    kh.ngay_cap_nhat AS khach_hang_ngay_cap_nhat
+FROM don_hang dh
+LEFT JOIN ben_xe bx_nhan ON dh.id_ben_xe_nhan = bx_nhan.id
+LEFT JOIN ben_xe bx_gui ON dh.id_ben_xe_gui = bx_gui.id
+LEFT JOIN khach_hang kh ON dh.nguoi_gui_id = kh.id
+WHERE 1=1
+
     `;
     let queryParams = [];
 
@@ -392,7 +401,7 @@ const createOrderAndCustomer = async (req, res) => {
       ho_ten,
       so_dien_thoai,
       dia_chi,
-      mat_khau
+      mat_khau,
     } = req.body;
 
     const id_nguoi_cap_nhat = req.user?.id;
