@@ -3,7 +3,9 @@ import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import AddressSelector from '../share/component-share/addressUser';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { Toast } from 'primereact/toast';
+import { validateForm } from '../(main)/utilities/validation';
 
 const BenXeDialog = ({ visible, onHide, isEditing, formData, onInputChange, onSave }) => {
   const [street, setStreet] = useState('');
@@ -11,6 +13,8 @@ const BenXeDialog = ({ visible, onHide, isEditing, formData, onInputChange, onSa
   const [selectedDistrict, setSelectedDistrict] = useState(null);
   const [selectedWards, setSelectedWards] = useState(null);
   const [address, setAddress] = useState('');
+  const [errors, setErrors] = useState({});
+  const toast = useRef(null);
 
   // Sync local state with formData when dialog opens or formData changes
   useEffect(() => {
@@ -39,27 +43,44 @@ const BenXeDialog = ({ visible, onHide, isEditing, formData, onInputChange, onSa
 
   // Handle save action
   const handleSave = () => {
-    const dataToSave = {
-      id: formData.id, // Thêm id để giữ nguyên khi edit
-      ten_ben_xe: formData.ten_ben_xe || '',
+    const requiredFields = ['ten_ben_xe', 'dia_chi', 'tinh', 'huyen', 'xa', 'duong'];
+    const validationErrors = validateForm({
+      ...formData,
       dia_chi: address,
       tinh: selectedProvince?.full_name || '',
       huyen: selectedDistrict?.full_name || '',
       xa: selectedWards?.full_name || '',
       duong: street
-    };
+    }, requiredFields);
 
-    // Gửi toàn bộ dataToSave lên parent, không cần lọc updatedFields
-    onInputChange(dataToSave);
-    onSave(dataToSave);
+    if (Object.keys(validationErrors).length === 0) {
+      const dataToSave = {
+        id: formData.id, // Thêm id để giữ nguyên khi edit
+        ten_ben_xe: formData.ten_ben_xe || '',
+        dia_chi: address,
+        tinh: selectedProvince?.full_name || '',
+        huyen: selectedDistrict?.full_name || '',
+        xa: selectedWards?.full_name || '',
+        duong: street
+      };
+
+      // Gửi toàn bộ dataToSave lên parent, không cần lọc updatedFields
+      onInputChange(dataToSave);
+      onSave(dataToSave);
+    } else {
+      setErrors(validationErrors);
+      toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng điền đầy đủ thông tin', life: 3000 });
+    }
   };
 
   return (
     <Dialog visible={visible} style={{ width: '960px' }} header={isEditing ? 'Chỉnh sửa bến xe' : 'Thêm bến xe'} modal onHide={onHide}>
+      <Toast ref={toast} />
       <div className="p-fluid">
         <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
           <label htmlFor="ten_ben_xe">Tên Bến Xe</label>
           <InputText className="mt-2 h-10" id="ten_ben_xe" value={formData.ten_ben_xe || ''} onChange={(e) => onInputChange(e)} />
+          {errors.ten_ben_xe && <small className="p-error">{errors.ten_ben_xe}</small>}
         </div>
         <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
           <AddressSelector
@@ -77,12 +98,14 @@ const BenXeDialog = ({ visible, onHide, isEditing, formData, onInputChange, onSa
             Địa Chỉ
           </label>
           <InputText className="mt-2 h-10" id="dia_chi" value={address} readOnly />
+          {errors.dia_chi && <small className="p-error">{errors.dia_chi}</small>}
         </div>
         <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
           <label className="mt-2" htmlFor="ten_duong">
             Tên Đường
           </label>
           <InputText className="mt-2 h-10" id="ten_duong" value={street} onChange={(e) => setStreet(e.target.value)} />
+          {errors.duong && <small className="p-error">{errors.duong}</small>}
         </div>
       </div>
       <div className="p-dialog-footer">

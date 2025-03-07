@@ -9,6 +9,7 @@ import BenXeService from '../services/benXeServices';
 import UserService from '../services/userAccountService';
 import phanCongNguoiDungService from '../services/phanCongNguoiDungServices';
 import { useAxios } from '../authentication/useAxiosClient';
+import { validateForm } from '../(main)/utilities/validation';
 
 const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, onInputChange, onSave }) => {
   const [listBenXe, setListBenXe] = useState([]);
@@ -16,12 +17,14 @@ const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, for
   const [selectedBenXe, setSelectedBenXe] = useState([]);
   const [listPhanCongNguoiDung, setListPhanCongNguoiDung] = useState([]);
   const [filters, setFilters] = useState({});
+  const [errors, setErrors] = useState({});
   const toast = useRef(null);
-  //
+
   const axiosInstance = useAxios();
   const userService = UserService(axiosInstance);
   const benXeService = BenXeService(axiosInstance);
   const PhanCongNguoiDungService = phanCongNguoiDungService(axiosInstance);
+
   useEffect(() => {
     if (visible) {
       fetchPhanCongNguoiDung();
@@ -111,11 +114,22 @@ const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, for
     onInputChange(e, field);
   };
 
+  const handleSave = () => {
+    const requiredFields = ['id_ben', 'id_nguoi_dung'];
+    const validationErrors = validateForm(formData, requiredFields);
+    if (Object.keys(validationErrors).length === 0) {
+      onSave();
+    } else {
+      setErrors(validationErrors);
+      toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng điền đầy đủ thông tin', life: 3000 });
+    }
+  };
+
   // Footer của modal
   const dialogFooter = (
     <div>
       <Button label="Hủy" icon="pi pi-times" className="p-button-text" onClick={onHide} />
-      <Button label="Lưu" icon="pi pi-check" className="p-button-text" onClick={onSave} />
+      <Button label="Lưu" icon="pi pi-check" className="p-button-text" onClick={handleSave} />
     </div>
   );
 
@@ -142,6 +156,7 @@ const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, for
               className="p-inputtext-sm"
               style={{ width: '100%' }}
             />
+            {errors.id_ben && <small className="p-error">{errors.id_ben}</small>}
           </div>
 
           <div className="p-col-12" style={{ marginBottom: '2rem' }}>
@@ -155,13 +170,14 @@ const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, for
               optionLabel="ho_ten"
               optionValue="id"
               onChange={(e) => handleInputChange(e, 'id_nguoi_dung')}
-              placeholder="Chọn bến se trước khi chọn người dùng"
+              placeholder="Chọn bến xe trước khi chọn người dùng"
               filter
               filterBy="ho_ten"
               className="p-inputtext-sm"
               style={{ width: '100%' }}
               disabled={!formData.id_ben}
             />
+            {errors.id_nguoi_dung && <small className="p-error">{errors.id_nguoi_dung}</small>}
           </div>
         </div>
       </div>

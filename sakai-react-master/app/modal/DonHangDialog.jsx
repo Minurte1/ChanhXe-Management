@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef} from 'react';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
@@ -11,6 +11,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { Autocomplete, TextField } from '@mui/material';
 import { useAxios } from '../authentication/useAxiosClient';
 import AddressSelector from '../share/component-share/addressUser';
+import { validateForm } from '../(main)/utilities/validation';
+import { Toast } from 'primereact/toast';
 
 const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, onSave2, isLoggedIn }) => {
   const [listBenXe, setListBenXe] = useState([]);
@@ -22,6 +24,9 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
   const [selectedDistrict, setSelectedDistrict] = useState(null);
   const [selectedWards, setSelectedWards] = useState(null);
   const [address, setAddress] = useState('');
+  const [errors, setErrors] = useState({});
+
+  const toast = useRef(null);
 
   useEffect(() => {
     if (visible) {
@@ -115,10 +120,33 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
     setAddress(formData.dia_chi);
   }, [street, selectedProvince, selectedDistrict, selectedWards]);
 
+  const handleSave = () => {
+    if (!isNewCustomer) {
+      const requiredFields = ['id_ben_xe_gui', 'id_ben_xe_nhan', 'loai_hang_hoa', 'trong_luong', 'ho_ten', 'so_dien_thoai', 'dia_chi', 'mat_khau', 'gia_tri_hang', 'cuoc_phi', 'phi_bao_hiem', 'phu_phi', 'trang_thai', 'ten_nguoi_nhan', 'so_dien_thoai_nhan', 'email_nhan'];
+      const validationErrors = validateForm(formData, requiredFields);
+      if (Object.keys(validationErrors).length === 0) {
+        onSave2();
+      } else {
+        setErrors(validationErrors);
+        toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng điền đầy đủ thông tin', life: 3000 });
+      }
+    } else {
+      const requiredFields = ['id_ben_xe_gui', 'id_ben_xe_nhan', 'loai_hang_hoa', 'trong_luong', 'nguoi_gui_id', 'gia_tri_hang', 'cuoc_phi', 'phi_bao_hiem', 'phu_phi', 'trang_thai', 'ten_nguoi_nhan', 'so_dien_thoai_nhan', 'email_nhan'];
+      const validationErrors = validateForm(formData, requiredFields);
+      if (Object.keys(validationErrors).length === 0) {
+        onSave();
+      } else {
+        setErrors(validationErrors);
+        // toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng điền đầy đủ thông tin', life: 3000 });
+        console.log('validationErrors', validationErrors);
+      }
+    }
+  };
+
   const dialogFooter = (
     <>
       <Button label="Hủy" icon="pi pi-times" className="p-button-text" onClick={onHide} />
-      <Button label="Lưu" icon="pi pi-check" className="p-button-primary" onClick={isNewCustomer ? onSave : onSave2} />
+      <Button label="Lưu" icon="pi pi-check" className="p-button-primary" onClick={handleSave} />
     </>
   );
 
@@ -152,7 +180,8 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
                     showClear
                     className="w-100 mt-2"
                   />
-                </div>
+                  {errors.nguoi_gui_id && <small className="p-error">{errors.nguoi_gui_id}</small>}
+                </div>    
               ) : (
                 <div>
                   <label htmlFor="ho_ten">Họ Tên</label>
@@ -175,6 +204,7 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
               <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
                 <label htmlFor="so_dien_thoai">Số Điện Thoại</label>
                 <InputText id="so_dien_thoai" value={formData.so_dien_thoai || ''} onChange={(e) => onInputChange(e, 'so_dien_thoai')} className="mt-2 h-10" />
+                {errors.so_dien_thoai && <small className="p-error">{errors.so_dien_thoai}</small>}
               </div>
               <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
                 <AddressSelector
@@ -192,14 +222,17 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
                   Tên Đường
                 </label>
                 <InputText className="mt-2 h-10" id="ten_duong" value={street} onChange={(e) => setStreet(e.target.value)} />
+                {errors.ten_duong && <small className="p-error">{errors.ten_duong}</small>}
               </div>{' '}
               <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
                 <label htmlFor="dia_chi">Địa Chỉ</label>
                 <InputText id="dia_chi" value={formData.dia_chi || ''} onChange={(e) => onInputChange(e, 'dia_chi')} className="mt-2 h-10" />
+                {errors.dia_chi && <small className="p-error">{errors.dia_chi}</small>}
               </div>
               <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
                 <label htmlFor="mat_khau">Mật Khẩu</label>
                 <InputText id="mat_khau" type="password" value={formData.mat_khau || ''} onChange={(e) => onInputChange(e, 'mat_khau')} className="mt-2 h-10" />
+                {errors.mat_khau && <small className="p-error">{errors.mat_khau}</small>}
               </div>
             </div>
           )
@@ -220,6 +253,7 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
           showClear
           className="w-100 mt-2"
         />
+        {errors.nguoi_gui_id && <small className="p-error">{errors.nguoi_gui_id}</small>}
       </div>)}
 
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
@@ -236,6 +270,7 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
           showClear
           className="w-100 mt-2"
         />
+        {errors.id_ben_xe_gui && <small className="p-error">{errors.id_ben_xe_gui}</small>}
       </div>
 
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
@@ -252,22 +287,27 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
           showClear
           className="w-100 mt-2"
         />
+        {errors.id_ben_xe_nhan && <small className="p-error">{errors.id_ben_xe_nhan}</small>}
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="loai_hang_hoa">Loại Hàng Hóa</label>
         <Dropdown id="loai_hang_hoa" value={formData.loai_hang_hoa || ''} options={loaiHangHoaOptions} onChange={(e) => onInputChange({ target: { value: e.value } }, 'loai_hang_hoa')} placeholder="Chọn loại hàng hóa" className="mt-2" />
+        {errors.loai_hang_hoa && <small className="p-error">{errors.loai_hang_hoa}</small>}            
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="trong_luong">Trọng Lượng</label>
         <InputText id="trong_luong" value={formData.trong_luong || ''} onChange={(e) => onInputChange(e, 'trong_luong')} className="mt-2 h-10" placeholder="Ví dụ: 10 kg" />
+        {errors.trong_luong && <small className="p-error">{errors.trong_luong}</small>}
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="kich_thuoc">Kích Thước</label>
         <InputText id="kich_thuoc" value={formData.kich_thuoc || ''} onChange={(e) => onInputChange(e, 'kich_thuoc')} className="mt-2 h-10" placeholder="Ví dụ: 50x30x20 cm" />
+        {errors.kich_thuoc && <small className="p-error">{errors.kich_thuoc}</small>}
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="so_kien">Số Kiện</label>
         <InputText id="so_kien" value={formData.so_kien || ''} onChange={(e) => onInputChange(e, 'so_kien')} className="mt-2 h-10" placeholder="Ví dụ: 2" />
+        {errors.so_kien && <small className="p-error">{errors.so_kien}</small>}
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="gia_tri_hang">Giá Trị Hàng</label>
@@ -280,6 +320,7 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
           min={0}
           required
         />
+        {errors.gia_tri_hang && <small className="p-error">{errors.gia_tri_hang}</small>}
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="cuoc_phi">Cước Phí</label>
@@ -292,30 +333,37 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
           required
           min={0}
         />
+        {errors.cuoc_phi && <small className="p-error">{errors.cuoc_phi}</small>}
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="phi_bao_hiem">Phí Bảo Hiểm</label>
         <InputNumber id="phi_bao_hiem" value={formData.phi_bao_hiem || 0} min={0} onValueChange={(e) => onInputChange(e, 'phi_bao_hiem')} className="mt-2 h-10" placeholder="Ví dụ: 20000 VND" required/>
+        {errors.phi_bao_hiem && <small className="p-error">{errors.phi_bao_hiem}</small>}
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="phu_phi">Phụ Phí</label>
         <InputNumber id="phu_phi" value={formData.phu_phi || 0} min={0} onValueChange={(e) => onInputChange(e, 'phu_phi')} className="mt-2 h-10" placeholder="Ví dụ: 30000 VND" required/>
+        {errors.phu_phi && <small className="p-error">{errors.phu_phi}</small>}
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="trang_thai">Trạng Thái</label>
         <Dropdown id="trang_thai" value={formData.trang_thai || ''} options={trangThaiOptions} onChange={(e) => onInputChange({ target: { value: e.value } }, 'trang_thai')} placeholder="Chọn trạng thái" className="mt-2" required/>
+        {errors.trang_thai && <small className="p-error">{errors.trang_thai}</small>}
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="ten_nguoi_nhan">Tên Người Nhận</label>
         <InputText id="ten_nguoi_nhan" value={formData.ten_nguoi_nhan || ''} onChange={(e) => onInputChange(e, 'ten_nguoi_nhan')} className="mt-2 h-10" placeholder="Ví dụ: Nguyễn Văn A" required/>
+        {errors.ten_nguoi_nhan && <small className="p-error">{errors.ten_nguoi_nhan}</small>}
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="so_dien_thoai_nhan">Số Điện Thoại Nhận</label>
         <InputText id="so_dien_thoai_nhan" value={formData.so_dien_thoai_nhan || ''} onChange={(e) => onInputChange(e, 'so_dien_thoai_nhan')} className="mt-2 h-10" placeholder="Ví dụ: 0912345678" required/>
+        {errors.so_dien_thoai_nhan && <small className="p-error">{errors.so_dien_thoai_nhan}</small>}
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="email_nhan">Email Nhận</label>
         <InputText id="email_nhan" value={formData.email_nhan || ''} onChange={(e) => onInputChange(e, 'email_nhan')} className="mt-2 h-10" placeholder="Ví dụ: example@gmail.com" required/>
+        {errors.email_nhan && <small className="p-error">{errors.email_nhan}</small>}
       </div>
       {/* Hiển thị tổng tiền */}
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>

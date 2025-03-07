@@ -21,15 +21,15 @@ const DiaDiemDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave
       <div className="p-fluid">
         <div className="p-field">
           <label htmlFor="tinh">Tỉnh</label>
-          <InputText id="tinh" value={formData.tinh} onChange={(e) => onInputChange(e, 'tinh')} required/>
+          <InputText id="tinh" value={formData.tinh} onChange={(e) => onInputChange(e, 'tinh')} />
         </div>
         <div className="p-field">
           <label htmlFor="huyen">Huyện</label>
-          <InputText id="huyen" value={formData.huyen} onChange={(e) => onInputChange(e, 'huyen')} required/>
+          <InputText id="huyen" value={formData.huyen} onChange={(e) => onInputChange(e, 'huyen')} />
         </div>
         <div className="p-field">
           <label htmlFor="xa">Xã</label>
-          <InputText id="xa" value={formData.xa} onChange={(e) => onInputChange(e, 'xa')} required/>
+          <InputText id="xa" value={formData.xa} onChange={(e) => onInputChange(e, 'xa')} />
         </div>
       </div>
     </Dialog>

@@ -2,16 +2,15 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Dialog } from 'primereact/dialog';
-
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { Dropdown } from 'primereact/dropdown';
 import BenXeService from '../services/benXeServices';
-
 import phanCongTaiXeService from '../services/phanCongTaiXeServices';
 import { useAxios } from '../authentication/useAxiosClient';
 import taiXeService from '../services/taiXeServices';
 import spServices from '../share/share-services/sp-services';
+import { validateForm } from '../(main)/utilities/validation';
 
 const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, onInputChange, onSave }) => {
   const [listBenXe, setListBenXe] = useState([]);
@@ -19,12 +18,14 @@ const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formDat
   const [listPhanCongTaiXe, setListPhanCongTaiXe] = useState([]);
   const [selectedBenXe, setSelectedBenXe] = useState([]);
   const [filters, setFilters] = useState({});
+  const [errors, setErrors] = useState({});
   const toast = useRef(null);
-  //
+
   const axiosInstance = useAxios();
   const benXeService = BenXeService(axiosInstance);
   const TaiXeServices = taiXeService(axiosInstance);
   const phanCongTaiXeServices = phanCongTaiXeService(axiosInstance);
+
   useEffect(() => {
     if (visible) {
       fetchBenXe();
@@ -106,11 +107,22 @@ const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formDat
     onInputChange(e, field);
   };
 
+  const handleSave = () => {
+    const requiredFields = ['id_ben', 'id_tai_xe'];
+    const validationErrors = validateForm(formData, requiredFields);
+    if (Object.keys(validationErrors).length === 0) {
+      onSave();
+    } else {
+      setErrors(validationErrors);
+      toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng điền đầy đủ thông tin', life: 3000 });
+    }
+  };
+
   // Footer của modal
   const dialogFooter = (
     <div>
       <Button label="Hủy" icon="pi pi-times" className="p-button-text" onClick={onHide} />
-      <Button label="Lưu" icon="pi pi-check" className="p-button-text" onClick={onSave} />
+      <Button label="Lưu" icon="pi pi-check" className="p-button-text" onClick={handleSave} />
     </div>
   );
 
@@ -137,6 +149,7 @@ const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formDat
               className="p-inputtext-sm"
               style={{ width: '100%' }}
             />
+            {errors.id_ben && <small className="p-error">{errors.id_ben}</small>}
           </div>
 
           <div className="p-col-12" style={{ marginBottom: '2rem' }}>
@@ -162,6 +175,7 @@ const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formDat
                 </div>
               )}
             />
+            {errors.id_tai_xe && <small className="p-error">{errors.id_tai_xe}</small>}
           </div>
         </div>
       </div>
