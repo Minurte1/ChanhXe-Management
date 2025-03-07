@@ -33,27 +33,27 @@ const NhanVienDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
     <Dialog visible={visible} style={{ width: '450px' }} header={isNew ? 'Thêm Nhân Viên' : 'Chỉnh Sửa Nhân Viên'} modal className="p-fluid" footer={dialogFooter} onHide={onHide}>
       <div className="p-field">
         <label htmlFor="ho_ten ">Họ Tên</label>
-        <InputText id="ho_ten" style={{ marginTop: '3px' }} value={formData.ho_ten} onChange={(e) => onInputChange(e, 'ho_ten')} />
+        <InputText id="ho_ten" style={{ marginTop: '3px' }} value={formData.ho_ten} onChange={(e) => onInputChange(e, 'ho_ten')} required/>
       </div>
       <div className="p-field  mt-2">
         <label htmlFor="so_dien_thoai ">Số Điện Thoại</label>
-        <InputText id="so_dien_thoai" style={{ marginTop: '3px' }} value={formData.so_dien_thoai} onChange={(e) => onInputChange(e, 'so_dien_thoai')} />
+        <InputText id="so_dien_thoai" style={{ marginTop: '3px' }} value={formData.so_dien_thoai} onChange={(e) => onInputChange(e, 'so_dien_thoai')} required/>
       </div>
       <div className="p-field mt-2">
         <label htmlFor="email ">Email</label>
-        <InputText id="email" style={{ marginTop: '3px' }} value={formData.email} onChange={(e) => onInputChange(e, 'email')} />
+        <InputText id="email" style={{ marginTop: '3px' }} value={formData.email} onChange={(e) => onInputChange(e, 'email')} required/>
       </div>
       <div className="p-field mt-2">
         <label htmlFor="mat_khau ">Mật Khẩu</label>
-        <InputText id="mat_khau" style={{ marginTop: '3px' }} type="password" value={formData.mat_khau} onChange={(e) => onInputChange(e, 'mat_khau')} />
+        <InputText id="mat_khau" style={{ marginTop: '3px' }} type="password" value={formData.mat_khau} onChange={(e) => onInputChange(e, 'mat_khau')} required/>
       </div>
       <div className="p-field mt-2">
         <label htmlFor="vai_tro ">Vai Trò</label>
-        <Dropdown id="vai_tro" style={{ marginTop: '3px' }} value={formData.vai_tro} options={vaiTroOptions} onChange={(e) => onInputChange(e, 'vai_tro')} placeholder="Chọn vai trò" />
+        <Dropdown id="vai_tro" style={{ marginTop: '3px' }} value={formData.vai_tro} options={vaiTroOptions} onChange={(e) => onInputChange(e, 'vai_tro')} placeholder="Chọn vai trò" required/>
       </div>
       <div className="p-field mt-2">
         <label htmlFor="trang_thai ">Trạng Thái</label>
-        <Dropdown id="trang_thai" style={{ marginTop: '3px' }} value={formData.trang_thai} options={trangThaiOptions} onChange={(e) => onInputChange(e, 'trang_thai')} placeholder="Chọn trạng thái" />
+        <Dropdown id="trang_thai" style={{ marginTop: '3px' }} value={formData.trang_thai} options={trangThaiOptions} onChange={(e) => onInputChange(e, 'trang_thai')} placeholder="Chọn trạng thái" required/>
       </div>
     </Dialog>
   );

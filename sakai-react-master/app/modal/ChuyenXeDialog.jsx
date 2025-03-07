@@ -143,20 +143,20 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
     <Dialog visible={visible} style={{ width: '450px' }} header={isNew ? 'Thêm Chuyến Xe' : 'Chỉnh Sửa Chuyến Xe'} modal className="p-fluid" footer={dialogFooter} onHide={onHide}>
       <div className="p-field mt-2">
         <label htmlFor="id_ben_xe_gui">Bến Xe Gửi</label>
-        <Dropdown id="id_ben_xe_gui" value={formData.id_ben_xe_gui} options={benXeOptions} onChange={(e) => onInputChange(e, 'id_ben_xe_gui')} placeholder="Chọn bến xe gửi" filter filterBy="label" style={{ marginTop: '3px' }} />
+        <Dropdown id="id_ben_xe_gui" value={formData.id_ben_xe_gui} options={benXeOptions} onChange={(e) => onInputChange(e, 'id_ben_xe_gui')} placeholder="Chọn bến xe gửi" filter filterBy="label" style={{ marginTop: '3px' }} required/>
       </div>
       <div className="p-field mt-2">
         <label htmlFor="id_ben_xe_nhan">Bến Xe Nhận</label>
-        <Dropdown id="id_ben_xe_nhan" value={formData.id_ben_xe_nhan} options={benXeOptions} onChange={(e) => onInputChange(e, 'id_ben_xe_nhan')} placeholder="Chọn bến xe nhận" filter filterBy="label" style={{ marginTop: '3px' }} />
+        <Dropdown id="id_ben_xe_nhan" value={formData.id_ben_xe_nhan} options={benXeOptions} onChange={(e) => onInputChange(e, 'id_ben_xe_nhan')} placeholder="Chọn bến xe nhận" filter filterBy="label" style={{ marginTop: '3px' }} required/>
       </div>
       <div className="p-field mt-2">
         <label htmlFor="xe_id">Xe</label>
-        <Dropdown id="xe_id" value={formData?.xe_id} options={xeOptions} onChange={(e) => onInputChange(e, 'xe_id')} placeholder="Chọn xe" filter filterBy="label" style={{ marginTop: '3px' }} />
+        <Dropdown id="xe_id" value={formData?.xe_id} options={xeOptions} onChange={(e) => onInputChange(e, 'xe_id')} placeholder="Chọn xe" filter filterBy="label" style={{ marginTop: '3px' }} required/>
       </div>
 
       <div className="p-field mt-2">
         <label htmlFor="tai_xe_id">Tài Xế</label>
-        <Dropdown id="tai_xe_id" value={formData?.tai_xe_id} options={taiXeOptions} onChange={(e) => onInputChange(e, 'tai_xe_id')} placeholder="Chọn tài xế" filter filterBy="label" style={{ marginTop: '3px' }} />
+        <Dropdown id="tai_xe_id" value={formData?.tai_xe_id} options={taiXeOptions} onChange={(e) => onInputChange(e, 'tai_xe_id')} placeholder="Chọn tài xế" filter filterBy="label" style={{ marginTop: '3px' }} required/>
       </div>
 
       <div className="p-field mt-2">
@@ -171,6 +171,7 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
           filterBy="label"
           style={{ marginTop: '3px' }}
           showClear
+          required
         />
       </div>
 
@@ -186,6 +187,7 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
           minDate={new Date()}
           style={{ marginTop: '3px' }}
           placeholder="Chọn thời gian xuất bến"
+          required
         />
       </div>
 
@@ -199,6 +201,7 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
           placeholder="Chọn trạng thái"
           style={{ marginTop: '3px' }}
           disabled={formData?.trang_thai === 'da_cap_ben'} // Vô hiệu hóa nếu đã là "Đã cập bến"
+          required
         />
       </div>
     </Dialog>

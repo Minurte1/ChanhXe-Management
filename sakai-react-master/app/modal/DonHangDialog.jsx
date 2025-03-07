@@ -288,6 +288,7 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
           className="mt-2 h-10"
           placeholder="Ví dụ: 500000 VND"
           min={0}
+          required
         />
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
@@ -298,32 +299,33 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
           onValueChange={(e) => onInputChange({ target: { value: e.value } }, 'cuoc_phi')}
           className="mt-2 h-10"
           placeholder="Ví dụ: 100000 VND"
+          required
           min={0}
         />
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="phi_bao_hiem">Phí Bảo Hiểm</label>
-        <InputNumber id="phi_bao_hiem" value={formData.phi_bao_hiem || 0} min={0} onValueChange={(e) => onInputChange(e, 'phi_bao_hiem')} className="mt-2 h-10" placeholder="Ví dụ: 20000 VND" />
+        <InputNumber id="phi_bao_hiem" value={formData.phi_bao_hiem || 0} min={0} onValueChange={(e) => onInputChange(e, 'phi_bao_hiem')} className="mt-2 h-10" placeholder="Ví dụ: 20000 VND" required/>
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="phu_phi">Phụ Phí</label>
-        <InputNumber id="phu_phi" value={formData.phu_phi || 0} min={0} onValueChange={(e) => onInputChange(e, 'phu_phi')} className="mt-2 h-10" placeholder="Ví dụ: 30000 VND" />
+        <InputNumber id="phu_phi" value={formData.phu_phi || 0} min={0} onValueChange={(e) => onInputChange(e, 'phu_phi')} className="mt-2 h-10" placeholder="Ví dụ: 30000 VND" required/>
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="trang_thai">Trạng Thái</label>
-        <Dropdown id="trang_thai" value={formData.trang_thai || ''} options={trangThaiOptions} onChange={(e) => onInputChange({ target: { value: e.value } }, 'trang_thai')} placeholder="Chọn trạng thái" className="mt-2" />
+        <Dropdown id="trang_thai" value={formData.trang_thai || ''} options={trangThaiOptions} onChange={(e) => onInputChange({ target: { value: e.value } }, 'trang_thai')} placeholder="Chọn trạng thái" className="mt-2" required/>
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="ten_nguoi_nhan">Tên Người Nhận</label>
-        <InputText id="ten_nguoi_nhan" value={formData.ten_nguoi_nhan || ''} onChange={(e) => onInputChange(e, 'ten_nguoi_nhan')} className="mt-2 h-10" placeholder="Ví dụ: Nguyễn Văn A" />
+        <InputText id="ten_nguoi_nhan" value={formData.ten_nguoi_nhan || ''} onChange={(e) => onInputChange(e, 'ten_nguoi_nhan')} className="mt-2 h-10" placeholder="Ví dụ: Nguyễn Văn A" required/>
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="so_dien_thoai_nhan">Số Điện Thoại Nhận</label>
-        <InputText id="so_dien_thoai_nhan" value={formData.so_dien_thoai_nhan || ''} onChange={(e) => onInputChange(e, 'so_dien_thoai_nhan')} className="mt-2 h-10" placeholder="Ví dụ: 0912345678" />
+        <InputText id="so_dien_thoai_nhan" value={formData.so_dien_thoai_nhan || ''} onChange={(e) => onInputChange(e, 'so_dien_thoai_nhan')} className="mt-2 h-10" placeholder="Ví dụ: 0912345678" required/>
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="email_nhan">Email Nhận</label>
-        <InputText id="email_nhan" value={formData.email_nhan || ''} onChange={(e) => onInputChange(e, 'email_nhan')} className="mt-2 h-10" placeholder="Ví dụ: example@gmail.com" />
+        <InputText id="email_nhan" value={formData.email_nhan || ''} onChange={(e) => onInputChange(e, 'email_nhan')} className="mt-2 h-10" placeholder="Ví dụ: example@gmail.com" required/>
       </div>
       {/* Hiển thị tổng tiền */}
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
