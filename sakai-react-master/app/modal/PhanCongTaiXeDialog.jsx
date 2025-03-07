@@ -11,6 +11,7 @@ import BenXeService from '../services/benXeServices';
 import phanCongTaiXeService from '../services/phanCongTaiXeServices';
 import { useAxios } from '../authentication/useAxiosClient';
 import taiXeService from '../services/taiXeServices';
+import spServices from '../share/share-services/sp-services';
 
 const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, onInputChange, onSave }) => {
   const [listBenXe, setListBenXe] = useState([]);
@@ -155,6 +156,11 @@ const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formDat
               className="p-inputtext-sm"
               style={{ width: '100%' }}
               disabled={!formData.id_ben}
+              itemTemplate={(option) => (
+                <div>
+                  <span>{option.ho_ten}</span> {option.vai_tro && <small>({spServices.formatVaiTro(option.vai_tro)})</small>}
+                </div>
+              )}
             />
           </div>
         </div>

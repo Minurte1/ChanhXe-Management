@@ -138,7 +138,28 @@ const DanhSachChuyenXe = () => {
             <Column field="tai_xe_phu_ho_ten" header="Tài Xế Phụ" sortable body={(rowData) => rowData.tai_xe_phu_ho_ten || 'Không có'} />
             <Column field="thoi_gian_xuat_ben" header="Thời Gian Xuất Bến" sortable body={(rowData) => new Date(rowData.thoi_gian_xuat_ben).toLocaleString('vi-VN')} />
             <Column field="thoi_gian_cap_ben" header="Thời Gian Cập Bến" sortable body={(rowData) => (rowData.thoi_gian_cap_ben ? new Date(rowData.thoi_gian_cap_ben).toLocaleString('vi-VN') : 'Chưa cập bến')} />
-            <Column field="labelTrangThai" header="Trạng Thái" sortable />
+            <Column
+              field="labelTrangThai"
+              header="Trạng Thái"
+              sortable
+              body={(rowData) => {
+                const { text, background } = spServices.getColorTrangThai(rowData.labelTrangThai);
+                return (
+                  <span
+                    style={{
+                      color: text,
+                      backgroundColor: background,
+                      padding: '4px 8px',
+                      borderRadius: '4px',
+                      display: 'inline-block',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    {rowData.labelTrangThai}
+                  </span>
+                );
+              }}
+            />
             <Column field="ben_xe_nhan_ten" header="Bến Xe Nhận" sortable />
             <Column field="ben_xe_gui_ten" header="Bến Xe Gửi" sortable />
             <Column

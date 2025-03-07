@@ -10,6 +10,15 @@ const chuyenXeService = (axiosInstance) => ({
       throw error;
     }
   },
+  getTripAndOrders: async (id) => {
+    try {
+      const response = await axiosInstance.post(`${API_URL}/trips/don-hang`, { id: id });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching trips:', error);
+      throw error;
+    }
+  },
 
   getTripById: async (id) => {
     try {
@@ -24,6 +33,15 @@ const chuyenXeService = (axiosInstance) => ({
   createTrip: async (tripData) => {
     try {
       const response = await axiosInstance.post(`${API_URL}/trips`, tripData);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating trip:', error);
+      throw error;
+    }
+  },
+  updateChuyenXeCapBen: async (id) => {
+    try {
+      const response = await axiosInstance.post(`${API_URL}/trips/updateChuyenXeCapBen`, { id: id });
       return response.data;
     } catch (error) {
       console.error('Error creating trip:', error);
