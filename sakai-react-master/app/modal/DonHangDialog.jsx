@@ -44,10 +44,11 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
 
   const trangThaiOptions = [
     { label: 'Chờ xử lý', value: 'cho_xu_ly' },
-    { label: 'Đã nhận', value: 'da_nhan' },
+    // { label: 'Đã nhận', value: 'da_nhan' },
     { label: 'Đang vận chuyển', value: 'dang_van_chuyen' },
     { label: 'Giao thành công', value: 'giao_thanh_cong' },
-    { label: 'Giao thất bại', value: 'giao_that_bai' }
+    { label: 'Giao thất bại', value: 'giao_that_bai' },
+    { label: 'Đã cập bến', value: 'da_cap_ben' }
   ];
 
   const loaiHangHoaOptions = [
@@ -130,7 +131,7 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
   const dialogFooter = (
     <>
       <Button label="Hủy" icon="pi pi-times" className="p-button-text" onClick={onHide} />
-      <Button label="Lưu" icon="pi pi-check" className="p-button-primary" onClick={ isNewCustomer ? onSave : onSave2} />
+      <Button label="Lưu" icon="pi pi-check" className="p-button-primary" onClick={isNewCustomer ? onSave : onSave2} />
     </>
   );
 
@@ -165,9 +166,17 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
                     className="w-100 mt-2"
                   />
                 </div>
-              ) : (<div></div>)}
+              ) : (
+                <div></div>
+              )}
             </div>
-            <Button label={isNewCustomer ? "Khách Hàng Mới" : "Huỷ Thêm Khách Hàng"}  onClick={handleToggleDiv} icon={isNewCustomer ? "pi pi-plus" : "pi pi-minus"} className={isNewCustomer ? "p-button-success" : "p-button-fail"} style={{ width: '20%', marginTop: '25px', marginLeft: '10px' }} />
+            <Button
+              label={isNewCustomer ? 'Khách Hàng Mới' : 'Huỷ Thêm Khách Hàng'}
+              onClick={handleToggleDiv}
+              icon={isNewCustomer ? 'pi pi-plus' : 'pi pi-minus'}
+              className={isNewCustomer ? 'p-button-success' : 'p-button-fail'}
+              style={{ width: '20%', marginTop: '25px', marginLeft: '10px' }}
+            />
           </div>
 
           {isNewCustomer ? (
@@ -208,25 +217,25 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
                 <InputText id="mat_khau" type="password" value={formData.mat_khau || ''} onChange={(e) => onInputChange(e, 'mat_khau')} className="mt-2 h-10" />
               </div>
             </div>
-          )
-          }
+          )}
         </div>
-
-      ) : ( <div className="p-field" style={{ margin: '8px 0', minHeight: '70px'}}>
-        <label htmlFor="nguoi_gui_id">Người gửi</label>
-        <Dropdown
-          id="nguoi_gui_id"
-          value={formData.nguoi_gui_id}
-          options={users}
-          optionLabel="ho_ten"
-          optionValue="id"
-          onChange={(e) => onInputChange({ target: { value: e.value } }, 'nguoi_gui_id')}
-          filter
-          placeholder="Tìm kiếm khách hàng"
-          showClear
-          className="w-100 mt-2"
-        />
-      </div> )}
+      ) : (
+        <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
+          <label htmlFor="nguoi_gui_id">Người gửi</label>
+          <Dropdown
+            id="nguoi_gui_id"
+            value={formData.nguoi_gui_id}
+            options={users}
+            optionLabel="ho_ten"
+            optionValue="id"
+            onChange={(e) => onInputChange({ target: { value: e.value } }, 'nguoi_gui_id')}
+            filter
+            placeholder="Tìm kiếm khách hàng"
+            showClear
+            className="w-100 mt-2"
+          />
+        </div>
+      )}
 
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="id_ben_xe_gui">Bến Xe Gửi</label>
@@ -277,25 +286,11 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="gia_tri_hang">Giá Trị Hàng</label>
-        <InputNumber
-          id="gia_tri_hang"
-          value={formData.gia_tri_hang || 0}
-          onValueChange={(e) => onInputChange({ target: { value: e.value } }, 'gia_tri_hang')}
-          className="mt-2 h-10"
-          placeholder="Ví dụ: 500000 VND"
-          min={0}
-        />
+        <InputNumber id="gia_tri_hang" value={formData.gia_tri_hang || 0} onValueChange={(e) => onInputChange({ target: { value: e.value } }, 'gia_tri_hang')} className="mt-2 h-10" placeholder="Ví dụ: 500000 VND" min={0} />
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="cuoc_phi">Cước Phí</label>
-        <InputNumber
-          id="cuoc_phi"
-          value={formData.cuoc_phi || 0}
-          onValueChange={(e) => onInputChange({ target: { value: e.value } }, 'cuoc_phi')}
-          className="mt-2 h-10"
-          placeholder="Ví dụ: 100000 VND"
-          min={0}
-        />
+        <InputNumber id="cuoc_phi" value={formData.cuoc_phi || 0} onValueChange={(e) => onInputChange({ target: { value: e.value } }, 'cuoc_phi')} className="mt-2 h-10" placeholder="Ví dụ: 100000 VND" min={0} />
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="phi_bao_hiem">Phí Bảo Hiểm</label>
