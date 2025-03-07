@@ -180,12 +180,12 @@ const DonHangChuyenXeDialog = ({ visible, onHide, selectedChuyenXe }) => {
           selectionMode="multiple"
           headerStyle={{ width: '4em', padding: '10px' }} // Tăng chiều rộng và padding
         />
-        <Column
+        {/* <Column
           field="id"
           header="ID Đơn Hàng"
           sortable
           bodyStyle={{ padding: '10px' }} // Thêm padding cho nội dung cột
-        />
+        /> */}
         <Column field="ma_van_don" header="Mã Vận Đơn" sortable bodyStyle={{ padding: '10px' }} />
         <Column field="ten_nguoi_nhan" header="Tên Người Nhận" sortable bodyStyle={{ padding: '10px' }} />
         <Column field="so_dien_thoai_nhan" header="Số Điện Thoại" sortable bodyStyle={{ padding: '10px' }} />
