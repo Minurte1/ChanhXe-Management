@@ -44,7 +44,7 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
 
   const trangThaiOptions = [
     { label: 'Chờ xử lý', value: 'cho_xu_ly' },
-    // { label: 'Đã nhận', value: 'da_nhan' },
+
     { label: 'Đang vận chuyển', value: 'dang_van_chuyen' },
     { label: 'Giao thành công', value: 'giao_thanh_cong' },
     { label: 'Giao thất bại', value: 'giao_that_bai' },
