@@ -176,7 +176,28 @@ const DanhSachTaiXe = () => {
             <Column field="so_dien_thoai" header="Số Điện Thoại" sortable />
             <Column field="email" header="Email" sortable />
             <Column field="labelVaiTro" header="Vai Trò" sortable />
-            <Column field="labelTrangThai" header="Trạng Thái" sortable />
+            <Column
+              field="labelTrangThai"
+              header="Trạng Thái"
+              sortable
+              body={(rowData) => {
+                const { text, background } = spServices.getColorTrangThai(rowData.labelTrangThai);
+                return (
+                  <span
+                    style={{
+                      color: text,
+                      backgroundColor: background,
+                      padding: '4px 8px',
+                      borderRadius: '4px',
+                      display: 'inline-block',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    {rowData.labelTrangThai}
+                  </span>
+                );
+              }}
+            />
             <Column field="bang_lai" header="Bằng Lái" sortable />
             <Column
               header="Hành Động"

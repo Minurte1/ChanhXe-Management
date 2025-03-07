@@ -192,7 +192,28 @@ const DanhSachNhanVien = () => {
             <Column field="so_dien_thoai" header="Số Điện Thoại"></Column>
             <Column field="email" header="Email"></Column>
             <Column field="labelVaiTro" header="Vai Trò"></Column>
-            <Column field="labelTrangThai" header="Trạng Thái"></Column>
+            <Column
+              field="labelTrangThai"
+              header="Trạng Thái"
+              sortable
+              body={(rowData) => {
+                const { text, background } = spServices.getColorTrangThai(rowData.labelTrangThai);
+                return (
+                  <span
+                    style={{
+                      color: text,
+                      backgroundColor: background,
+                      padding: '4px 8px',
+                      borderRadius: '4px',
+                      display: 'inline-block',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    {rowData.labelTrangThai}
+                  </span>
+                );
+              }}
+            />
             <Column
               body={(rowData) => (
                 <>

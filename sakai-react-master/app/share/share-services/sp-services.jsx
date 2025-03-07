@@ -90,6 +90,19 @@ const spServices = {
 
       return formattedItem;
     });
+  },
+
+  getColorTrangThai: (trangThai) => {
+    const colorMap = {
+      'Đang Vận Chuyển': { text: 'orange', background: 'rgba(255,165,0,0.2)' },
+      'Hoạt Động': { text: 'green', background: 'rgba(0,128,0,0.2)' },
+      'Ngưng Hoạt Động': { text: 'red', background: 'rgba(255,0,0,0.2)' },
+      'Chờ xuất bến': { text: 'blue', background: 'rgba(0,0,255,0.2)' },
+      'Giao thành công': { text: 'green', background: 'rgba(0,128,0,0.2)' },
+      'Giao thất bại': { text: 'red', background: 'rgba(255,0,0,0.2)' },
+      'Đã cập bến': { text: 'green', background: 'rgba(0,128,0,0.2)' }
+    };
+    return colorMap[trangThai] || { text: 'gray', background: 'rgba(128,128,128,0.2)' }; // Mặc định nếu không có
   }
 };
 

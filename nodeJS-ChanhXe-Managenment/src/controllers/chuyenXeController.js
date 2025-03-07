@@ -78,7 +78,7 @@ const getAllTrips = async (req, res) => {
     bx_gui.ngay_tao AS bx_gui_ngay_tao,
     bx_gui.ngay_cap_nhat AS bx_gui_ngay_cap_nhat
 
-  FROM chuyen_xe cx
+  FROM chuyen_xe cx 
   LEFT JOIN xe x ON cx.xe_id = x.id
   LEFT JOIN tai_xe tx ON cx.tai_xe_id = tx.id
   LEFT JOIN nguoi_dung nd1 ON tx.nguoi_dung_id = nd1.id
@@ -86,15 +86,24 @@ const getAllTrips = async (req, res) => {
   LEFT JOIN nguoi_dung nd2 ON txp.nguoi_dung_id = nd2.id
   LEFT JOIN ben_xe bx_nhan ON cx.id_ben_xe_nhan = bx_nhan.id
   LEFT JOIN ben_xe bx_gui ON cx.id_ben_xe_gui = bx_gui.id
+  
 `;
 
+    const params = [];
+
     if (trang_thai) {
-      query += ` WHERE cx.trang_thai = ?`;
+      const trangThaiArray = Array.isArray(trang_thai)
+        ? trang_thai
+        : [trang_thai];
+      query += ` WHERE cx.trang_thai IN (${trangThaiArray
+        .map(() => "?")
+        .join(", ")})`;
+      params.push(...trangThaiArray);
     }
 
     query += ` ORDER BY cx.ngay_cap_nhat DESC`;
 
-    const [rows] = await pool.query(query, trang_thai ? [trang_thai] : []);
+    const [rows] = await pool.query(query, params);
 
     return res.status(200).json({
       EM: "Lấy danh sách chuyến xe thành công",
@@ -324,10 +333,114 @@ const deleteTrip = async (req, res) => {
   }
 };
 
+const updateChuyenXeCapBen = async (req, res) => {
+  const { id } = req.body; // id của bảng chuyen_xe
+  console.log("req.body", req.body);
+  if (!id) {
+    return res.status(400).json({ message: "Thiếu id chuyến xe" });
+  }
+
+  const connection = await pool.getConnection();
+  await connection.beginTransaction();
+
+  try {
+    // Update trạng thái chuyen_xe => da_cap_ben
+    const thoiGianCapBen = new Date();
+
+    // Update trạng thái chuyen_xe => da_cap_ben và thời gian thoi_gian_cap_ben
+    await connection.query(
+      `UPDATE chuyen_xe SET trang_thai = 'da_cap_ben', ngay_cap_nhat = NOW(), thoi_gian_cap_ben = ? WHERE id = ?`,
+      [thoiGianCapBen, id]
+    );
+
+    // Lấy xe_id và tai_xe từ chuyen_xe
+    const [chuyenXe] = await connection.query(
+      `SELECT xe_id, tai_xe_id, tai_xe_phu_id FROM chuyen_xe WHERE id = ?`,
+      [id]
+    );
+    if (chuyenXe.length === 0) {
+      await connection.rollback();
+      return res.status(404).json({ message: "Không tìm thấy chuyến xe" });
+    }
+
+    const { xe_id, tai_xe_id, tai_xe_phu_id } = chuyenXe[0];
+
+    // Update trạng thái xe => hoat_dong
+    await connection.query(
+      `UPDATE xe SET trang_thai = 'hoat_dong' WHERE id = ?`,
+      [xe_id]
+    );
+
+    // Update trạng thái tai_xe => hoat_dong
+    await connection.query(
+      `UPDATE tai_xe SET trang_thai = 'hoat_dong' WHERE id = ?`,
+      [tai_xe_id]
+    );
+    await connection.query(
+      `UPDATE tai_xe SET trang_thai = 'hoat_dong' WHERE id = ?`,
+      [tai_xe_phu_id]
+    );
+    // Lấy danh sách don_hang_id từ don_hang_chuyen_xe
+    const [donHangChuyenXe] = await connection.query(
+      `SELECT don_hang_id FROM don_hang_chuyen_xe WHERE don_hang_chuyen_xe_id = ?`,
+      [id]
+    );
+
+    // Update trạng thái don_hang => da_cap_ben
+    for (let item of donHangChuyenXe) {
+      await connection.query(
+        `UPDATE don_hang SET trang_thai = 'da_cap_ben' WHERE id = ?`,
+        [item.don_hang_id]
+      );
+    }
+
+    await connection.commit();
+    return res.status(200).json({ message: "Cập nhật thành công" });
+  } catch (error) {
+    await connection.rollback();
+    console.error(error);
+    return res.status(500).json({ message: "Lỗi máy chủ" });
+  } finally {
+    connection.release();
+  }
+};
+
+const getDonHangChuyenXe = async (req, res) => {
+  const { id } = req.body; // id của bảng chuyen_xe
+  console.log("id", id);
+  if (!id) {
+    return res.status(400).json({ message: "Thiếu id chuyến xe" });
+  }
+
+  try {
+    const [donHangKhachHang] = await pool.query(
+      `SELECT dh.*, kh.ho_ten, kh.so_dien_thoai, kh.dia_chi 
+       FROM don_hang dh 
+       JOIN khach_hang kh ON dh.nguoi_gui_id = kh.id 
+       JOIN don_hang_chuyen_xe dhcx ON dh.id = dhcx.don_hang_id 
+       WHERE dhcx.don_hang_chuyen_xe_id = ?`,
+      [id]
+    );
+
+    if (donHangKhachHang.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy đơn hàng cho chuyến xe này" });
+    }
+
+    return res.status(200).json({ data: donHangKhachHang });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Lỗi máy chủ" });
+  }
+};
+
 module.exports = {
   getAllTrips,
   getTripById,
   createTrip,
   updateTrip,
   deleteTrip,
+  updateChuyenXeCapBen,
+  getDonHangChuyenXe,
 };
