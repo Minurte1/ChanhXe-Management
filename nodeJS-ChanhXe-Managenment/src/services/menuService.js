@@ -84,7 +84,7 @@ const getMenuItems = (role, selectedRole = null) => {
         items: [
           { label: "Trang chủ", url: "/" },
           { label: "Đơn hàng cập bến", url: "/kho-hang" },
-          { label: "Tra cứu đơn hàng", url: "/orders/search" },
+          { label: "Tra cứu đơn hàng", url: "/kho-hang/tra-cuu" },
         ],
       },
       { label: "Quản lý xe", icon: "pi pi-truck", url: "/vehicles" },

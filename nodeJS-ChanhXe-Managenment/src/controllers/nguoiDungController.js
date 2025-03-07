@@ -27,16 +27,26 @@ const getAllUsers = async (req, res) => {
     } = req.query;
 
     let query = `
-      SELECT 
-        nd.*, 
-        pcd.id AS phan_cong_id, pcd.id_ben, pcd.id_nguoi_dung, pcd.id_nguoi_cap_nhat AS phan_cong_id_nguoi_cap_nhat, 
-        pcd.ngay_tao AS phan_cong_ngay_tao, pcd.ngay_cap_nhat AS phan_cong_ngay_cap_nhat,
-        bx.id AS ben_xe_id, bx.dia_chi, bx.ten_ben_xe, bx.tinh, bx.huyen, bx.xa, 
-        bx.id_nguoi_cap_nhat AS ben_xe_id_nguoi_cap_nhat, bx.ngay_tao AS ben_xe_ngay_tao, bx.ngay_cap_nhat AS ben_xe_ngay_cap_nhat
-      FROM nguoi_dung nd
-      LEFT JOIN phan_cong_dia_diem_nguoi_dung pcd ON nd.id = pcd.id_nguoi_dung
-      LEFT JOIN ben_xe bx ON pcd.id_ben = bx.id
-      WHERE 1=1
+SELECT 
+    nd.*, 
+    pcd.id AS phan_cong_id, pcd.id_ben, pcd.id_nguoi_dung, pcd.id_nguoi_cap_nhat AS phan_cong_id_nguoi_cap_nhat, 
+    pcd.ngay_tao AS phan_cong_ngay_tao, pcd.ngay_cap_nhat AS phan_cong_ngay_cap_nhat,
+    bx.id AS ben_xe_id, bx.dia_chi, bx.ten_ben_xe, bx.tinh, bx.huyen, bx.xa, 
+    bx.id_nguoi_cap_nhat AS ben_xe_id_nguoi_cap_nhat, bx.ngay_tao AS ben_xe_ngay_tao, bx.ngay_cap_nhat AS ben_xe_ngay_cap_nhat,
+    pctx.id AS phan_cong_tai_xe_id, pctx.id_ben AS phan_cong_tai_xe_id_ben, pctx.id_tai_xe, 
+    pctx.id_nguoi_cap_nhat AS phan_cong_tai_xe_id_nguoi_cap_nhat, pctx.ngay_tao AS phan_cong_tai_xe_ngay_tao, pctx.ngay_cap_nhat AS phan_cong_tai_xe_ngay_cap_nhat,
+    tx.id AS tai_xe_id, tx.nguoi_dung_id AS tai_xe_nguoi_dung_id, tx.bang_lai, 
+    tx.id_nguoi_cap_nhat AS tai_xe_id_nguoi_cap_nhat, tx.ngay_tao AS tai_xe_ngay_tao, tx.ngay_cap_nhat AS tai_xe_ngay_cap_nhat,
+    COALESCE(tx.trang_thai, nd.trang_thai) AS trang_thai
+FROM nguoi_dung nd
+LEFT JOIN tai_xe tx ON nd.id = tx.nguoi_dung_id
+LEFT JOIN phan_cong_dia_diem_tai_xe pctx ON tx.id = pctx.id_tai_xe
+LEFT JOIN ben_xe bx ON pctx.id_ben = bx.id
+LEFT JOIN phan_cong_dia_diem_nguoi_dung pcd ON nd.id = pcd.id_nguoi_dung AND pcd.id_ben = bx.id
+WHERE 1=1
+
+
+
     `;
     let queryParams = [];
 
