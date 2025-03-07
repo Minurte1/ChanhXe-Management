@@ -124,7 +124,6 @@ const DanhSachDonHang = () => {
   };
 
   const SaveWithCustomer = async () => {
-    console.log('SaveWithCustomer');
     const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = formData;
     try {
       if (isNew) {
@@ -136,7 +135,7 @@ const DanhSachDonHang = () => {
       setDisplayDialog(false);
       showSuccess(isNew ? 'Thêm đơn hàng và khách hàng thành công' : '');
     } catch (error) {
-      showError(isNew ? 'Lỗi khi thêm đơn hàng và khách hàng' : '');
+      showError(isNew ? 'Lỗi khi thêm đơn hàng và khách hàng ' + error : '');
     }
   };
   const StatusLabel = React.memo(

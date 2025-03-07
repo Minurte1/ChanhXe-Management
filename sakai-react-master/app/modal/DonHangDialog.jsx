@@ -109,15 +109,6 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
     setIsNewCustomer(!isNewCustomer);
   };
 
-  const handleInputChange = (e, field) => {
-    onInputChange({ target: { value: e.target.value } }, field);
-  };
-
-  const handleSave = () => {
-    // Save logic here
-    console.log('Form data saved:', formData);
-  };
-
   useEffect(() => {
     console.log('selectedWards', selectedWards);
     formData.dia_chi = [street, selectedWards?.full_name, selectedDistrict?.full_name, selectedProvince?.full_name].filter((part) => part).join(', ');

@@ -126,7 +126,7 @@ const DanhSachXe = () => {
       setDisplayDialog(false);
       showSuccess(isNew ? 'Thêm xe thành công' : 'Cập nhật xe thành công');
     } catch (error) {
-      showError(isNew ? 'Lỗi khi thêm xe' : 'Lỗi khi cập nhật xe');
+      showError(isNew ? 'Lỗi khi thêm xe ' + error : 'Lỗi khi cập nhật xe ' + error);
     }
   };
 
@@ -142,7 +142,7 @@ const DanhSachXe = () => {
       setDisplayAssignDialog(false);
       showSuccess(isNew ? 'Thêm phân công xe thành công' : 'Cập nhật phân công xe thành công');
     } catch (error) {
-      showError(isNew ? 'Lỗi khi thêm phân công  xe' : 'Lỗi khi cập nhật phân công  xe');
+      showError(isNew ? 'Lỗi khi thêm phân công xe ' + error: 'Lỗi khi cập nhật phân công xe ' + error);
     }
   };
 
