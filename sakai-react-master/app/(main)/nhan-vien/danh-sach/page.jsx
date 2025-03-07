@@ -5,6 +5,7 @@ import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { InputText } from 'primereact/inputtext';
 
 import NhanVienDialog from '../../../modal/NhanVienDialog';
 import PhanCongNguoiDungDialog from '../../../modal/PhanCongNguoiDungDialog';
@@ -12,10 +13,12 @@ import PhanCongNguoiDungService from '../../../services/phanCongNguoiDungService
 import spServices from '../../../share/share-services/sp-services';
 import UserService from '@/app/services/userAccountService';
 import { useAxios } from '@/app/authentication/useAxiosClient';
+
 const DanhSachNhanVien = () => {
   const [nhanVien, setNhanVien] = useState([]);
   const [displayDialog, setDisplayDialog] = useState(false);
   const [displayAssignDialog, setDisplayAssignDialog] = useState(false);
+
   const [isNew, setIsNew] = useState(false);
   const [formData, setFormData] = useState({
     ho_ten: '',
@@ -166,6 +169,28 @@ const DanhSachNhanVien = () => {
       [name]: val
     }));
   };
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredNhanVien, setFilteredNhanVien] = useState([]);
+
+  const onSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchTerm.trim() === '') {
+        setFilteredNhanVien(nhanVien);
+      } else {
+        setFilteredNhanVien(nhanVien.filter((nv) => nv.ho_ten.toLowerCase().includes(searchTerm.toLowerCase())));
+      }
+    }, 300); // Thời gian trễ 300ms
+
+    return () => clearTimeout(timer); // Xóa timer khi searchTerm thay đổi hoặc component unmount
+  }, [searchTerm, nhanVien]);
+
+  useEffect(() => {
+    setFilteredNhanVien(nhanVien);
+  }, [nhanVien]);
 
   return (
     <div className="p-grid">
@@ -177,9 +202,10 @@ const DanhSachNhanVien = () => {
           <div style={{ marginBottom: '10px' }}>
             <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew} style={{ marginRight: '10px' }} />
             <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm} />
+            <InputText placeholder="Tìm kiếm tên nhân viên" value={searchTerm} onChange={onSearchChange} style={{ marginLeft: '8px', width: '30%' }} />
           </div>
           <DataTable
-            value={nhanVien}
+            value={filteredNhanVien}
             paginator
             rows={10}
             rowsPerPageOptions={[5, 10, 25]}
