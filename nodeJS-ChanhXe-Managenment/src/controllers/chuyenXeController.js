@@ -105,8 +105,6 @@ const getAllTrips = async (req, res) => {
   }
 };
 
-module.exports = { getAllTrips };
-
 // Lấy chuyến xe theo ID
 const getTripById = async (req, res) => {
   // #swagger.tags = ['Chuyến xe']

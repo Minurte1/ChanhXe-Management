@@ -6,10 +6,12 @@ import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 
 import taiXeService from '../services/taiXeServices';
+import { useAxios } from '../authentication/useAxiosClient';
 
 const TaiXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }) => {
   const [users, setUsers] = useState([]);
-
+  const axiosInstance = useAxios();
+  const TaiXeServices = taiXeService(axiosInstance);
   useEffect(() => {
     if (visible) {
       fetchUsers();
@@ -20,7 +22,7 @@ const TaiXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }
     try {
       const filters = { vai_tro: ['tai_xe', 'tai_xe_phu'], trang_thai: 'hoat_dong' };
 
-      const response = await taiXeService.getUsersNotInDriverTable();
+      const response = await TaiXeServices.getUsersNotInDriverTable();
 
       setUsers(Array.isArray(response.DT) ? response.DT : []);
     } catch (error) {

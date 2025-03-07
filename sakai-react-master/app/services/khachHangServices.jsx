@@ -1,7 +1,6 @@
-import axiosInstance from '../authentication/axiosInstance';
 const API_URL = process.env.NEXT_PUBLIC_URL_SERVER;
 
-const khachHangService = {
+const khachHangService = (axiosInstance) => ({
   getAllCustomers: async () => {
     try {
       const response = await axiosInstance.get(`${API_URL}/customers`);
@@ -51,6 +50,5 @@ const khachHangService = {
       throw error;
     }
   }
-};
-
+});
 export default khachHangService;

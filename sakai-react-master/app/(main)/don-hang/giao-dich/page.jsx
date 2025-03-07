@@ -7,6 +7,7 @@ import { Toast } from 'primereact/toast';
 import OrderService from '../../../services/donHangSevices'; // Cập nhật tên service
 import OrderDialog from '../../../modal/DonHangDialog';
 import spServices from '@/app/share/share-services/sp-services';
+import { useAxios } from '@/app/authentication/useAxiosClient';
 
 const DanhSachDonHang = () => {
   const [orders, setOrders] = useState([]);
@@ -33,14 +34,16 @@ const DanhSachDonHang = () => {
   });
 
   const toast = useRef(null);
-
+  const axiosInstance = useAxios();
+  const orderService = OrderService(axiosInstance);
+  axiosInstance;
   useEffect(() => {
     fetchOrders();
   }, []);
 
   const fetchOrders = async () => {
     try {
-      const response = await OrderService.getAllOrders();
+      const response = await orderService.getAllOrders();
       const output = spServices.formatData(response?.DT);
       setOrders(Array.isArray(output) ? output : []);
     } catch (error) {
@@ -97,6 +100,7 @@ const DanhSachDonHang = () => {
   };
 
   const saveOrder = async () => {
+    // console.log('saveOrder');
     const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = formData;
     try {
       if (isNew) {
@@ -118,6 +122,10 @@ const DanhSachDonHang = () => {
       ...prevData,
       [name]: val
     }));
+  };
+
+  const Save2 = async () => {
+    console.log('Save2');
   };
 
   return (
@@ -145,7 +153,7 @@ const DanhSachDonHang = () => {
         </div>
       </div>
 
-      <OrderDialog visible={displayDialog} onHide={() => setDisplayDialog(false)} isNew={isNew} formData={formData} onInputChange={onInputChange} onSave={saveOrder} />
+      <OrderDialog visible={displayDialog} onHide={() => setDisplayDialog(false)} isNew={isNew} formData={formData} onInputChange={onInputChange} onSave={saveOrder} onSave2={Save2} />
     </div>
   );
 };

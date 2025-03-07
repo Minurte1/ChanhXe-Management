@@ -16,8 +16,8 @@ const getMenuItems = (role, selectedRole = null) => {
         ],
       },
       {
-        label: "Thông tin nhân viên",
-        icon: "pi pi-user",
+        label: "Quản lý hệ thống",
+        icon: "pi pi-cog",
         items: [
           {
             label: "Danh sách nhân viên",
@@ -29,18 +29,19 @@ const getMenuItems = (role, selectedRole = null) => {
             url: "/nhan-vien/tai-xe",
             icon: "pi pi-user",
           },
+          {
+            label: "Danh sách xe",
+            url: "/xe/danh-sach",
+            icon: "pi pi-car",
+          },
+          {
+            label: "Danh sách bến xe",
+            url: "/ben-xe/danh-sach",
+            icon: "pi pi-map-marker",
+          },
         ],
       },
-      {
-        label: "Danh sách các loại xe",
-        icon: "pi pi-car",
-        items: [{ label: "Danh sách xe", url: "/xe/danh-sach" }],
-      },
-      {
-        label: "Danh sách các bến xe",
-        icon: "pi pi-car",
-        items: [{ label: "Danh sách bến xe", url: "/ben-xe/danh-sach" }],
-      },
+
       {
         label: "Quản lý phân quyền",
         icon: "pi pi-user",

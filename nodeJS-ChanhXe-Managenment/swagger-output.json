@@ -45,6 +45,11 @@
         "description": "",
         "parameters": [
           {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "id",
             "in": "query",
             "type": "string"
@@ -154,8 +159,14 @@
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
@@ -168,6 +179,11 @@
         ],
         "description": "",
         "parameters": [
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
@@ -233,6 +249,9 @@
           "201": {
             "description": "Created"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
           },
@@ -257,14 +276,25 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
@@ -284,6 +314,11 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
             "type": "string"
           }
         ],
@@ -319,14 +354,25 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
@@ -406,6 +452,11 @@
         "description": "",
         "parameters": [
           {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "body",
             "in": "body",
             "schema": {
@@ -482,6 +533,11 @@
             "type": "string"
           },
           {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "body",
             "in": "body",
             "schema": {
@@ -491,15 +547,6 @@
                   "example": "any"
                 },
                 "labelTrangThai": {
-                  "example": "any"
-                },
-                "mat_khau": {
-                  "example": "any"
-                },
-                "id_nguoi_cap_nhat": {
-                  "example": "any"
-                },
-                "ngay_cap_nhat": {
                   "example": "any"
                 }
               }
@@ -806,6 +853,11 @@
         "description": "",
         "parameters": [
           {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "selectedRole",
             "in": "query",
             "type": "string"
@@ -815,8 +867,14 @@
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
@@ -831,6 +889,11 @@
         ],
         "description": "",
         "parameters": [
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "id",
             "in": "query",
@@ -876,8 +939,14 @@
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
@@ -890,6 +959,11 @@
         ],
         "description": "",
         "parameters": [
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
@@ -916,6 +990,9 @@
           "201": {
             "description": "Created"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
           },
@@ -940,14 +1017,25 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
@@ -967,6 +1055,11 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
             "type": "string"
           }
         ],
@@ -1002,14 +1095,25 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
@@ -1026,10 +1130,25 @@
           "Bến xe"
         ],
         "description": "",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
@@ -1042,6 +1161,11 @@
         ],
         "description": "",
         "parameters": [
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
@@ -1074,6 +1198,9 @@
           "201": {
             "description": "Created"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
           },
@@ -1098,11 +1225,25 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
@@ -1122,6 +1263,11 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
             "type": "string"
           },
           {
@@ -1175,14 +1321,25 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
@@ -1199,13 +1356,25 @@
           "Khách hàng"
         ],
         "description": "",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
@@ -1218,6 +1387,11 @@
         ],
         "description": "",
         "parameters": [
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
@@ -1244,6 +1418,9 @@
           "201": {
             "description": "Created"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
           },
@@ -1268,14 +1445,25 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
@@ -1295,6 +1483,11 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
             "type": "string"
           },
           {
@@ -1342,14 +1535,25 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
@@ -1367,6 +1571,11 @@
         ],
         "description": "",
         "parameters": [
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "id",
             "in": "query",
@@ -1447,8 +1656,14 @@
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
@@ -1461,6 +1676,11 @@
         ],
         "description": "",
         "parameters": [
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
@@ -1484,6 +1704,9 @@
           "201": {
             "description": "Created"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
           },
@@ -1502,13 +1725,25 @@
           "Tài xế"
         ],
         "description": "",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
@@ -1528,14 +1763,25 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
@@ -1555,6 +1801,11 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
             "type": "string"
           },
           {
@@ -1602,14 +1853,25 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
@@ -1626,13 +1888,25 @@
           "Chuyến xe"
         ],
         "description": "",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
@@ -1645,6 +1919,11 @@
         ],
         "description": "",
         "parameters": [
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
@@ -1683,6 +1962,9 @@
           "201": {
             "description": "Created"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
           },
@@ -1707,14 +1989,25 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
@@ -1734,6 +2027,11 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
             "type": "string"
           }
         ],
@@ -1769,14 +2067,25 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
@@ -1809,6 +2118,11 @@
         ],
         "description": "",
         "parameters": [
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
@@ -1883,6 +2197,11 @@
             "type": "string"
           },
           {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "body",
             "in": "body",
             "schema": {
@@ -1933,14 +2252,25 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
@@ -2028,13 +2358,55 @@
           "Phân công xe"
         ],
         "description": "",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id_ben",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id_xe",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id_nguoi_cap_nhat",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "ngay_tao",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "ngay_cap_nhat",
+            "in": "query",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
@@ -2047,6 +2419,11 @@
         ],
         "description": "",
         "parameters": [
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
@@ -2066,6 +2443,9 @@
         "responses": {
           "201": {
             "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
@@ -2091,14 +2471,25 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
@@ -2118,6 +2509,11 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
             "type": "string"
           }
         ],
@@ -2153,14 +2549,25 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
@@ -2177,13 +2584,55 @@
           "Phân công tài xế"
         ],
         "description": "",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id_ben",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id_tai_xe",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id_nguoi_cap_nhat",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "ngay_tao",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "ngay_cap_nhat",
+            "in": "query",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
@@ -2196,6 +2645,11 @@
         ],
         "description": "",
         "parameters": [
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
@@ -2215,6 +2669,9 @@
         "responses": {
           "201": {
             "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
@@ -2240,14 +2697,25 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
@@ -2267,6 +2735,11 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
             "type": "string"
           }
         ],
@@ -2302,14 +2775,25 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
@@ -2326,13 +2810,25 @@
           "Phân công người dùng"
         ],
         "description": "",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
@@ -2345,6 +2841,11 @@
         ],
         "description": "",
         "parameters": [
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
@@ -2364,6 +2865,9 @@
         "responses": {
           "201": {
             "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
@@ -2389,14 +2893,25 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
@@ -2416,6 +2931,11 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
             "type": "string"
           }
         ],
@@ -2451,14 +2971,25 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"

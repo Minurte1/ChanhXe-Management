@@ -26,7 +26,18 @@ const getAllUsers = async (req, res) => {
       ngay_tao,
     } = req.query;
 
-    let query = "SELECT * FROM nguoi_dung WHERE 1=1";
+    let query = `
+      SELECT 
+        nd.*, 
+        pcd.id AS phan_cong_id, pcd.id_ben, pcd.id_nguoi_dung, pcd.id_nguoi_cap_nhat AS phan_cong_id_nguoi_cap_nhat, 
+        pcd.ngay_tao AS phan_cong_ngay_tao, pcd.ngay_cap_nhat AS phan_cong_ngay_cap_nhat,
+        bx.id AS ben_xe_id, bx.dia_chi, bx.ten_ben_xe, bx.tinh, bx.huyen, bx.xa, 
+        bx.id_nguoi_cap_nhat AS ben_xe_id_nguoi_cap_nhat, bx.ngay_tao AS ben_xe_ngay_tao, bx.ngay_cap_nhat AS ben_xe_ngay_cap_nhat
+      FROM nguoi_dung nd
+      LEFT JOIN phan_cong_dia_diem_nguoi_dung pcd ON nd.id = pcd.id_nguoi_dung
+      LEFT JOIN ben_xe bx ON pcd.id_ben = bx.id
+      WHERE 1=1
+    `;
     let queryParams = [];
 
     if (id) {
@@ -179,16 +190,18 @@ const updateUser = async (req, res) => {
     console.log("id", id);
 
     let updates = req.body;
+
     // Loại bỏ các trường không cần thiết
     delete updates.labelVaiTro;
     delete updates.labelTrangThai;
+
     if (Object.keys(updates).length === 0) {
       return res
         .status(400)
         .json({ EM: "Không có dữ liệu cập nhật", EC: -1, DT: {} });
     }
 
-    // Lấy `id_nguoi_cap_nhat` từ cookies
+    // Lấy `id_nguoi_cap_nhat` từ cookies hoặc session
     const id_nguoi_cap_nhat = req.user?.id;
     if (!id_nguoi_cap_nhat) {
       return res
@@ -196,8 +209,35 @@ const updateUser = async (req, res) => {
         .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
     }
 
+    // Danh sách các trường hợp lệ trong bảng `nguoi_dung`
+    const validFields = [
+      "ho_ten",
+      "so_dien_thoai",
+      "email",
+      "mat_khau",
+      "vai_tro",
+      "trang_thai",
+      "id_nguoi_cap_nhat",
+      "ngay_cap_nhat",
+      "ngay_tao",
+    ];
+
+    // Lọc các trường cập nhật hợp lệ
+    const filteredUpdates = Object.keys(updates)
+      .filter((key) => validFields.includes(key))
+      .reduce((obj, key) => {
+        obj[key] = updates[key];
+        return obj;
+      }, {});
+
+    if (Object.keys(filteredUpdates).length === 0) {
+      return res
+        .status(400)
+        .json({ EM: "Không có trường hợp lệ để cập nhật", EC: -1, DT: {} });
+    }
+
     // Kiểm tra nếu có `mat_khau`, so sánh với mật khẩu hiện tại
-    if (updates.mat_khau) {
+    if (filteredUpdates.mat_khau) {
       // Lấy mật khẩu hiện tại từ cơ sở dữ liệu
       const [user] = await pool.query(
         "SELECT mat_khau FROM nguoi_dung WHERE id = ?",
@@ -207,33 +247,36 @@ const updateUser = async (req, res) => {
 
       // So sánh mật khẩu mới với mật khẩu hiện tại
       const isPasswordChanged = await bcrypt.compare(
-        updates.mat_khau,
+        filteredUpdates.mat_khau,
         currentPassword
       );
 
       if (!isPasswordChanged) {
         // Nếu mật khẩu thay đổi, băm mật khẩu mới
         const saltRounds = 10;
-        updates.mat_khau = await bcrypt.hash(updates.mat_khau, saltRounds);
+        filteredUpdates.mat_khau = await bcrypt.hash(
+          filteredUpdates.mat_khau,
+          saltRounds
+        );
       } else {
         // Nếu mật khẩu không thay đổi, không cập nhật mật khẩu
-        delete updates.mat_khau;
+        delete filteredUpdates.mat_khau;
       }
     }
 
     // Bổ sung `id_nguoi_cap_nhat` và `ngay_cap_nhat`
-    updates.id_nguoi_cap_nhat = id_nguoi_cap_nhat;
-    updates.ngay_cap_nhat = new Date(); // Hoặc sử dụng `NOW()` trong SQL
+    filteredUpdates.id_nguoi_cap_nhat = id_nguoi_cap_nhat;
+    filteredUpdates.ngay_cap_nhat = new Date(); // Hoặc sử dụng `NOW()` trong SQL
 
     // Chuẩn bị query
-    const fields = Object.keys(updates)
+    const fields = Object.keys(filteredUpdates)
       .map((key) => `${key} = ?`)
       .join(", ");
-    const values = Object.values(updates);
+    const values = Object.values(filteredUpdates);
     values.push(id);
 
     const [result] = await pool.query(
-      `UPDATE nguoi_dung SET ${fields}, ngay_cap_nhat = NOW() WHERE id = ?`,
+      `UPDATE nguoi_dung SET ${fields} WHERE id = ?`,
       values
     );
 

@@ -10,6 +10,7 @@ import XeDialog from '../../../modal/XeDialog';
 import PhanCongDialog from '../../../modal/PhanCongXeDialog';
 import VehicleAssignmentService from '../../../services/phanCongXeServices';
 import spServices from '@/app/share/share-services/sp-services';
+import { useAxios } from '@/app/authentication/useAxiosClient';
 
 const DanhSachXe = () => {
   const [xeList, setXeList] = useState([]);
@@ -27,7 +28,10 @@ const DanhSachXe = () => {
     id_ben: '',
     id_xe: ''
   });
-
+  //
+  const axiosInstance = useAxios();
+  const vehicleService = VehicleService(axiosInstance);
+  const vehicleAssignmentService = VehicleAssignmentService(axiosInstance);
   const toast = useRef(null);
 
   useEffect(() => {
@@ -36,7 +40,7 @@ const DanhSachXe = () => {
 
   const fetchXe = async () => {
     try {
-      const response = await VehicleService.getAllVehicles();
+      const response = await vehicleService.getAllVehicles();
       const output = spServices.formatData(response?.DT);
       setXeList(output);
     } catch (error) {
@@ -101,7 +105,7 @@ const DanhSachXe = () => {
 
   const deleteXe = async (id) => {
     try {
-      await VehicleService.deleteVehicle(id);
+      await vehicleService.deleteVehicle(id);
       fetchXe();
       showSuccess('Xóa xe thành công');
     } catch (error) {
@@ -113,9 +117,9 @@ const DanhSachXe = () => {
     const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, labelTrangThai, ...filteredData } = formData;
     try {
       if (isNew) {
-        await VehicleService.createVehicle(formData);
+        await vehicleService.createVehicle(formData);
       } else {
-        await VehicleService.updateVehicle(filteredData.id, filteredData);
+        await vehicleService.updateVehicle(filteredData.id, filteredData);
       }
       fetchXe();
       setDisplayDialog(false);
@@ -129,9 +133,9 @@ const DanhSachXe = () => {
     const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = assignData;
     try {
       if (isNew) {
-        await VehicleAssignmentService.createVehicleAssignment(assignData);
+        await vehicleAssignmentService.createVehicleAssignment(assignData);
       } else {
-        await VehicleAssignmentService.createVehicleAssignment(filteredData.id, filteredData);
+        await vehicleAssignmentService.createVehicleAssignment(filteredData.id, filteredData);
       }
       fetchXe();
       setDisplayAssignDialog(false);
@@ -169,6 +173,7 @@ const DanhSachXe = () => {
           </div>
           <DataTable value={xeList} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}>
             <Column field="bien_so" header="Biển Số"></Column>
+            <Column field="ten_ben_xe" header="Địa điểm công tác" sortable body={(rowData) => rowData.ten_ben_xe || '(Chưa được phân công)'} />
             <Column field="suc_chua" header="Sức chứa"></Column>
             <Column field="loai_xe" header="Loại Xe"></Column>
             <Column field="labelTrangThai" header="Trạng Thái"></Column>

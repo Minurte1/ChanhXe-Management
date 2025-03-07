@@ -1,6 +1,6 @@
 const pool = require("../config/database"); // Kết nối cơ sở dữ liệu
 
-// Lấy tất cả xe với search động
+// Lấy tất cả xe với search động kèm thông tin bến xe
 const getAllVehicles = async (req, res) => {
   // #swagger.tags = ['Xe']
   try {
@@ -15,60 +15,70 @@ const getAllVehicles = async (req, res) => {
       ngay_tao,
     } = req.query;
 
-    // Query cơ bản
     let query = `
       SELECT 
-        id,
-        bien_so,
-        loai_xe,
-        suc_chua,
-        trang_thai,
-        id_nguoi_cap_nhat,
-        ngay_cap_nhat,
-        ngay_tao
+        xe.id,
+        xe.bien_so,
+        xe.loai_xe,
+        xe.suc_chua,
+        xe.trang_thai,
+        xe.id_nguoi_cap_nhat,
+        xe.ngay_cap_nhat,
+        xe.ngay_tao,
+        pcdx.id AS id_phan_cong,
+        pcdx.id_ben,
+        pcdx.ngay_tao AS ngay_phan_cong,
+        pcdx.ngay_cap_nhat AS ngay_cap_nhat_phan_cong,
+        ben_xe.ten_ben_xe,
+        ben_xe.dia_chi,
+        ben_xe.tinh,
+        ben_xe.huyen,
+        ben_xe.xa
       FROM xe
+      LEFT JOIN phan_cong_dia_diem_xe pcdx ON xe.id = pcdx.id_xe
+      LEFT JOIN ben_xe ON pcdx.id_ben = ben_xe.id
       WHERE 1=1
     `;
     let queryParams = [];
 
     // Thêm điều kiện tìm kiếm động
     if (id) {
-      query += " AND id = ?";
+      query += " AND xe.id = ?";
       queryParams.push(id);
     }
     if (bien_so) {
-      query += " AND bien_so LIKE ?";
+      query += " AND xe.bien_so LIKE ?";
       queryParams.push(`%${bien_so}%`);
     }
     if (loai_xe) {
-      query += " AND loai_xe = ?";
+      query += " AND xe.loai_xe = ?";
       queryParams.push(loai_xe);
     }
     if (suc_chua) {
-      query += " AND suc_chua = ?";
+      query += " AND xe.suc_chua = ?";
       queryParams.push(suc_chua);
     }
     if (trang_thai) {
-      query += " AND trang_thai = ?";
+      query += " AND xe.trang_thai = ?";
       queryParams.push(trang_thai);
     }
     if (id_nguoi_cap_nhat) {
-      query += " AND id_nguoi_cap_nhat = ?";
+      query += " AND xe.id_nguoi_cap_nhat = ?";
       queryParams.push(id_nguoi_cap_nhat);
     }
     if (ngay_cap_nhat) {
-      query += " AND DATE(ngay_cap_nhat) = ?";
+      query += " AND DATE(xe.ngay_cap_nhat) = ?";
       queryParams.push(ngay_cap_nhat);
     }
     if (ngay_tao) {
-      query += " AND DATE(ngay_tao) = ?";
+      query += " AND DATE(xe.ngay_tao) = ?";
       queryParams.push(ngay_tao);
     }
 
-    // Sắp xếp theo ngày cập nhật (tùy chọn)
-    query += " ORDER BY ngay_cap_nhat DESC";
+    // Sắp xếp theo ngày cập nhật mới nhất
+    query += " ORDER BY xe.ngay_cap_nhat DESC";
 
-    // Thực thi query
+    // Thực thi truy vấn
     const [rows] = await pool.query(query, queryParams);
 
     return res.status(200).json({
@@ -141,22 +151,49 @@ const updateVehicle = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
     const id_nguoi_cap_nhat = req.user?.id;
+
     if (!id_nguoi_cap_nhat) {
       return res
         .status(403)
         .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
     }
+
     if (Object.keys(updates).length === 0) {
       return res
         .status(400)
         .json({ EM: "Không có dữ liệu cập nhật", EC: -1, DT: {} });
     }
 
+    // Danh sách các trường hợp lệ trong bảng `xe`
+    const validFields = [
+      "bien_so",
+      "loai_xe",
+      "suc_chua",
+      "trang_thai",
+      "id_nguoi_cap_nhat",
+      "ngay_cap_nhat",
+      "ngay_tao",
+    ];
+
+    // Lọc các trường cập nhật hợp lệ
+    const filteredUpdates = Object.keys(updates)
+      .filter((key) => validFields.includes(key))
+      .reduce((obj, key) => {
+        obj[key] = updates[key];
+        return obj;
+      }, {});
+
+    if (Object.keys(filteredUpdates).length === 0) {
+      return res
+        .status(400)
+        .json({ EM: "Không có trường hợp lệ để cập nhật", EC: -1, DT: {} });
+    }
+
     // Tạo danh sách cập nhật, thêm `ngay_cap_nhat = NOW()` và `id_nguoi_cap_nhat`
-    const fields = Object.keys(updates)
+    const fields = Object.keys(filteredUpdates)
       .map((key) => `${key} = ?`)
       .join(", ");
-    const values = Object.values(updates);
+    const values = Object.values(filteredUpdates);
 
     // Thêm `ngay_cap_nhat` và `id_nguoi_cap_nhat`
     const updateQuery = `UPDATE xe SET ${fields}, ngay_cap_nhat = NOW(), id_nguoi_cap_nhat = ? WHERE id = ?`;

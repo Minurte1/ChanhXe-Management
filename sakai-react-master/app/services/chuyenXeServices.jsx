@@ -1,7 +1,6 @@
-import axiosInstance from '../authentication/axiosInstance';
 const API_URL = process.env.NEXT_PUBLIC_URL_SERVER;
 
-const chuyenXeService = {
+const chuyenXeService = (axiosInstance) => ({
   getAllTrips: async () => {
     try {
       const response = await axiosInstance.get(`${API_URL}/trips`);
@@ -51,6 +50,6 @@ const chuyenXeService = {
       throw error;
     }
   }
-};
+});
 
 export default chuyenXeService;

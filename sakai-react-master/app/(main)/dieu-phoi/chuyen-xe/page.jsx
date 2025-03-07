@@ -8,6 +8,7 @@ import TripService from '../../../services/chuyenXeServices'; // Đường dẫn
 import TripDialog from '../../../modal/ChuyenXeDialog'; // Đường dẫn tới TripDialog
 import DonHangChuyenXeDialog from '../../../modal/DonHangChuyenXeDialog';
 import spServices from '@/app/share/share-services/sp-services';
+import { useAxios } from '@/app/authentication/useAxiosClient';
 const DanhSachChuyenXe = () => {
   const [tripList, setTripList] = useState([]);
   const [displayDialog, setDisplayDialog] = useState(false);
@@ -25,15 +26,17 @@ const DanhSachChuyenXe = () => {
     id_ben_xe_gui: ''
   });
 
+  //
   const toast = useRef(null);
-
+  const axiosInstance = useAxios();
+  const tripService = TripService(axiosInstance);
   useEffect(() => {
     fetchTrips();
   }, []);
 
   const fetchTrips = async () => {
     try {
-      const response = await TripService.getAllTrips();
+      const response = await tripService.getAllTrips();
       const output = spServices.formatData(response?.DT);
       console.log('output', output);
       setTripList(Array.isArray(output) ? output : []);
@@ -83,7 +86,7 @@ const DanhSachChuyenXe = () => {
 
   const deleteTrip = async (id) => {
     try {
-      await TripService.deleteTrip(id);
+      await tripService.deleteTrip(id);
       fetchTrips();
       showSuccess('Xóa chuyến xe thành công');
     } catch (error) {
@@ -96,9 +99,9 @@ const DanhSachChuyenXe = () => {
     const { id, ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = formData;
     try {
       if (isNew) {
-        await TripService.createTrip(filteredData);
+        await tripService.createTrip(filteredData);
       } else {
-        await TripService.updateTrip(formData.chuyen_xe_id, filteredData);
+        await tripService.updateTrip(formData.chuyen_xe_id, filteredData);
       }
       fetchTrips();
       setDisplayDialog(false);

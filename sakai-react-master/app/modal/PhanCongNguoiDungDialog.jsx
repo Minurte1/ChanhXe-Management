@@ -10,15 +10,18 @@ import UserService from '../services/userAccountService';
 import phanCongNguoiDungService from '../services/phanCongNguoiDungServices';
 import { useAxios } from '../authentication/useAxiosClient';
 
-const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, onInputChange, onSave }) => {
+const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, onInputChange, onSave }) => {
   const [listBenXe, setListBenXe] = useState([]);
   const [listNguoiDung, setListNguoiDung] = useState([]);
   const [selectedBenXe, setSelectedBenXe] = useState([]);
   const [listPhanCongNguoiDung, setListPhanCongNguoiDung] = useState([]);
   const [filters, setFilters] = useState({});
   const toast = useRef(null);
+  //
   const axiosInstance = useAxios();
   const userService = UserService(axiosInstance);
+  const benXeService = BenXeService(axiosInstance);
+  const PhanCongNguoiDungService = phanCongNguoiDungService(axiosInstance);
   useEffect(() => {
     if (visible) {
       fetchPhanCongNguoiDung();
@@ -29,7 +32,7 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
 
   const fetchBenXe = async () => {
     try {
-      const response = await BenXeService.getAllBenXe();
+      const response = await benXeService.getAllBenXe();
       console.log('response ben xe', response);
       setListBenXe(Array.isArray(response.DT) ? response.DT : []);
     } catch (error) {
@@ -55,7 +58,7 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
 
   const fetchPhanCongNguoiDung = async () => {
     try {
-      const response = await phanCongNguoiDungService.getAllUserAssignments();
+      const response = await PhanCongNguoiDungService.getAllUserAssignments();
       console.log('response phan cong nguoi dung', response);
       setListPhanCongNguoiDung(Array.isArray(response.DT) ? response.DT : []);
     } catch (error) {
@@ -166,4 +169,4 @@ const PhanCongXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, 
   );
 };
 
-export default PhanCongXeDialog;
+export default PhanCongNguoiDungDialog;
