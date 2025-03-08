@@ -121,11 +121,17 @@ const getMenuItems = (role, selectedRole = null) => {
       },
     ],
     tai_xe_phu: [
-      { label: "Trang chủ", url: "/" },
       {
-        label: "Lịch trình vận chuyển",
-        icon: "pi pi-map",
-        url: "/driver/schedule",
+        label: "Chúng ta là tài xế phụ",
+        url: "/",
+        icon: "pi pi-user",
+        items: [
+          {
+            label: "Lịch trình vận chuyển",
+            icon: "pi pi-map",
+            url: "/tai-xe/lich-trinh",
+          },
+        ],
       },
     ],
     nhan_vien_giao_dich: [

@@ -91,6 +91,13 @@ const TripScheduleTracker = () => {
       </span>
     );
   };
+  const driverPhuBodyTemplate = (rowData) => {
+    return (
+      <span>
+        {rowData.ten_tai_xe_phu} ({rowData.so_dien_thoai_tai_xe_phu})
+      </span>
+    );
+  };
 
   // Template cho thông tin xe
   const vehicleBodyTemplate = (rowData) => {
@@ -100,7 +107,7 @@ const TripScheduleTracker = () => {
       </span>
     );
   };
-
+  console.log('trip', tripList);
   return (
     <div className="p-grid">
       <Toast ref={toast} />
@@ -111,15 +118,16 @@ const TripScheduleTracker = () => {
             <Button label="Tải lại" icon="pi pi-refresh" className="p-button-info" onClick={fetchTrips} loading={loading} />
           </div>
           <DataTable value={tripList} paginator rows={10} rowsPerPageOptions={[5, 10, 25]} emptyMessage="Không có chuyến xe nào trong ngày hôm nay">
-            <Column field="chuyen_xe_id" header="Mã Chuyến" sortable style={{ width: '10%' }} />
             <Column field="bien_so" header="Thông Tin Xe" body={vehicleBodyTemplate} sortable style={{ width: '15%' }} />
-            <Column field="ten_tai_xe" header="Tài Xế" body={driverBodyTemplate} sortable style={{ width: '15%' }} />
-            <Column field="thoi_gian_xuat_ben" header="Xuất Bến" body={(rowData) => formatDateTime(rowData.thoi_gian_xuat_ben)} sortable style={{ width: '15%' }} />
-            <Column field="thoi_gian_cap_ben" header="Cập Bến" body={(rowData) => formatDateTime(rowData.thoi_gian_cap_ben)} sortable style={{ width: '15%' }} />
-            <Column header="Lộ Trình" body={routeBodyTemplate} style={{ width: '20%' }} />
+            <Column field="ten_tai_xe" header="Tài Xế" body={driverBodyTemplate} sortable style={{ width: '12%' }} />
+            <Column field="ten_tai_xe_phu" header="Tài Xế Phụ" body={driverPhuBodyTemplate} sortable style={{ width: '12%' }} />
+            <Column field="thoi_gian_xuat_ben" header="Xuất Bến" body={(rowData) => formatDateTime(rowData.thoi_gian_xuat_ben)} sortable style={{ width: '10%' }} />
+            <Column field="thoi_gian_cap_ben" header="Cập Bến" body={(rowData) => formatDateTime(rowData.thoi_gian_cap_ben)} sortable style={{ width: '10%' }} />
+            <Column header="Lộ Trình" body={routeBodyTemplate} style={{ width: '25%' }} />
             <Column
+              style={{ width: '11%' }}
               field="labelTrangThai"
-              header="Trạng Thái"
+              header="Trạng Thái Chuyến Xe"
               sortable
               body={(rowData) => {
                 const { text, background } = spServices.getColorTrangThai(rowData.labelTrangThai);
