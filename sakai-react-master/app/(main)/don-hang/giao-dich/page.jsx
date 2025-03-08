@@ -8,6 +8,7 @@ import OrderService from '../../../services/donHangSevices'; // Cập nhật tê
 import OrderDialog from '../../../modal/DonHangDialog';
 import spServices from '@/app/share/share-services/sp-services';
 import { useAxios } from '@/app/authentication/useAxiosClient';
+import { ReduxExportServices } from '@/app/redux/redux-services/services-redux-export';
 
 const DanhSachDonHang = () => {
   const [orders, setOrders] = useState([]);
@@ -36,13 +37,14 @@ const DanhSachDonHang = () => {
   const toast = useRef(null);
   const axiosInstance = useAxios();
   const orderService = OrderService(axiosInstance);
-  axiosInstance;
+  const { userInfo } = ReduxExportServices();
   useEffect(() => {
     fetchOrders();
   }, []);
 
   const fetchOrders = async () => {
     try {
+      const filters = userInfo.vai_tro === 'admin' ? null : (filters.id_ben_xe_nhan = userInfo.id_ben);
       const response = await orderService.getAllOrders();
       const output = spServices.formatData(response?.DT);
       setOrders(Array.isArray(output) ? output : []);

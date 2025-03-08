@@ -64,7 +64,7 @@ const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, for
       showError('Lỗi khi tải danh sách người dùng');
     }
   };
-
+  console.log('listNguoiDung', listNguoiDung);
   const fetchPhanCongNguoiDung = async () => {
     try {
       const response = await PhanCongNguoiDungService.getAllUserAssignments();
@@ -106,11 +106,9 @@ const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, for
   const handleInputChange = async (e, field) => {
     const value = e.value;
     if (field === 'id_ben') {
-      const response = await userService.getAllUsers();
-      const allUsers = Array.isArray(response.DT) ? response.DT : [];
       const filters = { vai_tro: ['tai_xe', 'tai_xe_phu'], trang_thai: 'hoat_dong' };
 
-      const filteredUsers = allUsers.filter((user) => !filters.vai_tro.includes(user.vai_tro) && user.trang_thai === filters.trang_thai);
+      const filteredUsers = listNguoiDung.filter((user) => !filters.vai_tro.includes(user.vai_tro) && user.trang_thai === filters.trang_thai);
 
       const assignedUser = listPhanCongNguoiDung.filter((assignment) => assignment.id_ben === value).map((assignment) => assignment.id_nguoi_dung);
       const filteredNguoiDungOptions = filteredUsers.filter((user) => !assignedUser.includes(user.id));
