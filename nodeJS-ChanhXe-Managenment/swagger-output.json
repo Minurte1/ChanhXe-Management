@@ -1465,6 +1465,41 @@
             "name": "x-pathname",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "ho_ten",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "so_dien_thoai",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "dia_chi",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id_nguoi_cap_nhat",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "ngay_cap_nhat",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "ngay_tao",
+            "in": "query",
+            "type": "string"
           }
         ],
         "responses": {

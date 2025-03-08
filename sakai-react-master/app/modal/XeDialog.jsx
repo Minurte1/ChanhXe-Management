@@ -1,16 +1,21 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber';
 import { Dropdown } from 'primereact/dropdown';
 import { Toast } from 'primereact/toast';
+import XeService from '../services/xeSerivces';
+import { useAxios } from '../authentication/useAxiosClient';
 import { validateForm } from '../(main)/utilities/validation'; // Nhập hàm validateForm từ file validation.js
 
 const XeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }) => {
   const [errors, setErrors] = useState({});
   const toast = React.useRef(null);
+
+  const axiosInstance = useAxios();
+  const xeService = XeService(axiosInstance);
 
   useEffect(() => {
     if (!visible) {
@@ -18,9 +23,18 @@ const XeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }) =
     }
   }, [visible]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const requiredFields = ['bien_so', 'loai_xe', 'suc_chua', 'trang_thai'];
     const validationErrors = validateForm(formData, requiredFields);
+
+    //Sử dụng hàm getAllUsers có tìm kiếm dynamic từ userAccountService để kiểm tra số điện thoại và email đã tồn tại chưa
+    const timBienSo = await xeService.getAllVehicles({ bien_so: formData.so_dien_thoai });
+    if (timBienSo.DT.length === 1) {
+      validationErrors.so_dien_thoai = 'Số điện thoại đã tồn tại';
+      setErrors(validationErrors);
+      console.log('validationErrors', validationErrors);
+    }
+
     if (Object.keys(validationErrors).length === 0) {
       onSave();
     } else {

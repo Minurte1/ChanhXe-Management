@@ -1,9 +1,20 @@
 const API_URL = process.env.NEXT_PUBLIC_URL_SERVER;
 
 const khachHangService = (axiosInstance) => ({
-  getAllCustomers: async () => {
+  getAllCustomers: async (searchParams = {}) => {
     try {
-      const response = await axiosInstance.get(`${API_URL}/customers`);
+      const params = new URLSearchParams();
+      Object.entries(searchParams).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          value.forEach((item) => params.append(`${key}[]`, item));
+        } else {
+          params.append(key, value);
+        }
+      });
+
+      console.log('params size:', params.toString(), 'size:', params.size);
+
+      const response = await axiosInstance.get(`${API_URL}/customers?${params.toString()}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching customers:', error);

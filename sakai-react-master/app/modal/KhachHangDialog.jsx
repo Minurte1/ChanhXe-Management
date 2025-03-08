@@ -2,10 +2,12 @@
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Toast } from 'primereact/toast';
 import AddressSelector from '../share/component-share/addressUser';
 import { validateForm } from '../(main)/utilities/validation';
+import { useAxios } from '../authentication/useAxiosClient';
+import khachHangService from '../services/khachHangServices';
 
 const KhachHangDialog = ({ isEditing, visible, onHide, isNew, formData, onInputChange, onSave }) => {
   const [errors, setErrors] = useState({});
@@ -15,6 +17,9 @@ const KhachHangDialog = ({ isEditing, visible, onHide, isNew, formData, onInputC
   const [selectedDistrict, setSelectedDistrict] = useState(null);
   const [selectedWards, setSelectedWards] = useState(null);
   const [address, setAddress] = useState('');
+
+  const axiosInstance = useAxios();
+  const khachHangServices = khachHangService(axiosInstance);
 
   useEffect(() => {
     if (!visible) {
@@ -29,14 +34,29 @@ const KhachHangDialog = ({ isEditing, visible, onHide, isNew, formData, onInputC
     setAddress(formData.dia_chi);
   }, [street, selectedProvince, selectedDistrict, selectedWards]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const requiredFields = ['ho_ten', 'so_dien_thoai', 'dia_chi', 'mat_khau'];
     const validationErrors = validateForm(formData, requiredFields);
+    console.log('sdt', formData.so_dien_thoai);
+
+    if(formData.so_dien_thoai.length < 10 || formData.so_dien_thoai.length > 11){
+      validationErrors.so_dien_thoai = 'Số điện thoại không hợp lệ';
+    }
+    
+    //Sử dụng hàm getAllCustomers có tìm kiếm dynamic
+    const timSoDienThoai = await khachHangServices.getAllCustomers({ so_dien_thoai: formData.so_dien_thoai });
+    if (timSoDienThoai.DT.length === 1) {
+      validationErrors.so_dien_thoai = 'Số điện thoại đã tồn tại';
+      setErrors(validationErrors);
+      console.log('validationErrors', validationErrors);
+    }
+
     if (Object.keys(validationErrors).length === 0) {
-      onSave();
+      // onSave();
+      console.log('ok to save');
     } else {
       setErrors(validationErrors);
-      toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng điền đầy đủ thông tin', life: 3000 });
+      toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng kiểm tra lại các thông tin nhập', life: 3000 });
     }
   };
 

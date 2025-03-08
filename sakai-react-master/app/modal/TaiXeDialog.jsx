@@ -86,7 +86,7 @@ const TaiXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }
         <label htmlFor="trang_thai">Trạng Thái</label>
         <Dropdown
           id="trang_thai"
-          value={formData.trang_thai || ''}
+          value={formData.trang_thai || 'hoat_dong'}
           options={[
             { label: 'Hoạt Động', value: 'hoat_dong' },
             { label: 'Ngừng Hoạt Động', value: 'ngung_hoat_dong' },
@@ -96,6 +96,7 @@ const TaiXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }
           placeholder="Chọn trạng thái"
           className="mt-2"
           style={{ width: '100%' }}
+          disabled={isNew}
         />
         {errors.trang_thai && <small className="p-error">{errors.trang_thai}</small>}
       </div>
