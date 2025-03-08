@@ -112,7 +112,10 @@ const DanhSachChuyenXe = () => {
   };
 
   const onInputChange = (e, name) => {
+    console.log('name', name);
+
     const val = e.target?.value || e.value || '';
+    console.log('val', val);
     setFormData((prevData) => ({
       ...prevData,
       [name]: val

@@ -146,20 +146,67 @@ const getAllDrivers = async (req, res) => {
   }
 };
 
-// Lấy tài xế theo ID
 const getDriverById = async (req, res) => {
   // #swagger.tags = ['Tài xế']
   try {
     const { id } = req.params;
-    const [rows] = await pool.query("SELECT * FROM tai_xe WHERE id = ?", [id]);
+    console.log("userId", id);
+
+    const query = `
+      SELECT 
+        cx.id AS chuyen_xe_id,
+        cx.thoi_gian_xuat_ben,
+        cx.thoi_gian_cap_ben,
+        cx.trang_thai ,
+        cx.ngay_tao AS chuyen_xe_ngay_tao,
+        cx.ngay_cap_nhat AS chuyen_xe_ngay_cap_nhat,
+        
+        -- Thông tin xe
+        xe.bien_so,
+        xe.loai_xe,
+        xe.suc_chua,
+
+        -- Thông tin tài xế
+        tx.bang_lai,
+        tx.trang_thai as trang_thai_tai_xe,
+        -- Thông tin người dùng tài xế
+        nd.ho_ten AS ten_tai_xe,
+        nd.so_dien_thoai,
+        nd.email,
+
+        -- Thông tin bến xe xuất phát
+        bx_gui.ten_ben_xe AS ben_xe_xuat_phat,
+        bx_gui.dia_chi AS dia_chi_ben_xe_xuat_phat,
+
+
+        -- Thông tin bến xe đích
+        bx_nhan.ten_ben_xe AS ben_xe_dich,
+        bx_nhan.dia_chi AS dia_chi_ben_xe_dich
+
+
+      FROM chuyen_xe cx
+      JOIN tai_xe tx ON cx.tai_xe_id = tx.id OR cx.tai_xe_phu_id = tx.id
+      JOIN nguoi_dung nd ON tx.nguoi_dung_id = nd.id
+      JOIN xe ON cx.xe_id = xe.id
+
+      -- Join với bảng bến xe
+      LEFT JOIN ben_xe bx_gui ON cx.id_ben_xe_gui = bx_gui.id
+      LEFT JOIN ben_xe bx_nhan ON cx.id_ben_xe_nhan = bx_nhan.id
+
+      WHERE nd.id = ?;
+    `;
+
+    const [rows] = await pool.query(query, [id]);
+
     if (rows.length === 0) {
       return res
         .status(404)
-        .json({ EM: "Không tìm thấy tài xế", EC: -1, DT: {} });
+        .json({ EM: "Không tìm thấy lịch trình cho tài xế", EC: -1, DT: {} });
     }
+
     return res
       .status(200)
-      .json({ EM: "Lấy tài xế thành công", EC: 1, DT: rows[0] });
+      .json({ EM: "Lấy lịch trình thành công", EC: 1, DT: rows });
   } catch (error) {
     console.error("Error in getDriverById:", error);
     return res

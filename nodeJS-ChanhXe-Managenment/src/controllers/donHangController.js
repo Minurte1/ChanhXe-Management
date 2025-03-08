@@ -139,11 +139,11 @@ WHERE 1=1
       query += " AND dh.email_nhan LIKE ?";
       queryParams.push(`%${email_nhan}%`);
     }
-
+    // console.log("query", query);
+    // console.log("queryParams", queryParams);
     // Thực thi câu truy vấn
     const [rows] = await pool.query(query, queryParams);
-    console.log("query", query);
-    console.log("rows", rows);
+
     return res.status(200).json({
       EM: "Lấy danh sách đơn hàng thành công",
       EC: 1,

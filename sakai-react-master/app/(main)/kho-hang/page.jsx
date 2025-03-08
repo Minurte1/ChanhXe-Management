@@ -184,7 +184,7 @@ const DonHangCapBen = () => {
               header="Hành Động"
               body={(rowData) => (
                 <>
-                  {!rowData.trang_thai === 'da_cap_ben' && (
+                  {rowData.trang_thai === 'dang_van_chuyen' && (
                     <Button
                       style={{ height: '30px', width: '30px' }}
                       icon="pi pi-check"

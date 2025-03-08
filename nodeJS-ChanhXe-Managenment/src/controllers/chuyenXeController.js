@@ -241,6 +241,7 @@ const updateTrip = async (req, res) => {
     const allowedFields = [
       "xe_id",
       "tai_xe",
+      "tai_xe_id",
       "tai_xe_phu_id",
       "thoi_gian_xuat_ben",
       "thoi_gian_cap_ben",

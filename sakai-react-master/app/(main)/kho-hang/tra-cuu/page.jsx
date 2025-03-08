@@ -208,7 +208,9 @@ const DanhSachDonHangTrongKho = () => {
             />
           )}
         </span>
-        <Dropdown value={trangThaiFilter} options={trangThaiOptions} onChange={(e) => setTrangThaiFilter(e.value)} placeholder="Lọc trạng thái" showClear style={{ width: '200px', marginRight: '10px' }} />
+
+        {/* <Dropdown value={trangThaiFilter} options={trangThaiOptions} onChange={(e) => setTrangThaiFilter(e.value)} placeholder="Lọc trạng thái" showClear style={{ width: '200px', marginRight: '10px' }} /> */}
+
         <Dropdown value={loaiHangHoaFilter} options={loaiHangHoaOptions} onChange={(e) => setLoaiHangHoaFilter(e.value)} placeholder="Lọc loại hàng hóa" showClear style={{ width: '200px' }} />
       </div>
     </div>

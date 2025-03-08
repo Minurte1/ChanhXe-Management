@@ -612,6 +612,10 @@ const loginUser = async (req, res) => {
         DT: [],
       });
     }
+    const [rowsPhanCongUser] = await pool.query(
+      "SELECT * FROM phan_cong_dia_diem_nguoi_dung WHERE id_nguoi_dung = ?",
+      [user.id]
+    );
 
     // Tạo JWT token
     const accessToken = jwt.sign(
@@ -625,6 +629,7 @@ const loginUser = async (req, res) => {
         id_nguoi_cap_nhat: user.id_nguoi_cap_nhat,
         ngay_cap_nhat: user.ngay_cap_nhat,
         ngay_tao: user.ngay_tao,
+        id_ben: rowsPhanCongUser.length > 0 ? rowsPhanCongUser[0].id_ben : null,
       },
       process.env.JWT_SECRET,
       // { expiresIn: "10s" }
@@ -642,6 +647,7 @@ const loginUser = async (req, res) => {
         id_nguoi_cap_nhat: user.id_nguoi_cap_nhat,
         ngay_cap_nhat: user.ngay_cap_nhat,
         ngay_tao: user.ngay_tao,
+        id_ben: rowsPhanCongUser.length > 0 ? rowsPhanCongUser[0].id_ben : null,
       },
       process.env.JWT_REFRESH_SECRET,
       { expiresIn: "7d" }
@@ -670,6 +676,8 @@ const loginUser = async (req, res) => {
           id_nguoi_cap_nhat: user.id_nguoi_cap_nhat,
           ngay_cap_nhat: user.ngay_cap_nhat,
           ngay_tao: user.ngay_tao,
+          id_ben:
+            rowsPhanCongUser.length > 0 ? rowsPhanCongUser[0].id_ben : null,
         },
       },
     });
