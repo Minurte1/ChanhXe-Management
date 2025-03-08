@@ -43,7 +43,6 @@ const KhachHangDialog = ({ isEditing, visible, onHide, isNew, formData, onInputC
       validationErrors.so_dien_thoai = 'Số điện thoại không hợp lệ';
     }
     
-    //Sử dụng hàm getAllCustomers có tìm kiếm dynamic
     const timSoDienThoai = await khachHangServices.getAllCustomers({ so_dien_thoai: formData.so_dien_thoai });
     if (timSoDienThoai.DT.length === 1) {
       validationErrors.so_dien_thoai = 'Số điện thoại đã tồn tại';

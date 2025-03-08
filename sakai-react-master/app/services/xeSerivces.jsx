@@ -2,11 +2,20 @@ import axiosInstance from '../authentication/axiosInstance';
 const API_URL = process.env.NEXT_PUBLIC_URL_SERVER;
 
 const VehicleService = (axiosInstance) => ({
-  getAllVehicles: async (params = {}) => {
+  getAllVehicles: async (searchParams = {}) => {
     try {
-      const response = await axiosInstance.get(`${API_URL}/xe`, {
-        params: params
+      const params = new URLSearchParams();
+      Object.entries(searchParams).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          value.forEach((item) => params.append(`${key}[]`, item));
+        } else {
+          params.append(key, value);
+        }
       });
+
+      console.log('params size:', params.toString(), 'size:', params.size);
+
+      const response = await axiosInstance.get(`${API_URL}/xe?${params.toString()}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching vehicles:', error);

@@ -26,11 +26,11 @@ const XeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }) =
   const handleSave = async () => {
     const requiredFields = ['bien_so', 'loai_xe', 'suc_chua', 'trang_thai'];
     const validationErrors = validateForm(formData, requiredFields);
+    console.log('bien_so', formData.bien_so);
 
-    //Sử dụng hàm getAllUsers có tìm kiếm dynamic từ userAccountService để kiểm tra số điện thoại và email đã tồn tại chưa
-    const timBienSo = await xeService.getAllVehicles({ bien_so: formData.so_dien_thoai });
+    const timBienSo = await xeService.getAllVehicles({ bien_so: formData.bien_so});
     if (timBienSo.DT.length === 1) {
-      validationErrors.so_dien_thoai = 'Số điện thoại đã tồn tại';
+      validationErrors.bien_so = 'Biển số đã tồn tại';
       setErrors(validationErrors);
       console.log('validationErrors', validationErrors);
     }
