@@ -29,7 +29,6 @@ const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formDat
   useEffect(() => {
     if (visible) {
       fetchBenXe();
-      fetchTaiXe();
       fetchPhanCongTaiXe();
     }
   }, [visible, filters]);

@@ -29,7 +29,6 @@ const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, for
     if (visible) {
       fetchPhanCongNguoiDung();
       fetchBenXe();
-      fetchUser();
     }
   }, [visible, filters]);
 

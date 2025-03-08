@@ -192,6 +192,7 @@ const DanhSachNhanVien = () => {
     setFilteredNhanVien(nhanVien);
   }, [nhanVien]);
 
+  // || rowData.ben_xe_nguoi_dung_ten 
   return (
     <div className="p-grid">
       <Toast ref={toast} />
@@ -204,6 +205,7 @@ const DanhSachNhanVien = () => {
             <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm} />
             <InputText placeholder="Tìm kiếm tên nhân viên" value={searchTerm} onChange={onSearchChange} style={{ marginLeft: '8px', width: '30%' }} />
           </div>
+          
           <DataTable
             value={filteredNhanVien}
             paginator
@@ -214,7 +216,7 @@ const DanhSachNhanVien = () => {
           >
             <Column field="ho_ten" header="Họ Tên"></Column>
             <Column field="dia_diem_cong_tac" sortable header="Địa điểm công tác" body={(rowData) => rowData.ten_ben_xe || rowData.ben_xe_nguoi_dung_ten || '(Chưa được phân công)'} />
-
+             
             <Column field="so_dien_thoai" header="Số Điện Thoại"></Column>
             <Column field="email" header="Email"></Column>
             <Column field="labelVaiTro" sortable header="Vai Trò"></Column>

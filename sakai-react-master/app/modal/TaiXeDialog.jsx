@@ -45,7 +45,7 @@ const TaiXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }
       onSave();
     } else {
       setErrors(validationErrors);
-      toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng điền đầy đủ thông tin', life: 3000 });
+      toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng kiểm tra lại các thông tin nhập', life: 3000 });
     }
   };
 

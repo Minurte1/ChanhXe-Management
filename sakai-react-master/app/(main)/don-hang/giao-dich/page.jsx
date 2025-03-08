@@ -166,7 +166,10 @@ const DanhSachDonHang = () => {
         <div className="card">
           <h1>Danh Sách Đơn Hàng</h1>
           <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew} style={{ marginBottom: '10px' }} />
-          <DataTable value={orders} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}>
+          <DataTable value={orders} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+            currentPageReportTemplate="Hiển thị {first} đến {last} của {totalRecords} đơn hàng"
+          >
             <Column field="ma_van_don" header="Mã Vận Đơn" />
             <Column field="ten_nguoi_nhan" header="Tên Người Nhận" />
             <Column field="so_dien_thoai_nhan" header="Số Điện Thoại Nhận" />

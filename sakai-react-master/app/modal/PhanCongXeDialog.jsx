@@ -29,7 +29,6 @@ const PhanCongXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onS
     if (visible) {
       fetchPhanCongXe();
       fetchBenXe();
-      fetchXe();
     }
   }, [visible, filters]);
 

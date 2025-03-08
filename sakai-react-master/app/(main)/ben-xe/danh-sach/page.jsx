@@ -115,7 +115,10 @@ const DanhSachBenXe = () => {
         <div className="card">
           <h1>Danh Sách Bến Xe</h1>
           <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew} style={{ marginBottom: '10px' }} />
-          <DataTable value={benXe} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}>
+          <DataTable value={benXe} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+            currentPageReportTemplate="Hiển thị {first} đến {last} của {totalRecords} bến xe"
+          >
             <Column field="ten_ben_xe" header="Tên Bến Xe"></Column>
             <Column field="dia_chi" header="Địa Chỉ"></Column>
             <Column field="tinh" header="Tỉnh"></Column>

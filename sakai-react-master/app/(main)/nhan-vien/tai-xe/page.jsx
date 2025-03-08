@@ -193,7 +193,10 @@ const DanhSachTaiXe = () => {
             <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm} />
             <InputText placeholder="Tìm kiếm tên tài xế" value={searchTerm} onChange={onSearchChange} style={{ marginLeft: '8px', width: '30%' }} />
           </div>
-          <DataTable value={filteredTaiXe} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}>
+          <DataTable value={filteredTaiXe} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+            currentPageReportTemplate="Hiển thị {first} đến {last} của {totalRecords} tài xế"
+          >
             <Column field="ho_ten" header="Họ Tên" />
             <Column field="ten_ben_xe" header="Địa điểm công tác" sortable body={(rowData) => rowData.ten_ben_xe || '(Chưa được phân công)'} />
 

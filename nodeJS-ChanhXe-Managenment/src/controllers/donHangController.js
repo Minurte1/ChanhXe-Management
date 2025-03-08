@@ -207,6 +207,12 @@ const createOrder = async (req, res) => {
       email_nhan,
     } = req.body;
 
+    if (!ma_van_don || !ma_qr_code || !nguoi_gui_id || !id_ben_xe_nhan || !id_ben_xe_gui || !loai_hang_hoa || !trong_luong || !kich_thuoc || !so_kien || !gia_tri_hang || !cuoc_phi || !phi_bao_hiem || !phu_phi || !trang_thai || !ten_nguoi_nhan || !so_dien_thoai_nhan || !email_nhan) {
+      return res
+        .status(400)
+        .json({ EM: "Thiếu thông tin cần thiết", EC: -1, DT: {} });
+    }
+
     const id_nguoi_cap_nhat = req.user?.id;
     if (!id_nguoi_cap_nhat) {
       return res
@@ -403,6 +409,26 @@ const createOrderAndCustomer = async (req, res) => {
       dia_chi,
       mat_khau,
     } = req.body;
+
+    if (!ma_van_don || !ma_qr_code || !nguoi_gui_id || !id_ben_xe_nhan || !id_ben_xe_gui || !loai_hang_hoa || !trong_luong || !kich_thuoc || !so_kien || !gia_tri_hang || !cuoc_phi || !phi_bao_hiem || !phu_phi || !trang_thai || !ten_nguoi_nhan || !so_dien_thoai_nhan || !email_nhan || !ho_ten || !so_dien_thoai || !dia_chi || !mat_khau) {
+      return res
+        .status(400)
+        .json({ EM: "Thiếu thông tin cần thiết", EC: -1, DT: {} });
+    }
+
+    // Kiểm tra xem số điện thoại đã tồn tại chưa
+    const [existingPhone] = await pool.query(
+      `SELECT id FROM  khach_hang WHERE so_dien_thoai = ? LIMIT 1`,
+      [so_dien_thoai]
+    );
+
+    if (existingPhone.length > 0) {
+      return res.status(400).json({
+        EM: "Số điện thoại đã tồn tại",
+        EC: -1,
+        DT: {},
+      });
+    }
 
     const id_nguoi_cap_nhat = req.user?.id;
     if (!id_nguoi_cap_nhat) {
