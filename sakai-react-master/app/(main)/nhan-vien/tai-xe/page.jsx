@@ -4,6 +4,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
+import { InputText } from 'primereact/inputtext';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import taiXeService from '../../../services/taiXeServices';
 import TaiXeDialog from '../../../modal/TaiXeDialog';
@@ -29,6 +30,8 @@ const DanhSachTaiXe = () => {
     id_ben: '',
     id_tai_xe: ''
   });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredTaiXe, setFilteredTaiXe] = useState([]);
 
   const toast = useRef(null);
 
@@ -158,6 +161,26 @@ const DanhSachTaiXe = () => {
     }));
   };
 
+  const onSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchTerm.trim() === '') {
+        setFilteredTaiXe(taiXeList);
+      } else {
+        setFilteredTaiXe(taiXeList.filter((tx) => tx.ho_ten.toLowerCase().includes(searchTerm.toLowerCase())));
+      }
+    }, 300); // Thời gian trễ 300ms
+
+    return () => clearTimeout(timer);
+  }, [searchTerm, taiXeList]);
+
+  useEffect(() => {
+    setFilteredTaiXe(taiXeList);
+  }, [taiXeList]);
+
   return (
     <div className="p-grid">
       <Toast ref={toast} />
@@ -168,13 +191,14 @@ const DanhSachTaiXe = () => {
           <div style={{ marginBottom: '10px' }}>
             <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew} style={{ marginRight: '10px' }} />
             <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm} />
+            <InputText placeholder="Tìm kiếm tên tài xế" value={searchTerm} onChange={onSearchChange} style={{ marginLeft: '8px', width: '30%' }} />
           </div>
-          <DataTable value={taiXeList} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}>
-            <Column field="ho_ten" header="Họ Tên" sortable />
+          <DataTable value={filteredTaiXe} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}>
+            <Column field="ho_ten" header="Họ Tên" />
             <Column field="ten_ben_xe" header="Địa điểm công tác" sortable body={(rowData) => rowData.ten_ben_xe || '(Chưa được phân công)'} />
 
-            <Column field="so_dien_thoai" header="Số Điện Thoại" sortable />
-            <Column field="email" header="Email" sortable />
+            <Column field="so_dien_thoai" header="Số Điện Thoại" />
+            <Column field="email" header="Email" />
             <Column field="labelVaiTro" header="Vai Trò" sortable />
             <Column
               field="labelTrangThai"

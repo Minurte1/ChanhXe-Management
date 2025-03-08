@@ -159,15 +159,35 @@ const createUser = async (req, res) => {
     const { ho_ten, so_dien_thoai, email, mat_khau, vai_tro, trang_thai } =
       req.body;
 
+    if (!ho_ten || !so_dien_thoai || !email || !mat_khau || !vai_tro) {
+      return res
+        .status(400)
+        .json({ EM: "Thiếu thông tin cần thiết", EC: -1, DT: {} });
+    }
+
     // Kiểm tra xem số điện thoại đã tồn tại chưa
-    const [existingUser] = await pool.query(
+    const [existingPhone] = await pool.query(
       `SELECT id FROM nguoi_dung WHERE so_dien_thoai = ? LIMIT 1`,
       [so_dien_thoai]
     );
 
-    if (existingUser.length > 0) {
+    if (existingPhone.length > 0) {
       return res.status(400).json({
         EM: "Số điện thoại đã tồn tại",
+        EC: -1,
+        DT: {},
+      });
+    }
+
+    // Kiểm tra xem email đã tồn tại chưa
+    const [existingEmail] = await pool.query(
+      `SELECT id FROM nguoi_dung WHERE email = ? LIMIT 1`,
+      [email]
+    );
+
+    if (existingEmail.length > 0) {
+      return res.status(400).json({
+        EM: "Email đã tồn tại",
         EC: -1,
         DT: {},
       });

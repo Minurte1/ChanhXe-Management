@@ -127,6 +127,26 @@ const createCustomer = async (req, res) => {
         .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
     }
 
+    if (!ho_ten || !so_dien_thoai || !dia_chi || !mat_khau) {
+      return res
+        .status(400)
+        .json({ EM: "Thiếu thông tin cần thiết", EC: -1, DT: {} });
+    }
+
+    // Kiểm tra xem số điện thoại đã tồn tại chưa
+    const [existingPhone] = await pool.query(
+      `SELECT id FROM  khach_hang WHERE so_dien_thoai = ? LIMIT 1`,
+      [so_dien_thoai]
+    );
+
+    if (existingPhone.length > 0) {
+      return res.status(400).json({
+        EM: "Số điện thoại đã tồn tại",
+        EC: -1,
+        DT: {},
+      });
+    }
+
     // Mã hóa mật khẩu trước khi lưu
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(mat_khau, saltRounds);

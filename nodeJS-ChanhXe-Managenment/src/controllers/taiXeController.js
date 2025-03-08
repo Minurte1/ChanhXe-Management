@@ -234,6 +234,13 @@ const createDriver = async (req, res) => {
         .status(403)
         .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
     }
+
+    if (!nguoi_dung_id || !bang_lai || !trang_thai) {
+      return res
+        .status(400)
+        .json({ EM: "Thiếu thông tin cần thiết", EC: -1, DT: {} });
+    }
+
     const [result] = await pool.query(
       `INSERT INTO tai_xe (nguoi_dung_id, bang_lai, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat, trang_thai) 
        VALUES (?, ?, ?, NOW(), NOW(), ?)`,

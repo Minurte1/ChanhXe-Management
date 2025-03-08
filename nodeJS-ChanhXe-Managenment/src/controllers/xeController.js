@@ -127,6 +127,27 @@ const createVehicle = async (req, res) => {
         .status(403)
         .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
     }
+
+    if (!bien_so || !loai_xe || !suc_chua || !trang_thai) {
+      return res
+        .status(400)
+        .json({ EM: "Thiếu thông tin cần thiết", EC: -1, DT: {} });
+    }
+
+    // Kiểm tra xem biển số đã tồn tại chưa
+    const [existingBienSo] = await pool.query(
+      `SELECT id FROM xe WHERE bien_so = ? LIMIT 1`,
+      [bien_so]
+    );
+
+    if (existingBienSo.length > 0) {
+      return res.status(400).json({
+        EM: "Biển số xe đã tồn tại",
+        EC: -1,
+        DT: {},
+      });
+    }
+
     const [result] = await pool.query(
       `INSERT INTO xe (bien_so, loai_xe, suc_chua, trang_thai, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat) 
        VALUES (?, ?, ?, ?, ?, NOW(), NOW())`,
