@@ -165,7 +165,13 @@ const createTrip = async (req, res) => {
       return res
         .status(403)
         .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
-    }
+    };
+
+    if (!xe_id || !tai_xe_id || !thoi_gian_xuat_ben || !trang_thai) {
+      return res
+        .status(400)
+        .json({ EM: "Thiếu thông tin cần thiết", EC: -1, DT: {} });
+    };
 
     // Định dạng thời gian xuất bến
     const thoiGianXuatBen = moment(thoi_gian_xuat_ben).format(

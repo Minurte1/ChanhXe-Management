@@ -42,6 +42,10 @@ const DanhSachNhanVien = () => {
     fetchNhanVien();
   }, []);
 
+  useEffect(() => {
+    setFilteredNhanVien(nhanVien);
+  }, [nhanVien]);
+
   const fetchNhanVien = async () => {
     try {
       const response = await userService.getAllUsers();
@@ -188,11 +192,6 @@ const DanhSachNhanVien = () => {
     return () => clearTimeout(timer); // Xóa timer khi searchTerm thay đổi hoặc component unmount
   }, [searchTerm, nhanVien]);
 
-  useEffect(() => {
-    setFilteredNhanVien(nhanVien);
-  }, [nhanVien]);
-
-  // || rowData.ben_xe_nguoi_dung_ten 
   return (
     <div className="p-grid">
       <Toast ref={toast} />
@@ -213,9 +212,17 @@ const DanhSachNhanVien = () => {
             rowsPerPageOptions={[5, 10, 25]}
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
             currentPageReportTemplate="Hiển thị {first} đến {last} của {totalRecords} nhân viên"
+            // onSort={customSort}
           >
             <Column field="ho_ten" header="Họ Tên"></Column>
-            <Column field="dia_diem_cong_tac" sortable header="Địa điểm công tác" body={(rowData) => rowData.ten_ben_xe || rowData.ben_xe_nguoi_dung_ten || '(Chưa được phân công)'} />
+            <Column 
+              field="dia_diem_cong_tac" 
+              header="Địa điểm công tác" 
+              sortable
+              sortField="ten_ben_xe"
+              // sortFunction={diaDiemCongTacSort}
+              body={(rowData) => rowData.ten_ben_xe || rowData.ben_xe_nguoi_dung_ten || '(Chưa được phân công)'} 
+            />
              
             <Column field="so_dien_thoai" header="Số Điện Thoại"></Column>
             <Column field="email" header="Email"></Column>

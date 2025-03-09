@@ -103,6 +103,13 @@ const createVehicleAssignment = async (req, res) => {
         .status(403)
         .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
     }
+
+    if (!id_ben || !id_xe) {
+      return res
+        .status(400)
+        .json({ EM: "Thiếu thông tin bắt buộc", EC: -1, DT: {} });
+    }
+
     const [result] = await pool.query(
       "INSERT INTO phan_cong_dia_diem_xe (id_ben, id_xe, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat) VALUES (?, ?, ?, NOW(), NOW())",
       [id_ben, id_xe, id_nguoi_cap_nhat]
