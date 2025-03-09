@@ -1,44 +1,64 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
+import { Toast } from 'primereact/toast';
 
 import taiXeService from '../services/taiXeServices';
 import { useAxios } from '../authentication/useAxiosClient';
+import { validateForm } from '../(main)/utilities/validation';
 
 const TaiXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }) => {
   const [users, setUsers] = useState([]);
+  const [errors, setErrors] = useState({});
+  const toast = useRef(null);
   const axiosInstance = useAxios();
   const TaiXeServices = taiXeService(axiosInstance);
+
   useEffect(() => {
     if (visible) {
       fetchUsers();
     }
   }, [visible]);
 
+  useEffect(() => {
+    if (!visible) {
+      setErrors({});
+    }
+  }, [visible]);
+
   const fetchUsers = async () => {
     try {
-      const filters = { vai_tro: ['tai_xe', 'tai_xe_phu'], trang_thai: 'hoat_dong' };
-
       const response = await TaiXeServices.getUsersNotInDriverTable();
-
       setUsers(Array.isArray(response.DT) ? response.DT : []);
     } catch (error) {
       console.error('Lỗi khi tải danh sách khách hàng', error);
     }
   };
 
+  const handleSave = () => {
+    const requiredFields = ['nguoi_dung_id', 'bang_lai', 'trang_thai'];
+    const validationErrors = validateForm(formData, requiredFields);
+    if (Object.keys(validationErrors).length === 0) {
+      onSave();
+    } else {
+      setErrors(validationErrors);
+      toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng kiểm tra lại các thông tin nhập', life: 3000 });
+    }
+  };
+
   const dialogFooter = (
     <React.Fragment>
       <Button label="Hủy" icon="pi pi-times" className="p-button-text" onClick={onHide} />
-      <Button label="Lưu" icon="pi pi-check" onClick={onSave} />
+      <Button label="Lưu" icon="pi pi-check" onClick={handleSave} />
     </React.Fragment>
   );
 
   return (
     <Dialog visible={visible} style={{ width: '450px' }} header={isNew ? 'Thêm Tài Xế' : 'Chỉnh Sửa Tài Xế'} modal className="p-fluid" footer={dialogFooter} onHide={onHide}>
+      <Toast ref={toast} />
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="nguoi_dung_id">Người Dùng</label>
         <Dropdown
@@ -55,16 +75,18 @@ const TaiXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }
           className="mt-2"
           style={{ width: '100%' }}
         />
+        {errors.nguoi_dung_id && <small className="p-error">{errors.nguoi_dung_id}</small>}
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="bang_lai">Bằng Lái</label>
         <InputText id="bang_lai" style={{ marginTop: '3px' }} value={formData.bang_lai || ''} onChange={(e) => onInputChange(e, 'bang_lai')} placeholder="Ví dụ: B2" className="mt-2 h-10" />
+        {errors.bang_lai && <small className="p-error">{errors.bang_lai}</small>}
       </div>{' '}
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="trang_thai">Trạng Thái</label>
         <Dropdown
           id="trang_thai"
-          value={formData.trang_thai || ''}
+          value={formData.trang_thai || 'hoat_dong'}
           options={[
             { label: 'Hoạt Động', value: 'hoat_dong' },
             { label: 'Ngừng Hoạt Động', value: 'ngung_hoat_dong' },
@@ -74,7 +96,9 @@ const TaiXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }
           placeholder="Chọn trạng thái"
           className="mt-2"
           style={{ width: '100%' }}
+          disabled={isNew}
         />
+        {errors.trang_thai && <small className="p-error">{errors.trang_thai}</small>}
       </div>
     </Dialog>
   );

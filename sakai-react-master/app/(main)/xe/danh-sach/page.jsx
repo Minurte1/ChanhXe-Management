@@ -4,6 +4,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
+import { InputText } from 'primereact/inputtext';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import VehicleService from '../../../services/xeSerivces';
 import XeDialog from '../../../modal/XeDialog';
@@ -33,6 +34,8 @@ const DanhSachXe = () => {
   const vehicleService = VehicleService(axiosInstance);
   const vehicleAssignmentService = VehicleAssignmentService(axiosInstance);
   const toast = useRef(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredXe, setFilteredXe] = useState([]);
 
   useEffect(() => {
     fetchXe();
@@ -126,7 +129,7 @@ const DanhSachXe = () => {
       setDisplayDialog(false);
       showSuccess(isNew ? 'Thêm xe thành công' : 'Cập nhật xe thành công');
     } catch (error) {
-      showError(isNew ? 'Lỗi khi thêm xe' : 'Lỗi khi cập nhật xe');
+      showError(isNew ? 'Lỗi khi thêm xe ' + error : 'Lỗi khi cập nhật xe ' + error);
     }
   };
 
@@ -142,7 +145,7 @@ const DanhSachXe = () => {
       setDisplayAssignDialog(false);
       showSuccess(isNew ? 'Thêm phân công xe thành công' : 'Cập nhật phân công xe thành công');
     } catch (error) {
-      showError(isNew ? 'Lỗi khi thêm phân công  xe' : 'Lỗi khi cập nhật phân công  xe');
+      showError(isNew ? 'Lỗi khi thêm phân công xe ' + error : 'Lỗi khi cập nhật phân công xe ' + error);
     }
   };
 
@@ -162,6 +165,26 @@ const DanhSachXe = () => {
     }));
   };
 
+  const onSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchTerm.trim() === '') {
+        setFilteredXe(xeList);
+      } else {
+        setFilteredXe(xeList.filter((x) => x.bien_so.toLowerCase().includes(searchTerm.toLowerCase())));
+      }
+    }, 300); // Thời gian trễ 300ms
+
+    return () => clearTimeout(timer);
+  }, [searchTerm, xeList]);
+
+  useEffect(() => {
+    setFilteredXe(xeList);
+  }, [xeList]);
+
   return (
     <div className="p-grid">
       <Toast ref={toast} />
@@ -172,12 +195,16 @@ const DanhSachXe = () => {
           <div style={{ marginBottom: '10px' }}>
             <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew} style={{ marginRight: '10px' }} />
             <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm} />
+            <InputText placeholder="Tìm kiếm biển số xe" value={searchTerm} onChange={onSearchChange} style={{ marginLeft: '8px', width: '30%' }} />
           </div>
-          <DataTable value={xeList} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}>
+          <DataTable value={filteredXe} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+            currentPageReportTemplate="Hiển thị {first} đến {last} của {totalRecords} xe"
+          >
             <Column field="bien_so" header="Biển Số"></Column>
             <Column field="ten_ben_xe" header="Địa điểm công tác" sortable body={(rowData) => rowData.ten_ben_xe || '(Chưa được phân công)'} />
             <Column field="suc_chua" header="Sức chứa"></Column>
-            <Column field="loai_xe" header="Loại Xe"></Column>
+            <Column field="loai_xe" header="Loại Xe" sortable></Column>
             <Column
               field="labelTrangThai"
               header="Trạng Thái"

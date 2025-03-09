@@ -37,6 +37,11 @@ const createUserAssignment = async (req, res) => {
     if (!id_nguoi_cap_nhat) {
       return res.status(403).json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
     }
+
+    if (!id_ben || !id_nguoi_dung) {
+      return res.status(400).json({ EM: "Thiếu thông tin bắt buộc", EC: -1, DT: {} });
+    }
+
     const [result] = await pool.query(
       "INSERT INTO phan_cong_dia_diem_nguoi_dung (id_ben, id_nguoi_dung, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat) VALUES (?, ?, ?, NOW(), NOW())",
       [id_ben, id_nguoi_dung, id_nguoi_cap_nhat]

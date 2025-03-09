@@ -2,12 +2,14 @@
 
 import Link from 'next/link';
 import { classNames } from 'primereact/utils';
-import React, { forwardRef, useContext, useImperativeHandle, useRef, useState } from 'react';
+import React, { forwardRef, useContext, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { AppTopbarRef } from '@/types';
 import { LayoutContext } from './context/layoutcontext';
 import { Menu, MenuItem } from '@mui/material';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
+import { ReduxExportServices } from '@/app/redux/redux-services/services-redux-export';
+import spServices from '@/app/share/share-services/sp-services';
 
 const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
   const { layoutConfig, layoutState, onMenuToggle } = useContext(LayoutContext);
@@ -17,6 +19,12 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const router = useRouter();
+  const { userInfo } = ReduxExportServices();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    setUser(userInfo);
+  }, [userInfo]);
 
   useImperativeHandle(ref, () => ({
     menubutton: menubuttonRef.current,
@@ -61,11 +69,14 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
       {/* Nút user để mở menu */}
 
       <div ref={topbarmenuRef} className={classNames('layout-topbar-menu', { 'layout-topbar-menu-mobile-active': layoutState.profileSidebarVisible })}>
+        <div style={{ marginTop: '14px', cursor: 'pointer' }} ref={topbarmenubuttonRef} onClick={handleProfileClick}>
+          {user ? `${user.ho_ten} ( ${spServices.formatVaiTro(user.vai_tro)} )` : 'Đang tải...'}
+        </div>
+
         <button className="p-link layout-menu-button layout-topbar-button" type="button" ref={topbarmenubuttonRef} onClick={handleProfileClick}>
           {' '}
           <i className="pi pi-user" />
         </button>
-
         {/* Menu dropdown */}
         <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
           <MenuItem onClick={handleViewProfile}>Xem thông tin</MenuItem>

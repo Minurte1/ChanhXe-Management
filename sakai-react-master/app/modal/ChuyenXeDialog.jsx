@@ -4,23 +4,27 @@ import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
+import { Toast } from 'primereact/toast';
 
 import BenXeService from '../services/benXeServices';
 import { useAxios } from '../authentication/useAxiosClient';
 import DriverAssignmentService from '../services/phanCongTaiXeServices';
 import VehicleAssignmentService from '../services/phanCongXeServices';
+import { validateForm } from '../(main)/utilities/validation';
 
 const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }) => {
   const [taiXeList, setTaiXeList] = useState([]);
   const [taiXePhuList, setTaiXePhuList] = useState([]);
   const [xeList, setXeList] = useState([]);
   const [listBenXe, setListBenXe] = useState([]);
-  const [error, setError] = useState(null);
+  const [errors, setErrors] = useState({});
+  const toast = React.useRef(null);
   const axiosInstance = useAxios();
 
   const benXeService = BenXeService(axiosInstance);
   const phanCongTaiXe = DriverAssignmentService(axiosInstance);
   const phanCongXe = VehicleAssignmentService(axiosInstance);
+
   // Danh sách trạng thái ban đầu
   const trangThaiOptions = [
     { label: 'Chờ xuất bến', value: 'cho_xuat_ben' },
@@ -41,29 +45,36 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
     return true;
   });
 
+  const handleSave = () => {
+    const requiredFields = ['id_ben_xe_gui', 'id_ben_xe_nhan', 'xe_id', 'tai_xe_id', 'thoi_gian_xuat_ben', 'trang_thai'];
+    const validationErrors = validateForm(formData, requiredFields);
+    if (Object.keys(validationErrors).length === 0 && validateTimes()) {
+      const formattedData = {
+        ...formData,
+        thoi_gian_xuat_ben: formatDateTime(formData.thoi_gian_xuat_ben),
+        thoi_gian_cap_ben: formatDateTime(formData.thoi_gian_cap_ben)
+      };
+      onSave(formattedData);
+    } else {
+      setErrors(validationErrors);
+      toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Vui lòng điền đầy đủ thông tin', life: 3000 });
+    }
+  };
+
   const dialogFooter = (
     <React.Fragment>
       <Button label="Hủy" icon="pi pi-times" className="p-button-text" onClick={onHide} />
       <Button
         label="Lưu"
         icon="pi pi-check"
-        onClick={() => {
-          if (validateTimes()) {
-            const formattedData = {
-              ...formData,
-              thoi_gian_xuat_ben: formatDateTime(formData.thoi_gian_xuat_ben),
-              thoi_gian_cap_ben: formatDateTime(formData.thoi_gian_cap_ben)
-            };
-            onSave(formattedData);
-          }
-        }}
+        onClick={handleSave}
       />
     </React.Fragment>
   );
 
   const showError = (message) => {
-    setError(message);
-    console.error(message);
+    setErrors({ form: message });
+    toast.current.show({ severity: 'error', summary: 'Lỗi', detail: message, life: 3000 });
   };
 
   const formatDateTime = (date) => {
@@ -98,6 +109,12 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
       fetchData();
     }
   }, [visible, formData?.id_ben_xe_gui]);
+
+  useEffect(() => {
+    if (!visible) {
+      setErrors({});
+    }
+  }, [visible]);
 
   const xeOptions = xeList.map((xe) => ({ label: `${xe.bien_so} (${xe.loai_xe})`, value: xe.id_xe }));
   const taiXeOptions = taiXeList.map((taiXe) => ({
@@ -136,34 +153,37 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
     // Nếu là cập nhật (isNew === false), không cần validate, luôn trả về true
     return true;
   };
-  console.log('formData', formData);
-  console.log('formData.trang_thai', formData.trang_thai);
 
   return (
     <Dialog visible={visible} style={{ width: '450px' }} header={isNew ? 'Thêm Chuyến Xe' : 'Chỉnh Sửa Chuyến Xe'} modal className="p-fluid" footer={dialogFooter} onHide={onHide}>
+      <Toast ref={toast} />
       <div className="p-field mt-2">
         <label htmlFor="id_ben_xe_gui">Bến Xe Gửi</label>
-        <Dropdown id="id_ben_xe_gui" value={formData.id_ben_xe_gui} options={benXeOptions} onChange={(e) => onInputChange(e, 'id_ben_xe_gui')} placeholder="Chọn bến xe gửi" filter filterBy="label" style={{ marginTop: '3px' }} />
+        <Dropdown id="id_ben_xe_gui" value={formData.id_ben_xe_gui} options={benXeOptions} onChange={(e) => onInputChange(e, 'id_ben_xe_gui')} placeholder="Chọn bến xe gửi" filter filterBy="label" style={{ marginTop: '3px' }}/>
+        {errors.id_ben_xe_gui && <small className="p-error">{errors.id_ben_xe_gui}</small>}
       </div>
       <div className="p-field mt-2">
         <label htmlFor="id_ben_xe_nhan">Bến Xe Nhận</label>
-        <Dropdown id="id_ben_xe_nhan" value={formData.id_ben_xe_nhan} options={benXeOptions} onChange={(e) => onInputChange(e, 'id_ben_xe_nhan')} placeholder="Chọn bến xe nhận" filter filterBy="label" style={{ marginTop: '3px' }} />
+        <Dropdown id="id_ben_xe_nhan" value={formData.id_ben_xe_nhan} options={benXeOptions} onChange={(e) => onInputChange(e, 'id_ben_xe_nhan')} placeholder="Chọn bến xe nhận" filter filterBy="label" style={{ marginTop: '3px' }}/>
+        {errors.id_ben_xe_nhan && <small className="p-error">{errors.id_ben_xe_nhan}</small>}
       </div>
       <div className="p-field mt-2">
         <label htmlFor="xe_id">Xe</label>
-        <Dropdown id="xe_id" value={formData?.xe_id} options={xeOptions} onChange={(e) => onInputChange(e, 'xe_id')} placeholder="Chọn xe" filter filterBy="label" style={{ marginTop: '3px' }} />
+        <Dropdown id="xe_id" value={formData?.xe_id} options={xeOptions} onChange={(e) => onInputChange(e, 'xe_id')} placeholder="Chọn xe" filter filterBy="label" style={{ marginTop: '3px' }}/>
+        {errors.xe_id && <small className="p-error">{errors.xe_id}</small>}
       </div>
 
       <div className="p-field mt-2">
         <label htmlFor="tai_xe_id">Tài Xế</label>
-        <Dropdown id="tai_xe_id" value={formData?.tai_xe_id} options={taiXeOptions} onChange={(e) => onInputChange(e, 'tai_xe_id')} placeholder="Chọn tài xế" filter filterBy="label" style={{ marginTop: '3px' }} />
+        <Dropdown id="tai_xe_id" value={formData?.tai_xe_id} options={taiXeOptions} onChange={(e) => onInputChange(e, 'tai_xe_id')} placeholder="Chọn tài xế" filter filterBy="label" style={{ marginTop: '3px' }}/>
+        {errors.tai_xe_id && <small className="p-error">{errors.tai_xe_id}</small>}
       </div>
 
       <div className="p-field mt-2">
         <label htmlFor="tai_xe_phu_id">Tài Xế Phụ</label>
         <Dropdown
           id="tai_xe_phu_id"
-          value={formData?.tai_xe_phu_id}
+          value={formData?.tai_xe_phu_id || null}
           options={taiXePhuOptions}
           onChange={(e) => onInputChange(e, 'tai_xe_phu_id')}
           placeholder="Chọn tài xế phụ (nếu có)"
@@ -187,6 +207,7 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
           style={{ marginTop: '3px' }}
           placeholder="Chọn thời gian xuất bến"
         />
+        {errors.thoi_gian_xuat_ben && <small className="p-error">{errors.thoi_gian_xuat_ben}</small>}
       </div>
 
       <div className="p-field mt-2">
@@ -200,6 +221,7 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
           style={{ marginTop: '3px' }}
           disabled={formData?.trang_thai === 'da_cap_ben'} // Vô hiệu hóa nếu đã là "Đã cập bến"
         />
+        {errors.trang_thai && <small className="p-error">{errors.trang_thai}</small>}
       </div>
     </Dialog>
   );

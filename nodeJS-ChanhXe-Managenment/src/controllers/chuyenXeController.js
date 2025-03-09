@@ -165,7 +165,13 @@ const createTrip = async (req, res) => {
       return res
         .status(403)
         .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
-    }
+    };
+
+    if (!xe_id || !tai_xe_id || !thoi_gian_xuat_ben || !trang_thai) {
+      return res
+        .status(400)
+        .json({ EM: "Thiếu thông tin cần thiết", EC: -1, DT: {} });
+    };
 
     // Định dạng thời gian xuất bến
     const thoiGianXuatBen = moment(thoi_gian_xuat_ben).format(
@@ -178,6 +184,12 @@ const createTrip = async (req, res) => {
       thoiGianCapBen = moment(thoi_gian_cap_ben).format("YYYY-MM-DD HH:mm:ss");
     }
 
+    // Xử lý tài xế phụ: nếu không có tài xế phụ, gán giá trị NULL
+    let taiXePhuId = null;
+    if (tai_xe_phu_id) {
+      taiXePhuId = tai_xe_phu_id;
+    }
+
     // Thực thi truy vấn SQL
     const [result] = await pool.query(
       `INSERT INTO chuyen_xe (xe_id, tai_xe_id, tai_xe_phu_id, thoi_gian_xuat_ben, thoi_gian_cap_ben, trang_thai, id_ben_xe_nhan, id_ben_xe_gui, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat) 
@@ -185,7 +197,7 @@ const createTrip = async (req, res) => {
       [
         xe_id,
         tai_xe_id,
-        tai_xe_phu_id,
+        taiXePhuId,
         thoiGianXuatBen,
         thoiGianCapBen,
         trang_thai,
@@ -235,6 +247,7 @@ const updateTrip = async (req, res) => {
     const allowedFields = [
       "xe_id",
       "tai_xe",
+      "tai_xe_id",
       "tai_xe_phu_id",
       "thoi_gian_xuat_ben",
       "thoi_gian_cap_ben",

@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
@@ -8,6 +8,7 @@ import OrderService from '../../../services/donHangSevices'; // Cập nhật tê
 import OrderDialog from '../../../modal/DonHangDialog';
 import spServices from '@/app/share/share-services/sp-services';
 import { useAxios } from '@/app/authentication/useAxiosClient';
+import { ReduxExportServices } from '@/app/redux/redux-services/services-redux-export';
 
 const DanhSachDonHang = () => {
   const [orders, setOrders] = useState([]);
@@ -36,13 +37,14 @@ const DanhSachDonHang = () => {
   const toast = useRef(null);
   const axiosInstance = useAxios();
   const orderService = OrderService(axiosInstance);
-  axiosInstance;
+  const { userInfo } = ReduxExportServices();
   useEffect(() => {
     fetchOrders();
   }, []);
 
   const fetchOrders = async () => {
     try {
+      const filters = userInfo.vai_tro === 'admin' ? null : (filters.id_ben_xe_nhan = userInfo.id_ben);
       const response = await orderService.getAllOrders();
       const output = spServices.formatData(response?.DT);
       setOrders(Array.isArray(output) ? output : []);
@@ -124,7 +126,6 @@ const DanhSachDonHang = () => {
   };
 
   const SaveWithCustomer = async () => {
-    console.log('SaveWithCustomer');
     const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = formData;
     try {
       if (isNew) {
@@ -136,9 +137,27 @@ const DanhSachDonHang = () => {
       setDisplayDialog(false);
       showSuccess(isNew ? 'Thêm đơn hàng và khách hàng thành công' : '');
     } catch (error) {
-      showError(isNew ? 'Lỗi khi thêm đơn hàng và khách hàng' : '');
+      showError(isNew ? 'Lỗi khi thêm đơn hàng và khách hàng ' + error : '');
     }
   };
+  const StatusLabel = React.memo(
+    ({ status }) => {
+      const styles = React.useMemo(() => {
+        const { text, background } = spServices.getColorTrangThai(status);
+        return {
+          color: text,
+          backgroundColor: background,
+          padding: '4px 8px',
+          borderRadius: '4px',
+          display: 'inline-block',
+          fontWeight: 'bold'
+        };
+      }, [status]);
+
+      return <span style={styles}>{status}</span>;
+    },
+    (prevProps, nextProps) => prevProps.status === nextProps.status
+  );
 
   return (
     <div className="p-grid">
@@ -147,12 +166,17 @@ const DanhSachDonHang = () => {
         <div className="card">
           <h1>Danh Sách Đơn Hàng</h1>
           <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew} style={{ marginBottom: '10px' }} />
-          <DataTable value={orders} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}>
+          <DataTable value={orders} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+            currentPageReportTemplate="Hiển thị {first} đến {last} của {totalRecords} đơn hàng"
+          >
             <Column field="ma_van_don" header="Mã Vận Đơn" />
             <Column field="ten_nguoi_nhan" header="Tên Người Nhận" />
             <Column field="so_dien_thoai_nhan" header="Số Điện Thoại Nhận" />
-            <Column field="labelLoaiHangHoa" header="Loại Hàng Hóa" />
-            <Column field="labelTrangThaiDonHang" header="Trạng Thái" />
+
+            <Column field="labelLoaiHangHoa" header="Loại Hàng Hóa" sortable body={(rowData) => <StatusLabel status={rowData.labelLoaiHangHoa} />} />
+
+            <Column field="labelTrangThaiDonHang" header="Trạng Thái" sortable body={(rowData) => <StatusLabel status={rowData.labelTrangThaiDonHang} />} />
             <Column
               body={(rowData) => (
                 <>

@@ -1465,6 +1465,41 @@
             "name": "x-pathname",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "ho_ten",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "so_dien_thoai",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "dia_chi",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id_nguoi_cap_nhat",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "ngay_cap_nhat",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "ngay_tao",
+            "in": "query",
+            "type": "string"
           }
         ],
         "responses": {
@@ -1867,25 +1902,11 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "x-pathname",
-            "in": "header",
-            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
@@ -1986,6 +2007,50 @@
         }
       }
     },
+    "/trips/don-hang": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/trips": {
       "get": {
         "tags": [
@@ -1996,6 +2061,11 @@
           {
             "name": "x-pathname",
             "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "trang_thai",
+            "in": "query",
             "type": "string"
           }
         ],
@@ -2176,6 +2246,50 @@
             "name": "x-pathname",
             "in": "header",
             "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/trips/updateChuyenXeCapBen": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {

@@ -84,7 +84,7 @@ const getMenuItems = (role, selectedRole = null) => {
         items: [
           { label: "Trang chủ", url: "/" },
           { label: "Đơn hàng cập bến", url: "/kho-hang" },
-          { label: "Tra cứu đơn hàng", url: "/orders/search" },
+          { label: "Tra cứu đơn hàng", url: "/kho-hang/tra-cuu" },
         ],
       },
       { label: "Quản lý xe", icon: "pi pi-truck", url: "/vehicles" },
@@ -108,17 +108,30 @@ const getMenuItems = (role, selectedRole = null) => {
     ],
     tai_xe: [
       {
-        label: "Lịch trình vận chuyển",
-        icon: "pi pi-map",
-        url: "/driver/schedule",
+        label: "Chúng ta là tài xế",
+        url: "/",
+        icon: "pi pi-user",
+        items: [
+          {
+            label: "Lịch trình vận chuyển",
+            icon: "pi pi-map",
+            url: "/tai-xe/lich-trinh",
+          },
+        ],
       },
     ],
     tai_xe_phu: [
-      { label: "Trang chủ", url: "/" },
       {
-        label: "Lịch trình vận chuyển",
-        icon: "pi pi-map",
-        url: "/driver/schedule",
+        label: "Chúng ta là tài xế phụ",
+        url: "/",
+        icon: "pi pi-user",
+        items: [
+          {
+            label: "Lịch trình vận chuyển",
+            icon: "pi pi-map",
+            url: "/tai-xe/lich-trinh",
+          },
+        ],
       },
     ],
     nhan_vien_giao_dich: [

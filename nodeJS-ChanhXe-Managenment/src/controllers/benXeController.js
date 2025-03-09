@@ -51,6 +51,12 @@ const createBenXe = async (req, res) => {
         .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
     }
 
+    if (!dia_chi || !ten_ben_xe || !tinh || !huyen || !xa || !duong) {
+      return res
+        .status(400)
+        .json({ EM: "Thiếu thông tin cần thiết", EC: -1, DT: {} });
+    }
+
     const [result] = await pool.query(
       `INSERT INTO ben_xe (dia_chi, ten_ben_xe, tinh, huyen, xa, id_nguoi_cap_nhat,  ngay_cap_nhat, ngay_tao,duong) 
        VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW(),?)`,
