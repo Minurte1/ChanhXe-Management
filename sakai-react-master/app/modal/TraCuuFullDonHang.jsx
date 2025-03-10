@@ -7,15 +7,19 @@ import { AutoComplete } from 'primereact/autocomplete';
 import { classNames } from 'primereact/utils';
 import moment from 'moment';
 
-const TraCuuOrderDialog = ({ visible, onHide, formData, onInputChange, onSave, isNew, saveWithCustomer, suggestions, completeMethod }) => {
+const TraCuuOrderDialog = ({ confirmOrder, visible, onHide, formData, onInputChange, onSave, isNew, saveWithCustomer, suggestions, completeMethod }) => {
   const footer = (
     <div>
       <Button label="Hủy" icon="pi pi-times" onClick={onHide} className="p-button-text" />
-      {/* <Button label="Lưu" icon="pi pi-check" onClick={onSave} className="p-button-success" /> */}
+      {formData?.trang_thai === 'da_cap_ben' ? <Button label="Đơn hàng đã nhận" icon="pi pi-check" onClick={() => handleUpdateStatusGiaoHangSuccess()} className="p-button-success" /> : false}
+
       {isNew && <Button label="Lưu cùng khách hàng" icon="pi pi-user-plus" onClick={saveWithCustomer} className="p-button-info" />}
     </div>
   );
 
+  const handleUpdateStatusGiaoHangSuccess = () => {
+    onSave('success');
+  };
   const getLabel = (key) => {
     const labels = {
       ben_xe_gui_ten: 'Bến xe gửi',
@@ -51,7 +55,7 @@ const TraCuuOrderDialog = ({ visible, onHide, formData, onInputChange, onSave, i
     };
     return labels[key] || key.replace(/_/g, ' ').toUpperCase();
   };
-  console.log('formData', formData);
+
   const formatDate = (value) => {
     return moment(value).isValid() ? moment(value).format('HH:mm:ss DD/MM/YYYY') : value;
   };

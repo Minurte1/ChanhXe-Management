@@ -10,7 +10,7 @@ import OrderDialog from '../../../modal/DonHangDialog';
 import spServices from '@/app/share/share-services/sp-services';
 import { useAxios } from '@/app/authentication/useAxiosClient';
 import { ReduxExportServices } from '@/app/redux/redux-services/services-redux-export';
-
+import TraCuuOrderDialog from '../../../modal/TraCuuFullDonHang';
 const DanhSachDonHang = () => {
   const [orders, setOrders] = useState([]);
   const [displayDialog, setDisplayDialog] = useState(false);
@@ -53,6 +53,7 @@ const DanhSachDonHang = () => {
         filter.id_ben_xe_gui = userInfo.id_ben;
       } else if (searchFilters === 2 && filter !== 'admin') {
         filter.id_ben_xe_nhan = userInfo.id_ben;
+        filter.trang_thai = ['da_cap_ben', 'giao_thanh_cong'];
       }
       console.log('filter', filter);
       const response = await orderService.getAllOrders(filter);
@@ -111,12 +112,17 @@ const DanhSachDonHang = () => {
     }
   };
 
-  const saveOrder = async () => {
+  const saveOrder = async (key) => {
     const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = formData;
     try {
       if (isNew) {
+        filteredData.trang_thai = 'cho_xu_ly';
         await orderService.createOrder(filteredData);
       } else {
+        if (key === 'success') {
+          filteredData.trang_thai = 'giao_thanh_cong';
+        }
+
         await orderService.updateOrder(filteredData.id, filteredData);
       }
       fetchOrders();
@@ -174,6 +180,13 @@ const DanhSachDonHang = () => {
     { label: 'Đơn sắp gửi', value: 1 },
     { label: 'Đơn đã nhận', value: 2 }
   ];
+  const [xemOrderDialog, setXemOrderDialog] = useState(false);
+  const xemOrder = (order) => {
+    const { id_ben_xe_gui, id_ben_xe_nhan, id_nguoi_cap_nhat, khach_hang_id, khach_hang_id_nguoi_cap_nhat, nguoi_gui_id, labelTrangThai, ...filteredData } = order || {};
+    setFormData(filteredData);
+    setIsNew(false);
+    setXemOrderDialog(true);
+  };
 
   return (
     <div className="p-grid">
@@ -199,21 +212,26 @@ const DanhSachDonHang = () => {
             <Column field="ma_van_don" header="Mã Vận Đơn" />
             <Column field="ten_nguoi_nhan" header="Tên Người Nhận" />
             <Column field="so_dien_thoai_nhan" header="Số Điện Thoại Nhận" />
-
             <Column field="labelLoaiHangHoa" header="Loại Hàng Hóa" sortable body={(rowData) => <StatusLabel status={rowData.labelLoaiHangHoa} />} />
-
             <Column field="labelTrangThaiDonHang" header="Trạng Thái" sortable body={(rowData) => <StatusLabel status={rowData.labelTrangThaiDonHang} />} />
             <Column
               body={(rowData) => (
                 <>
-                  <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editOrder(rowData)} />
-                  <Button icon="pi pi-trash" style={{ marginLeft: '5px' }} className="p-button-rounded p-button-warning" onClick={() => deleteOrder(rowData.id)} />
+                  {rowData.trang_thai === 'cho_xu_ly' && (
+                    <>
+                      {' '}
+                      <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editOrder(rowData)} />
+                      <Button icon="pi pi-trash" style={{ marginLeft: '5px' }} className="p-button-rounded p-button-warning" onClick={() => deleteOrder(rowData.id)} />
+                    </>
+                  )}
+                  {(rowData.trang_thai === 'da_cap_ben' || rowData.trang_thai === 'giao_thanh_cong') && <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => xemOrder(rowData)} />}
                 </>
               )}
-            />
+            />{' '}
           </DataTable>
         </div>
       </div>
+      <TraCuuOrderDialog confirmOrder={true} visible={xemOrderDialog} onHide={() => setXemOrderDialog(false)} formData={formData} onInputChange={onInputChange} onSave={saveOrder} isNew={isNew} saveWithCustomer={SaveWithCustomer} />
 
       <OrderDialog visible={displayDialog} onHide={() => setDisplayDialog(false)} isNew={isNew} formData={formData} onInputChange={onInputChange} onSave={saveOrder} onSave2={SaveWithCustomer} />
     </div>
