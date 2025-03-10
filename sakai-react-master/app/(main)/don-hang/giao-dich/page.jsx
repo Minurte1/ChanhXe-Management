@@ -159,6 +159,8 @@ const DanhSachDonHang = () => {
     (prevProps, nextProps) => prevProps.status === nextProps.status
   );
 
+  StatusLabel.displayName = 'StatusLabel';
+
   return (
     <div className="p-grid">
       <Toast ref={toast} />

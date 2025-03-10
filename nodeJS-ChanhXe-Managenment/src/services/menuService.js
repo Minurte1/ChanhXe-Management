@@ -5,7 +5,9 @@ const getMenuItems = (role, selectedRole = null) => {
       {
         label: "Thống kê cơ bản",
         icon: "pi pi-chart-bar",
-        url: "/",
+        items: [
+          { label: "Thống kê chung", url: "/thong-ke/thong-ke-chung" },
+        ],
       },
       {
         label: "Báo cáo doanh thu",

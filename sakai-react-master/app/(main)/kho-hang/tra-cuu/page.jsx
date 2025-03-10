@@ -181,6 +181,8 @@ const DanhSachDonHangTrongKho = () => {
     (prevProps, nextProps) => prevProps.status === nextProps.status
   );
 
+  StatusLabel.displayName = 'StatusLabel';
+
   const header = (
     <div className="p-d-flex p-ai-center p-jc-between">
       <div className="p-d-flex p-ai-center">
