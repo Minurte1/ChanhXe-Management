@@ -28,6 +28,7 @@ const getAllCustomers = async (req, res) => {
     let query = `
       SELECT 
         khach_hang.id,
+        khach_hang.mat_khau,
         khach_hang.ho_ten,
         khach_hang.so_dien_thoai,
         khach_hang.dia_chi,

@@ -136,11 +136,11 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
         'cuoc_phi',
         'phi_bao_hiem',
         'phu_phi',
-        'trang_thai',
         'ten_nguoi_nhan',
         'so_dien_thoai_nhan',
         'email_nhan'
       ];
+
       const validationErrors = validateForm(formData, requiredFields);
 
       if (formData.so_dien_thoai.length < 10 || formData.so_dien_thoai.length > 11) {
@@ -162,7 +162,7 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
         console.log('validationErrors', validationErrors);
       }
     } else {
-      const requiredFields = ['id_ben_xe_gui', 'id_ben_xe_nhan', 'loai_hang_hoa', 'trong_luong', 'nguoi_gui_id', 'gia_tri_hang', 'cuoc_phi', 'phi_bao_hiem', 'phu_phi', 'trang_thai', 'ten_nguoi_nhan', 'so_dien_thoai_nhan', 'email_nhan'];
+      const requiredFields = ['id_ben_xe_gui', 'id_ben_xe_nhan', 'loai_hang_hoa', 'trong_luong', 'nguoi_gui_id', 'gia_tri_hang', 'cuoc_phi', 'phi_bao_hiem', 'phu_phi', 'ten_nguoi_nhan', 'so_dien_thoai_nhan', 'email_nhan'];
       const validationErrors = validateForm(formData, requiredFields);
       if (Object.keys(validationErrors).length === 0) {
         onSave();
@@ -363,11 +363,14 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
         <InputNumber id="phu_phi" value={formData.phu_phi || 0} min={0} onValueChange={(e) => onInputChange(e, 'phu_phi')} className="mt-2 h-10" placeholder="Ví dụ: 30000 VND" required />
         {errors.phu_phi && <small className="p-error">{errors.phu_phi}</small>}
       </div>
-      <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
-        <label htmlFor="trang_thai">Trạng Thái</label>
-        <Dropdown id="trang_thai" value={formData.trang_thai || ''} options={trangThaiOptions} onChange={(e) => onInputChange({ target: { value: e.value } }, 'trang_thai')} placeholder="Chọn trạng thái" className="mt-2" required />
-        {errors.trang_thai && <small className="p-error">{errors.trang_thai}</small>}
-      </div>
+      {!isNew && (
+        <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
+          <label htmlFor="trang_thai">Trạng Thái</label>
+          <Dropdown id="trang_thai" value={formData.trang_thai || ''} options={trangThaiOptions} onChange={(e) => onInputChange({ target: { value: e.value } }, 'trang_thai')} placeholder="Chọn trạng thái" className="mt-2" required />
+          {errors.trang_thai && <small className="p-error">{errors.trang_thai}</small>}
+        </div>
+      )}
+
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="ten_nguoi_nhan">Tên Người Nhận</label>
         <InputText id="ten_nguoi_nhan" value={formData.ten_nguoi_nhan || ''} onChange={(e) => onInputChange(e, 'ten_nguoi_nhan')} className="mt-2 h-10" placeholder="Ví dụ: Nguyễn Văn A" required />

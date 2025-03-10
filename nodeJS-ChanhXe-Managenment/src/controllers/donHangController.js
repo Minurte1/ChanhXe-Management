@@ -5,7 +5,6 @@ const bcrypt = require("bcrypt");
 const getAllOrders = async (req, res) => {
   // #swagger.tags = ['Đơn hàng']
   try {
-    // Lấy tất cả tham số từ query string
     const {
       id,
       ma_van_don,
@@ -21,7 +20,7 @@ const getAllOrders = async (req, res) => {
       cuoc_phi,
       phi_bao_hiem,
       phu_phi,
-      trang_thai,
+      trang_thai, // Có thể là string hoặc array
       id_nguoi_cap_nhat,
       ngay_cap_nhat,
       ngay_tao,
@@ -30,31 +29,29 @@ const getAllOrders = async (req, res) => {
       email_nhan,
     } = req.query;
 
-    // Tạo câu truy vấn cơ bản với JOIN đến bảng ben_xe
     let query = `
-     SELECT 
-    dh.*, 
-    bx_nhan.ten_ben_xe AS ben_xe_nhan_ten, 
-    bx_nhan.dia_chi AS ben_xe_nhan_dia_chi,
-    bx_gui.ten_ben_xe AS ben_xe_gui_ten, 
-    bx_gui.dia_chi AS ben_xe_gui_dia_chi,
-    kh.id AS khach_hang_id,
-    kh.ho_ten AS khach_hang_ho_ten,
-    kh.so_dien_thoai AS khach_hang_so_dien_thoai,
-    kh.dia_chi AS khach_hang_dia_chi,
-    kh.id_nguoi_cap_nhat AS khach_hang_id_nguoi_cap_nhat,
-    kh.ngay_tao AS khach_hang_ngay_tao,
-    kh.ngay_cap_nhat AS khach_hang_ngay_cap_nhat
-FROM don_hang dh
-LEFT JOIN ben_xe bx_nhan ON dh.id_ben_xe_nhan = bx_nhan.id
-LEFT JOIN ben_xe bx_gui ON dh.id_ben_xe_gui = bx_gui.id
-LEFT JOIN khach_hang kh ON dh.nguoi_gui_id = kh.id
-WHERE 1=1
-
+      SELECT 
+        dh.*, 
+        bx_nhan.ten_ben_xe AS ben_xe_nhan_ten, 
+        bx_nhan.dia_chi AS ben_xe_nhan_dia_chi,
+        bx_gui.ten_ben_xe AS ben_xe_gui_ten, 
+        bx_gui.dia_chi AS ben_xe_gui_dia_chi,
+        kh.id AS khach_hang_id,
+        kh.ho_ten AS khach_hang_ho_ten,
+        kh.so_dien_thoai AS khach_hang_so_dien_thoai,
+        kh.dia_chi AS khach_hang_dia_chi,
+        kh.id_nguoi_cap_nhat AS khach_hang_id_nguoi_cap_nhat,
+        kh.ngay_tao AS khach_hang_ngay_tao,
+        kh.ngay_cap_nhat AS khach_hang_ngay_cap_nhat
+      FROM don_hang dh
+      LEFT JOIN ben_xe bx_nhan ON dh.id_ben_xe_nhan = bx_nhan.id
+      LEFT JOIN ben_xe bx_gui ON dh.id_ben_xe_gui = bx_gui.id
+      LEFT JOIN khach_hang kh ON dh.nguoi_gui_id = kh.id
+      WHERE 1=1
     `;
+
     let queryParams = [];
 
-    // Thêm điều kiện lọc dựa trên tham số (chỉ áp dụng cho bảng don_hang)
     if (id) {
       query += " AND dh.id = ?";
       queryParams.push(id);
@@ -111,10 +108,17 @@ WHERE 1=1
       query += " AND dh.phu_phi = ?";
       queryParams.push(phu_phi);
     }
+
+    // Xử lý `trang_thai` hỗ trợ tìm kiếm theo mảng
     if (trang_thai) {
-      query += " AND dh.trang_thai = ?";
-      queryParams.push(trang_thai);
+      const trangThaiArray = Array.isArray(trang_thai)
+        ? trang_thai
+        : [trang_thai];
+      const placeholders = trangThaiArray.map(() => "?").join(",");
+      query += ` AND dh.trang_thai IN (${placeholders})`;
+      queryParams.push(...trangThaiArray);
     }
+
     if (id_nguoi_cap_nhat) {
       query += " AND dh.id_nguoi_cap_nhat = ?";
       queryParams.push(id_nguoi_cap_nhat);
@@ -139,9 +143,7 @@ WHERE 1=1
       query += " AND dh.email_nhan LIKE ?";
       queryParams.push(`%${email_nhan}%`);
     }
-    // console.log("query", query);
-    // console.log("queryParams", queryParams);
-    // Thực thi câu truy vấn
+
     const [rows] = await pool.query(query, queryParams);
 
     return res.status(200).json({
@@ -207,7 +209,25 @@ const createOrder = async (req, res) => {
       email_nhan,
     } = req.body;
 
-    if (!ma_van_don || !ma_qr_code || !nguoi_gui_id || !id_ben_xe_nhan || !id_ben_xe_gui || !loai_hang_hoa || !trong_luong || !kich_thuoc || !so_kien || !gia_tri_hang || !cuoc_phi || !phi_bao_hiem || !phu_phi || !trang_thai || !ten_nguoi_nhan || !so_dien_thoai_nhan || !email_nhan) {
+    if (
+      !ma_van_don ||
+      !ma_qr_code ||
+      !nguoi_gui_id ||
+      !id_ben_xe_nhan ||
+      !id_ben_xe_gui ||
+      !loai_hang_hoa ||
+      !trong_luong ||
+      !kich_thuoc ||
+      !so_kien ||
+      !gia_tri_hang ||
+      !cuoc_phi ||
+      !phi_bao_hiem ||
+      !phu_phi ||
+      !trang_thai ||
+      !ten_nguoi_nhan ||
+      !so_dien_thoai_nhan ||
+      !email_nhan
+    ) {
       return res
         .status(400)
         .json({ EM: "Thiếu thông tin cần thiết", EC: -1, DT: {} });
@@ -410,7 +430,29 @@ const createOrderAndCustomer = async (req, res) => {
       mat_khau,
     } = req.body;
 
-    if (!ma_van_don || !ma_qr_code || !nguoi_gui_id || !id_ben_xe_nhan || !id_ben_xe_gui || !loai_hang_hoa || !trong_luong || !kich_thuoc || !so_kien || !gia_tri_hang || !cuoc_phi || !phi_bao_hiem || !phu_phi || !trang_thai || !ten_nguoi_nhan || !so_dien_thoai_nhan || !email_nhan || !ho_ten || !so_dien_thoai || !dia_chi || !mat_khau) {
+    if (
+      !ma_van_don ||
+      !ma_qr_code ||
+      !nguoi_gui_id ||
+      !id_ben_xe_nhan ||
+      !id_ben_xe_gui ||
+      !loai_hang_hoa ||
+      !trong_luong ||
+      !kich_thuoc ||
+      !so_kien ||
+      !gia_tri_hang ||
+      !cuoc_phi ||
+      !phi_bao_hiem ||
+      !phu_phi ||
+      !trang_thai ||
+      !ten_nguoi_nhan ||
+      !so_dien_thoai_nhan ||
+      !email_nhan ||
+      !ho_ten ||
+      !so_dien_thoai ||
+      !dia_chi ||
+      !mat_khau
+    ) {
       return res
         .status(400)
         .json({ EM: "Thiếu thông tin cần thiết", EC: -1, DT: {} });

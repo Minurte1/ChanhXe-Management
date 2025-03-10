@@ -22,14 +22,23 @@ const KhachHangDialog = ({ isEditing, visible, onHide, isNew, formData, onInputC
   const khachHangServices = khachHangService(axiosInstance);
 
   useEffect(() => {
+    if (formData && !isNew) {
+      const addressParts = formData.dia_chi.split(',').map((part) => part.trim());
+
+      setStreet(addressParts[0] || street);
+      setSelectedWards(addressParts[1] ? { full_name: addressParts[1] } : selectedWards);
+      setSelectedDistrict(addressParts[2] ? { full_name: addressParts[2] } : selectedDistrict);
+      setSelectedProvince(addressParts[3] ? { full_name: addressParts[3] } : selectedProvince);
+    }
+  }, [formData, isEditing]);
+
+  useEffect(() => {
     if (!visible) {
       setErrors({});
     }
   }, [visible]);
-
   // Update address locally whenever street or address components change
   useEffect(() => {
-    console.log('selectedWards', selectedWards);
     formData.dia_chi = [street, selectedWards?.full_name, selectedDistrict?.full_name, selectedProvince?.full_name].filter((part) => part).join(', ');
     setAddress(formData.dia_chi);
   }, [street, selectedProvince, selectedDistrict, selectedWards]);
@@ -37,13 +46,14 @@ const KhachHangDialog = ({ isEditing, visible, onHide, isNew, formData, onInputC
   const handleSave = async () => {
     const requiredFields = ['ho_ten', 'so_dien_thoai', 'dia_chi', 'mat_khau'];
     const validationErrors = validateForm(formData, requiredFields);
-    console.log('sdt', formData.so_dien_thoai);
 
-    if(formData.so_dien_thoai.length < 10 || formData.so_dien_thoai.length > 11){
+    if (formData.so_dien_thoai.length !== 10) {
       validationErrors.so_dien_thoai = 'Số điện thoại không hợp lệ';
+      return;
     }
-    
+
     const timSoDienThoai = await khachHangServices.getAllCustomers({ so_dien_thoai: formData.so_dien_thoai });
+    console.log('timSoDienThoai', timSoDienThoai);
     if (timSoDienThoai.DT.length === 1) {
       validationErrors.so_dien_thoai = 'Số điện thoại đã tồn tại';
       setErrors(validationErrors);
@@ -51,7 +61,7 @@ const KhachHangDialog = ({ isEditing, visible, onHide, isNew, formData, onInputC
     }
 
     if (Object.keys(validationErrors).length === 0) {
-      // onSave();
+      onSave();
       console.log('ok to save');
     } else {
       setErrors(validationErrors);
@@ -70,7 +80,7 @@ const KhachHangDialog = ({ isEditing, visible, onHide, isNew, formData, onInputC
         </div>
         <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
           <label htmlFor="so_dien_thoai">Số Điện Thoại</label>
-          <InputText id="so_dien_thoai" value={formData.so_dien_thoai || ''} onChange={(e) => onInputChange(e, 'so_dien_thoai')} className="mt-2 h-10" required />
+          <InputText type="number" id="so_dien_thoai" value={formData.so_dien_thoai || ''} onChange={(e) => onInputChange(e, 'so_dien_thoai')} className="mt-2 h-10" required />
           {errors.so_dien_thoai && <small className="p-error">{errors.so_dien_thoai}</small>}
         </div>
         <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
