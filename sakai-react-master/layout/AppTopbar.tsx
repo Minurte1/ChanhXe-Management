@@ -33,7 +33,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
   }));
 
   // Xử lý mở menu
-  const handleProfileClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
