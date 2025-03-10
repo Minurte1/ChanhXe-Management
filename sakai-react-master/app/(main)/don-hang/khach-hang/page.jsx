@@ -116,7 +116,7 @@ const DanhSachKhachHang = () => {
       <div className="p-col-12">
         <div className="card">
           {' '}
-          <h1>Danh Sách Khách Hàng {userInfo?.ten_ben_xe ? `Tại ${userInfo.ten_ben_xe}` : ''}</h1>
+          <h1>Danh Sách Khách Hàng</h1>
           <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew} style={{ marginBottom: '10px' }} />
           <DataTable value={khachHangList} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}>
             <Column field="ho_ten" header="Họ Tên" />
