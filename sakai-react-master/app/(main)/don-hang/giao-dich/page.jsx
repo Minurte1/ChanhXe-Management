@@ -127,6 +127,7 @@ const DanhSachDonHang = () => {
       }
       fetchOrders();
       setDisplayDialog(false);
+      setXemOrderDialog(false);
       showSuccess(isNew ? 'Thêm đơn hàng thành công' : 'Cập nhật đơn hàng thành công');
     } catch (error) {
       showError(isNew ? 'Lỗi khi thêm đơn hàng' : 'Lỗi khi cập nhật đơn hàng');
@@ -156,6 +157,18 @@ const DanhSachDonHang = () => {
       showError(isNew ? 'Lỗi khi thêm đơn hàng và khách hàng ' + error : '');
     }
   };
+  const benXeOptions = [
+    { label: 'Đơn sắp gửi', value: 1 },
+    { label: 'Đơn đã nhận', value: 2 }
+  ];
+  const [xemOrderDialog, setXemOrderDialog] = useState(false);
+  const xemOrder = (order) => {
+    const { id_ben_xe_gui, id_ben_xe_nhan, id_nguoi_cap_nhat, khach_hang_id, khach_hang_id_nguoi_cap_nhat, nguoi_gui_id, labelTrangThai, ...filteredData } = order || {};
+    setFormData(filteredData);
+    setIsNew(false);
+    setXemOrderDialog(true);
+  };
+
   const StatusLabel = React.memo(
     ({ status }) => {
       const styles = React.useMemo(() => {
@@ -175,18 +188,6 @@ const DanhSachDonHang = () => {
     (prevProps, nextProps) => prevProps.status === nextProps.status
   );
   StatusLabel.displayName = 'StatusLabel';
-
-  const benXeOptions = [
-    { label: 'Đơn sắp gửi', value: 1 },
-    { label: 'Đơn đã nhận', value: 2 }
-  ];
-  const [xemOrderDialog, setXemOrderDialog] = useState(false);
-  const xemOrder = (order) => {
-    const { id_ben_xe_gui, id_ben_xe_nhan, id_nguoi_cap_nhat, khach_hang_id, khach_hang_id_nguoi_cap_nhat, nguoi_gui_id, labelTrangThai, ...filteredData } = order || {};
-    setFormData(filteredData);
-    setIsNew(false);
-    setXemOrderDialog(true);
-  };
 
   return (
     <div className="p-grid">
@@ -214,20 +215,25 @@ const DanhSachDonHang = () => {
             <Column field="so_dien_thoai_nhan" header="Số Điện Thoại Nhận" />
             <Column field="labelLoaiHangHoa" header="Loại Hàng Hóa" sortable body={(rowData) => <StatusLabel status={rowData.labelLoaiHangHoa} />} />
             <Column field="labelTrangThaiDonHang" header="Trạng Thái" sortable body={(rowData) => <StatusLabel status={rowData.labelTrangThaiDonHang} />} />
+
             <Column
-              body={(rowData) => (
-                <>
-                  {rowData.trang_thai === 'cho_xu_ly' && (
-                    <>
-                      {' '}
-                      <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editOrder(rowData)} />
-                      <Button icon="pi pi-trash" style={{ marginLeft: '5px' }} className="p-button-rounded p-button-warning" onClick={() => deleteOrder(rowData.id)} />
-                    </>
-                  )}
-                  {(rowData.trang_thai === 'da_cap_ben' || rowData.trang_thai === 'giao_thanh_cong') && <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => xemOrder(rowData)} />}
-                </>
-              )}
-            />{' '}
+              body={(rowData) => {
+                return (
+                  <>
+                    {rowData.trang_thai === 'cho_xu_ly' && (
+                      <>
+                        <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editOrder(rowData)} />
+                        <Button icon="pi pi-trash" style={{ marginLeft: '5px' }} className="p-button-rounded p-button-warning" onClick={() => deleteOrder(rowData.id)} />
+                      </>
+                    )}
+
+                    {(rowData.trang_thai === 'da_cap_ben' || searchFilters === 1 || rowData.trang_thai === 'giao_thanh_cong') && (
+                      <Button icon="pi pi-box" style={{ marginLeft: '3px' }} className="p-button-rounded p-button-info p-mr-2" onClick={() => xemOrder(rowData)} />
+                    )}
+                  </>
+                );
+              }}
+            />
           </DataTable>
         </div>
       </div>
