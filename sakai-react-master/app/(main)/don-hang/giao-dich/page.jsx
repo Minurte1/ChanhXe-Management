@@ -4,6 +4,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
+import { Dropdown } from 'primereact/dropdown';
 import OrderService from '../../../services/donHangSevices'; // Cập nhật tên service
 import OrderDialog from '../../../modal/DonHangDialog';
 import spServices from '@/app/share/share-services/sp-services';
@@ -14,6 +15,8 @@ const DanhSachDonHang = () => {
   const [orders, setOrders] = useState([]);
   const [displayDialog, setDisplayDialog] = useState(false);
   const [isNew, setIsNew] = useState(false);
+  const [searchFilters, setSearchFilters] = useState(1);
+
   const [formData, setFormData] = useState({
     ma_van_don: '',
     ma_qr_code: '',
@@ -40,12 +43,19 @@ const DanhSachDonHang = () => {
   const { userInfo } = ReduxExportServices();
   useEffect(() => {
     fetchOrders();
-  }, []);
+  }, [searchFilters]);
 
   const fetchOrders = async () => {
     try {
-      const filters = userInfo.vai_tro === 'admin' ? null : (filters.id_ben_xe_nhan = userInfo.id_ben);
-      const response = await orderService.getAllOrders();
+      let filter = {};
+
+      if (searchFilters === 1 && filter !== 'admin') {
+        filter.id_ben_xe_gui = userInfo.id_ben;
+      } else if (searchFilters === 2 && filter !== 'admin') {
+        filter.id_ben_xe_nhan = userInfo.id_ben;
+      }
+      console.log('filter', filter);
+      const response = await orderService.getAllOrders(filter);
       const output = spServices.formatData(response?.DT);
       setOrders(Array.isArray(output) ? output : []);
     } catch (error) {
@@ -159,13 +169,25 @@ const DanhSachDonHang = () => {
     (prevProps, nextProps) => prevProps.status === nextProps.status
   );
   StatusLabel.displayName = 'StatusLabel';
+
+  const benXeOptions = [
+    { label: 'Đơn sắp gửi', value: 1 },
+    { label: 'Đơn đã nhận', value: 2 }
+  ];
+
   return (
     <div className="p-grid">
       <Toast ref={toast} />
       <div className="p-col-12">
         <div className="card">
-          <h1>Danh Sách Đơn Hàng</h1>
-          <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew} style={{ marginBottom: '10px' }} />
+          <h1>Danh Sách Đơn Hàng {userInfo?.ten_ben_xe ? `Tại ${userInfo.ten_ben_xe}` : ''} </h1>
+          <div style={{ display: 'flex', justifyContent: 'left', alignItems: 'center', marginBottom: '10px' }}>
+            <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew} />
+
+            <label style={{ marginLeft: '10px', marginRight: '10px' }}>Chọn Bến Xe Gửi:</label>
+            <Dropdown name="id_ben_xe_gui" value={searchFilters} options={benXeOptions} onChange={(e) => setSearchFilters(e.target.value)} placeholder="Chọn Bến Xe" style={{ width: '200px' }} />
+          </div>
+
           <DataTable
             value={orders}
             paginator

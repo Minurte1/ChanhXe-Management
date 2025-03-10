@@ -646,9 +646,25 @@ const loginUser = async (req, res) => {
       });
     }
     const [rowsPhanCongUser] = await pool.query(
-      "SELECT * FROM phan_cong_dia_diem_nguoi_dung WHERE id_nguoi_dung = ?",
+      "SELECT id_ben FROM phan_cong_dia_diem_nguoi_dung WHERE id_nguoi_dung = ?",
       [user.id]
     );
+
+    let tenBenXe = null;
+    let idBen = null;
+
+    if (rowsPhanCongUser.length > 0) {
+      idBen = rowsPhanCongUser[0].id_ben;
+
+      const [rowsBenXe] = await pool.query(
+        "SELECT ten_ben_xe FROM ben_xe WHERE id = ?",
+        [idBen]
+      );
+
+      if (rowsBenXe.length > 0) {
+        tenBenXe = rowsBenXe[0].ten_ben_xe;
+      }
+    }
 
     // Tạo JWT token
     const accessToken = jwt.sign(
@@ -662,10 +678,10 @@ const loginUser = async (req, res) => {
         id_nguoi_cap_nhat: user.id_nguoi_cap_nhat,
         ngay_cap_nhat: user.ngay_cap_nhat,
         ngay_tao: user.ngay_tao,
-        id_ben: rowsPhanCongUser.length > 0 ? rowsPhanCongUser[0].id_ben : null,
+        id_ben: idBen, // Nếu không có id_ben, sẽ là null
+        ten_ben_xe: tenBenXe, // Nếu không có tên bến xe, sẽ là null
       },
       process.env.JWT_SECRET,
-      // { expiresIn: "10s" }
       { expiresIn: "5h" }
     );
 
@@ -680,7 +696,8 @@ const loginUser = async (req, res) => {
         id_nguoi_cap_nhat: user.id_nguoi_cap_nhat,
         ngay_cap_nhat: user.ngay_cap_nhat,
         ngay_tao: user.ngay_tao,
-        id_ben: rowsPhanCongUser.length > 0 ? rowsPhanCongUser[0].id_ben : null,
+        id_ben: idBen, // Nếu không có id_ben, sẽ là null
+        ten_ben_xe: tenBenXe, // Nếu không có tên bến xe, sẽ là null
       },
       process.env.JWT_REFRESH_SECRET,
       { expiresIn: "7d" }
@@ -709,8 +726,8 @@ const loginUser = async (req, res) => {
           id_nguoi_cap_nhat: user.id_nguoi_cap_nhat,
           ngay_cap_nhat: user.ngay_cap_nhat,
           ngay_tao: user.ngay_tao,
-          id_ben:
-            rowsPhanCongUser.length > 0 ? rowsPhanCongUser[0].id_ben : null,
+          id_ben: idBen, // Nếu không có id_ben, sẽ là null
+          ten_ben_xe: tenBenXe, // Nếu không có tên bến xe, sẽ là null
         },
       },
     });

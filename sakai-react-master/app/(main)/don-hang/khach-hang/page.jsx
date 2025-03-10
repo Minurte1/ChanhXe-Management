@@ -7,12 +7,13 @@ import { Toast } from 'primereact/toast';
 import khachHangService from '../../../services/khachHangServices';
 import KhachHangDialog from '../../../modal/KhachHangDialog';
 import { useAxios } from '@/app/authentication/useAxiosClient';
+import { ReduxExportServices } from '@/app/redux/redux-services/services-redux-export';
 
 const DanhSachKhachHang = () => {
   const [khachHangList, setKhachHangList] = useState([]);
   const [displayDialog, setDisplayDialog] = useState(false);
   const [isNew, setIsNew] = useState(false);
-
+  const { userInfo } = ReduxExportServices();
   const [formData, setFormData] = useState({
     ho_ten: '',
     so_dien_thoai: '',
@@ -114,7 +115,8 @@ const DanhSachKhachHang = () => {
       <Toast ref={toast} />
       <div className="p-col-12">
         <div className="card">
-          <h1>Danh Sách Khách Hàng</h1>
+          {' '}
+          <h1>Danh Sách Khách Hàng {userInfo?.ten_ben_xe ? `Tại ${userInfo.ten_ben_xe}` : ''}</h1>
           <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew} style={{ marginBottom: '10px' }} />
           <DataTable value={khachHangList} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}>
             <Column field="ho_ten" header="Họ Tên" />

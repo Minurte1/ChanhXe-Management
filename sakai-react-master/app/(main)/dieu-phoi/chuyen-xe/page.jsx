@@ -42,7 +42,7 @@ const DanhSachChuyenXe = () => {
   const fetchTrips = async () => {
     try {
       let id_ben_xe_gui = null;
-      id_ben_xe_gui = userInfo.vai_tro === 'admin' ? null : (id_ben_xe_gui.id_ben_xe_gui = userInfo.id_ben);
+      id_ben_xe_gui = userInfo.vai_tro === 'admin' ? {} : (id_ben_xe_gui.id_ben_xe_gui = userInfo.id_ben);
       const response = await tripService.getAllTrips({ id_ben_xe_gui });
       const output = spServices.formatData(response?.DT);
       console.log('output', output);
