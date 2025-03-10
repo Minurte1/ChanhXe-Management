@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
@@ -8,18 +8,35 @@ import { classNames } from 'primereact/utils';
 import moment from 'moment';
 
 const TraCuuOrderDialog = ({ confirmOrder, visible, onHide, formData, onInputChange, onSave, isNew, saveWithCustomer, suggestions, completeMethod }) => {
+  const [confirmDialogVisible, setConfirmDialogVisible] = useState(false); // State để điều khiển modal xác nhận
+
   const footer = (
     <div>
       <Button label="Hủy" icon="pi pi-times" onClick={onHide} className="p-button-text" />
       {formData?.trang_thai === 'da_cap_ben' ? <Button label="Đơn hàng đã nhận" icon="pi pi-check" onClick={() => handleUpdateStatusGiaoHangSuccess()} className="p-button-success" /> : false}
-
       {isNew && <Button label="Lưu cùng khách hàng" icon="pi pi-user-plus" onClick={saveWithCustomer} className="p-button-info" />}
     </div>
   );
 
+  const confirmFooter = (
+    <div>
+      <Button label="Hủy" icon="pi pi-times" onClick={() => setConfirmDialogVisible(false)} className="p-button-text" />
+      <Button
+        label="Chắc chắn"
+        icon="pi pi-check"
+        onClick={() => {
+          onSave('success');
+          setConfirmDialogVisible(false);
+        }}
+        className="p-button-success"
+      />
+    </div>
+  );
+
   const handleUpdateStatusGiaoHangSuccess = () => {
-    onSave('success');
+    setConfirmDialogVisible(true); // Hiển thị modal xác nhận
   };
+
   const getLabel = (key) => {
     const labels = {
       ben_xe_gui_ten: 'Bến xe gửi',
@@ -77,7 +94,6 @@ const TraCuuOrderDialog = ({ confirmOrder, visible, onHide, formData, onInputCha
     'khach_hang_ho_ten',
     'ma_van_don',
     'ma_qr_code',
-
     'khach_hang_so_dien_thoai',
     'khach_hang_dia_chi',
     'ben_xe_gui_ten',
@@ -105,37 +121,43 @@ const TraCuuOrderDialog = ({ confirmOrder, visible, onHide, formData, onInputCha
   const sortedKeys = fieldOrder.filter((key) => formData.hasOwnProperty(key));
 
   return (
-    <Dialog header={isNew ? 'Thêm Đơn Hàng Mới' : 'Chi Tiết Đơn Hàng'} visible={visible} style={{ width: '70vw' }} footer={footer} onHide={onHide}>
-      <div className="p-fluid">
-        <table className="p-d-table p-d-table-sm" style={{ width: '100%' }}>
-          <tbody>
-            {sortedKeys.map((key) => (
-              <tr key={key}>
+    <>
+      <Dialog header={isNew ? 'Thêm Đơn Hàng Mới' : 'Chi Tiết Đơn Hàng'} visible={visible} style={{ width: '70vw' }} footer={footer} onHide={onHide}>
+        <div className="p-fluid">
+          <table className="p-d-table p-d-table-sm" style={{ width: '100%' }}>
+            <tbody>
+              {sortedKeys.map((key) => (
+                <tr key={key}>
+                  <td className="p-text-secondary" style={{ fontSize: '1em', padding: '0.5em' }}>
+                    {getLabel(key)}
+                  </td>
+                  <td style={{ padding: '0.5em' }}>
+                    {key === 'khach_hang_ho_ten' ? (
+                      <AutoComplete value={formData[key]} suggestions={suggestions} completeMethod={completeMethod} onChange={(e) => onInputChange(e, key)} style={{ fontSize: '0.8em', width: '100%' }} />
+                    ) : (
+                      <span style={{ fontSize: '1em', display: 'block', padding: '0.5em', backgroundColor: '#f8f9fa', borderRadius: '5px' }}>
+                        {['ngay_tao', 'ngay_cap_nhat', 'khach_hang_ngay_tao', 'khach_hang_ngay_cap_nhat'].includes(key) ? formatDate(formData[key]) : formData[key]}
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+              <tr>
                 <td className="p-text-secondary" style={{ fontSize: '1em', padding: '0.5em' }}>
-                  {getLabel(key)}
+                  {getLabel('tong_tien')}
                 </td>
-                <td style={{ padding: '0.5em' }}>
-                  {key === 'khach_hang_ho_ten' ? (
-                    <AutoComplete value={formData[key]} suggestions={suggestions} completeMethod={completeMethod} onChange={(e) => onInputChange(e, key)} style={{ fontSize: '0.8em', width: '100%' }} />
-                  ) : (
-                    <span style={{ fontSize: '1em', display: 'block', padding: '0.5em', backgroundColor: '#f8f9fa', borderRadius: '5px' }}>
-                      {['ngay_tao', 'ngay_cap_nhat', 'khach_hang_ngay_tao', 'khach_hang_ngay_cap_nhat'].includes(key) ? formatDate(formData[key]) : formData[key]}
-                    </span>
-                  )}
-                </td>
+                <td style={{ fontSize: '1em', padding: '0.5em' }}>{formatCurrency(tongTien)}</td>
               </tr>
-            ))}
+            </tbody>
+          </table>
+        </div>
+      </Dialog>
 
-            <tr>
-              <td className="p-text-secondary" style={{ fontSize: '1em', padding: '0.5em' }}>
-                {getLabel('tong_tien')}
-              </td>
-              <td style={{ fontSize: '1em', padding: '0.5em' }}>{formatCurrency(tongTien)}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </Dialog>
+      {/* Modal xác nhận */}
+      <Dialog header="Xác nhận giao hàng" visible={confirmDialogVisible} style={{ width: '30vw' }} footer={confirmFooter} onHide={() => setConfirmDialogVisible(false)}>
+        <p>Bạn có chắc chắn đơn hàng đã được giao cho khách hàng?</p>
+      </Dialog>
+    </>
   );
 };
 
