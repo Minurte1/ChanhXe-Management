@@ -146,70 +146,74 @@ const getAllDrivers = async (req, res) => {
   }
 };
 
-const getDriverById = async (req, res) => {
+const getDriverLichTrinh = async (req, res) => {
   // #swagger.tags = ['Tài xế']
   try {
     const { id } = req.params;
     console.log("userId", id);
 
-    const query = `
-     SELECT 
-    cx.id AS chuyen_xe_id,
-    cx.thoi_gian_xuat_ben,
-    cx.thoi_gian_cap_ben,
-    cx.trang_thai,
-    cx.ngay_tao AS chuyen_xe_ngay_tao,
-    cx.ngay_cap_nhat AS chuyen_xe_ngay_cap_nhat,
+    let query = `
+      SELECT 
+        cx.id AS chuyen_xe_id,
+        cx.thoi_gian_xuat_ben,
+        cx.thoi_gian_cap_ben,
+        cx.trang_thai,
+        cx.ngay_tao AS chuyen_xe_ngay_tao,
+        cx.ngay_cap_nhat AS chuyen_xe_ngay_cap_nhat,
 
-    -- Thông tin xe
-    xe.bien_so,
-    xe.loai_xe,
-    xe.suc_chua,
+        -- Thông tin xe
+        xe.bien_so,
+        xe.loai_xe,
+        xe.suc_chua,
 
-    -- Thông tin tài xế chính
-    tx.bang_lai,
-    tx.trang_thai AS trang_thai_tai_xe,
-    nd.ho_ten AS ten_tai_xe,
-    nd.so_dien_thoai,
-    nd.email,
+        -- Thông tin tài xế chính
+        tx.bang_lai,
+        tx.trang_thai AS trang_thai_tai_xe,
+        nd.ho_ten AS ten_tai_xe,
+        nd.so_dien_thoai,
+        nd.email,
 
-    -- Thông tin tài xế phụ
-    tx_phu.bang_lai AS bang_lai_phu,
-    tx_phu.trang_thai AS trang_thai_tai_xe_phu,
-    nd_phu.so_dien_thoai as so_dien_thoai_tai_xe_phu,
-    nd_phu.ho_ten AS ten_tai_xe_phu,
+        -- Thông tin tài xế phụ
+        tx_phu.bang_lai AS bang_lai_phu,
+        tx_phu.trang_thai AS trang_thai_tai_xe_phu,
+        nd_phu.so_dien_thoai as so_dien_thoai_tai_xe_phu,
+        nd_phu.ho_ten AS ten_tai_xe_phu,
 
-    -- Thông tin bến xe xuất phát
-    bx_gui.ten_ben_xe AS ben_xe_xuat_phat,
-    bx_gui.dia_chi AS dia_chi_ben_xe_xuat_phat,
+        -- Thông tin bến xe xuất phát
+        bx_gui.ten_ben_xe AS ben_xe_xuat_phat,
+        bx_gui.dia_chi AS dia_chi_ben_xe_xuat_phat,
 
-    -- Thông tin bến xe đích
-    bx_nhan.ten_ben_xe AS ben_xe_dich,
-    bx_nhan.dia_chi AS dia_chi_ben_xe_dich
+        -- Thông tin bến xe đích
+        bx_nhan.ten_ben_xe AS ben_xe_dich,
+        bx_nhan.dia_chi AS dia_chi_ben_xe_dich
 
-FROM chuyen_xe cx
-JOIN tai_xe tx ON cx.tai_xe_id = tx.id
-JOIN nguoi_dung nd ON tx.nguoi_dung_id = nd.id
-JOIN xe ON cx.xe_id = xe.id
+      FROM chuyen_xe cx
+      JOIN tai_xe tx ON cx.tai_xe_id = tx.id
+      JOIN nguoi_dung nd ON tx.nguoi_dung_id = nd.id
+      JOIN xe ON cx.xe_id = xe.id
 
--- Thông tin tài xế phụ
-LEFT JOIN tai_xe tx_phu ON cx.tai_xe_phu_id = tx_phu.id
-LEFT JOIN nguoi_dung nd_phu ON tx_phu.nguoi_dung_id = nd_phu.id
+      -- Thông tin tài xế phụ
+      LEFT JOIN tai_xe tx_phu ON cx.tai_xe_phu_id = tx_phu.id
+      LEFT JOIN nguoi_dung nd_phu ON tx_phu.nguoi_dung_id = nd_phu.id
 
--- Join với bảng bến xe
-LEFT JOIN ben_xe bx_gui ON cx.id_ben_xe_gui = bx_gui.id
-LEFT JOIN ben_xe bx_nhan ON cx.id_ben_xe_nhan = bx_nhan.id
-
-WHERE nd.id = ? OR nd_phu.id = ?;
-
+      -- Join với bảng bến xe
+      LEFT JOIN ben_xe bx_gui ON cx.id_ben_xe_gui = bx_gui.id
+      LEFT JOIN ben_xe bx_nhan ON cx.id_ben_xe_nhan = bx_nhan.id
     `;
 
-    const [rows] = await pool.query(query, [id, id]);
+    let params = [];
+
+    if (id) {
+      query += ` WHERE nd.id = ? OR nd_phu.id = ?`;
+      params = [id, id];
+    }
+
+    const [rows] = await pool.query(query, params);
 
     if (rows.length === 0) {
       return res
         .status(404)
-        .json({ EM: "Không tìm thấy lịch trình cho tài xế", EC: -1, DT: {} });
+        .json({ EM: "Không tìm thấy lịch trình", EC: -1, DT: {} });
     }
 
     return res
@@ -383,7 +387,7 @@ const getUsersNotInDriverTable = async (req, res) => {
 };
 module.exports = {
   getAllDrivers,
-  getDriverById,
+  getDriverLichTrinh,
   createDriver,
   updateDriver,
   deleteDriver,

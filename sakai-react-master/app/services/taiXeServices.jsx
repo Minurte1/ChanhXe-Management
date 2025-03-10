@@ -25,9 +25,9 @@ const taiXeService = (axiosInstance) => ({
       throw error;
     }
   },
-  getDriverById: async (id) => {
+  getDriverByLichTrinh: async ({ params }) => {
     try {
-      const response = await axiosInstance.get(`${API_URL}/tai-xe/${id}`);
+      const response = await axiosInstance.get(`${API_URL}/tai-xe/lich-trinh`, { params });
       return response.data;
     } catch (error) {
       console.error('Error fetching driver:', error);

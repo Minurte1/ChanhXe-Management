@@ -31,8 +31,8 @@ const TripScheduleTracker = () => {
   const fetchTrips = async () => {
     setLoading(true);
     try {
-      const id = userInfo.id;
-      const response = await TaiXeService.getDriverById(id);
+      const input = userInfo.vai_tro === 'admin' ? null : (input.id = userInfo.id);
+      const response = await TaiXeService.getDriverByLichTrinh({ input });
       const updatedTrips = spServices.formatData(response?.DT); // Format dữ liệu nếu cần
       // Lọc các chuyến xe liên quan đến ngày hôm nay
       const filteredTrips = updatedTrips.filter((trip) => {
