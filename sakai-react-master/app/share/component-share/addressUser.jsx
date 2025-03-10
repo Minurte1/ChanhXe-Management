@@ -63,6 +63,26 @@ const AddressSelector = ({ selectedProvince, selectedDistrict, selectedWards, se
       setWards([]);
     }
   }, [selectedDistrict]);
+  useEffect(() => {
+    if (selectedProvince && provinces.length > 0) {
+      const provinceMatch = provinces.find((p) => p.full_name === selectedProvince.full_name);
+      if (provinceMatch) setSelectedProvince(provinceMatch);
+    }
+  }, [selectedProvince, provinces]);
+
+  useEffect(() => {
+    if (selectedDistrict && districts.length > 0) {
+      const districtMatch = districts.find((d) => d.full_name === selectedDistrict.full_name);
+      if (districtMatch) setSelectedDistrict(districtMatch);
+    }
+  }, [selectedDistrict, districts]);
+
+  useEffect(() => {
+    if (selectedWards && wards.length > 0) {
+      const wardMatch = wards.find((w) => w.full_name === selectedWards.full_name);
+      if (wardMatch) setSelectedWards(wardMatch);
+    }
+  }, [selectedWards, wards]);
 
   return (
     <div className="p-fluid">
