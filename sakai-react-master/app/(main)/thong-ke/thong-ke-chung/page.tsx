@@ -27,7 +27,10 @@ const ThongKeChung = () => {
   const [benXe, setBenXe] = useState([]);
   const [donHang, setDonHang] = useState([]);
   const [selectedDataset, setSelectedDataset] = useState('cuoc_phi');
+  const [selectedBenXeDataset, setSelectedBenXeDataset] = useState();
+  const [selectedBenXeDatasetLabel, setSelectedBenXeDatasetLabel] = useState();
   const [selectedDatasetLabel, setSelectedDatasetLabel] = useState('Cước phí thu được');
+  const [datasetBenXeOptions, setDatasetBenXeOptions] = useState([]);
 
   const axiosInstance = useAxios();
   const benXeService = BenXeService(axiosInstance);
@@ -35,12 +38,19 @@ const ThongKeChung = () => {
   const [theme, setTheme] = useState('light');
   const toast = useRef(null);
 
-  const applyLightTheme = () => {
+  const applyLightTheme = (prefix = '', suffix = '') => {
     const lineOptions = {
       plugins: {
         legend: {
           labels: {
             color: '#000000'
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              return context.dataset.label + ': ' + prefix + context.raw + suffix;
+            }
           }
         }
       },
@@ -119,13 +129,20 @@ const ThongKeChung = () => {
   }, [theme]);
 
   useEffect(() => {
-    updateChartData();
+    updateChartDataDonHang();
   }, [donHang, selectedDataset]);
 
   const fetchBenXe = async () => {
     try {
       const response = await benXeService.getAllBenXe();
       setBenXe(response.DT);
+
+      // Map the fetched data to the dropdown options format
+      const options = response.DT.map(item => ({
+        label: item.ten_ben_xe, // Adjust the property name as needed
+        value: item.id // Adjust the property name as needed
+      }));
+      setDatasetBenXeOptions(options);
     } catch (error) {
       console.log('error', error);
     }
@@ -147,7 +164,7 @@ const ThongKeChung = () => {
     });
   };
 
-  const updateChartData = () => {
+  const updateChartDataDonHang = () => {
     const dateMap = new Map();
 
     donHang.forEach(item => {
@@ -189,19 +206,30 @@ const ThongKeChung = () => {
     setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
   };
 
-  const handleDatasetChange = (e) => {
-    const selectedOption = datasetOptions.find(option => option.value === e.value);
-    setSelectedDataset(e.value);
-    setSelectedDatasetLabel(selectedOption.label);
+  const handleDatasetChange = (e, options, setDataset, setLabel) => {
+    const selectedOption = options.find(option => option.value === e.value);
+    setDataset(e.value);
+    setLabel(selectedOption.label);
+
+    // Set prefix and suffix based on selected dataset
+    let prefix = '';
+    let suffix = '';
+    if (e.value === 'cuoc_phi') {
+      prefix = 'VND';
+    } else if (e.value === 'gia_tri_hang') {
+      suffix = ' VND';
+    }
+
+    // Apply the theme with the new prefix and suffix
+    if (theme === 'light') {
+      applyLightTheme(prefix, suffix);
+    } else {
+      // applyDarkTheme(prefix, suffix);
+    }
   };
 
   const datasetOptions = [
-    { label: 'Cước phí thu được', value: 'cuoc_phi' },
-    { label: 'Tổng giá trị hàng đã nhận', value: 'gia_tri_hang' },
-    { label: 'Test', value: 'id' }
-  ];
-
-  const datasetBenXeOptions = [
+    { label: 'Tổng doang thu', value: 'tong_doang_thu' },
     { label: 'Cước phí thu được', value: 'cuoc_phi' },
     { label: 'Tổng giá trị hàng đã nhận', value: 'gia_tri_hang' },
     { label: 'Test', value: 'id' }
@@ -209,19 +237,19 @@ const ThongKeChung = () => {
 
   return (
     <div>
-      {/* <div>
+      <div>
         <button onClick={toggleTheme}>
           Switch to {theme === 'light' ? 'Dark' : 'Light'} Theme
         </button>
-      </div> */}
+      </div>
       <div>
         <div className="card">
           <div style={{ width: '100%' }}>
             <h5>Thống Kê Chung</h5>
             <Dropdown
-              value={datasetOptions.values || 'cuoc_phi'}
+              value={selectedDataset}
               options={datasetOptions}
-              onChange={handleDatasetChange}
+              onChange={(e) => handleDatasetChange(e, datasetOptions, setSelectedDataset, setSelectedDatasetLabel)}
               placeholder="Chọn một trường thống kê"
             />
             <Chart type="line" data={lineData} options={lineOptions} />
@@ -233,15 +261,10 @@ const ThongKeChung = () => {
           <div style={{ width: '100%' }}>
             <h5>Thống kê theo bến xe</h5>
             <Dropdown
-              value={datasetOptions.values || 'cuoc_phi'}
-              options={datasetOptions}
-              onChange={handleDatasetChange}
-              placeholder="Chọn một trường thống kê"
-            />
-            <Dropdown
-              value={datasetOptions.values || 'cuoc_phi'}
-              options={datasetOptions}
-              onChange={handleDatasetChange}
+              id='id_ben_xe'
+              value={selectedBenXeDataset}
+              options={datasetBenXeOptions}
+              onChange={(e) => handleDatasetChange(e, datasetBenXeOptions, setSelectedBenXeDataset, setSelectedBenXeDatasetLabel)}
               placeholder="Chọn một trường thống kê"
             />
             <Chart type="bar" data={lineData} options={lineOptions} />
