@@ -23,10 +23,10 @@ const NhanVienDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
   }, [visible]);
 
   const handleSave = async () => {
-    const requiredFields = ['ho_ten', 'so_dien_thoai', 'email', 'mat_khau', 'vai_tro', 'trang_thai'];
+    const requiredFields = ['ho_ten', 'so_dien_thoai', 'email', 'mat_khau', 'vai_tro'];
     const validationErrors = validateForm(formData, requiredFields);
 
-    if(formData.so_dien_thoai.length < 10 || formData.so_dien_thoai.length > 11){
+    if (formData.so_dien_thoai.length < 10 || formData.so_dien_thoai.length > 11) {
       validationErrors.so_dien_thoai = 'Số điện thoại không hợp lệ';
     }
 
@@ -38,9 +38,9 @@ const NhanVienDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
       console.log('validationErrors', validationErrors);
     }
 
-    const timEmail= await userService.getAllUsers({ email: formData.email });
+    const timEmail = await userService.getAllUsers({ email: formData.email });
     if (timEmail.DT.length === 1) {
-      validationErrors.email= 'Email đã tồn tại';
+      validationErrors.email = 'Email đã tồn tại';
       setErrors(validationErrors);
       console.log('validationErrors', validationErrors);
     }
@@ -105,11 +105,13 @@ const NhanVienDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
         <Dropdown id="vai_tro" style={{ marginTop: '3px' }} value={formData.vai_tro} options={vaiTroOptions} onChange={(e) => onInputChange(e, 'vai_tro')} placeholder="Chọn vai trò" />
         {errors.vai_tro && <small className="p-error">{errors.vai_tro}</small>}
       </div>
-      <div className="p-field mt-2">
-        <label htmlFor="trang_thai">Trạng Thái</label>
-        <Dropdown id="trang_thai" style={{ marginTop: '3px' }} value={formData.trang_thai || 'hoat_dong'} options={trangThaiOptions} onChange={(e) => onInputChange(e, 'trang_thai')} placeholder="Chọn trạng thái" disabled={isNew}/>
-        {errors.trang_thai && <small className="p-error">{errors.trang_thai}</small>}
-      </div>
+      {!isNew && (
+        <div className="p-field mt-2">
+          <label htmlFor="trang_thai">Trạng Thái</label>
+          <Dropdown id="trang_thai" style={{ marginTop: '3px' }} value={formData.trang_thai || 'hoat_dong'} options={trangThaiOptions} onChange={(e) => onInputChange(e, 'trang_thai')} placeholder="Chọn trạng thái" disabled={isNew} />
+          {errors.trang_thai && <small className="p-error">{errors.trang_thai}</small>}
+        </div>
+      )}
     </Dialog>
   );
 };

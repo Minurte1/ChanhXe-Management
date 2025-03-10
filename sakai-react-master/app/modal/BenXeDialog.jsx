@@ -50,14 +50,17 @@ const BenXeDialog = ({ visible, onHide, isEditing, formData, onInputChange, onSa
   // Handle save action
   const handleSave = () => {
     const requiredFields = ['ten_ben_xe', 'dia_chi', 'tinh', 'huyen', 'xa', 'duong'];
-    const validationErrors = validateForm({
-      ...formData,
-      dia_chi: address,
-      tinh: selectedProvince?.full_name || '',
-      huyen: selectedDistrict?.full_name || '',
-      xa: selectedWards?.full_name || '',
-      duong: street
-    }, requiredFields);
+    const validationErrors = validateForm(
+      {
+        ...formData,
+        dia_chi: address,
+        tinh: selectedProvince?.full_name || '',
+        huyen: selectedDistrict?.full_name || '',
+        xa: selectedWards?.full_name || '',
+        duong: street
+      },
+      requiredFields
+    );
 
     if (Object.keys(validationErrors).length === 0) {
       const dataToSave = {

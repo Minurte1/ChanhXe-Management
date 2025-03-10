@@ -107,29 +107,26 @@ const TraCuuOrderDialog = ({ visible, onHide, formData, onInputChange, onSave, i
           <tbody>
             {sortedKeys.map((key) => (
               <tr key={key}>
-                <td className="p-text-secondary" style={{ fontSize: '0.8em', padding: '0.5em' }}>
+                <td className="p-text-secondary" style={{ fontSize: '1em', padding: '0.5em' }}>
                   {getLabel(key)}
                 </td>
                 <td style={{ padding: '0.5em' }}>
                   {key === 'khach_hang_ho_ten' ? (
                     <AutoComplete value={formData[key]} suggestions={suggestions} completeMethod={completeMethod} onChange={(e) => onInputChange(e, key)} style={{ fontSize: '0.8em', width: '100%' }} />
                   ) : (
-                    <InputText
-                      id={key}
-                      value={['ngay_tao', 'ngay_cap_nhat', 'khach_hang_ngay_tao', 'khach_hang_ngay_cap_nhat'].includes(key) ? formatDate(formData[key]) : formData[key]}
-                      onChange={(e) => onInputChange(e, key)}
-                      disabled={['ben_xe_gui_ten', 'ben_xe_gui_dia_chi', 'ben_xe_nhan_ten', 'ben_xe_nhan_dia_chi', 'khach_hang_so_dien_thoai', 'khach_hang_dia_chi', 'ngay_tao', 'ngay_cap_nhat'].includes(key)}
-                      style={{ fontSize: '0.8em', width: '100%' }}
-                    />
+                    <span style={{ fontSize: '1em', display: 'block', padding: '0.5em', backgroundColor: '#f8f9fa', borderRadius: '5px' }}>
+                      {['ngay_tao', 'ngay_cap_nhat', 'khach_hang_ngay_tao', 'khach_hang_ngay_cap_nhat'].includes(key) ? formatDate(formData[key]) : formData[key]}
+                    </span>
                   )}
                 </td>
               </tr>
             ))}
+
             <tr>
-              <td className="p-text-secondary" style={{ fontSize: '0.8em', padding: '0.5em' }}>
+              <td className="p-text-secondary" style={{ fontSize: '1em', padding: '0.5em' }}>
                 {getLabel('tong_tien')}
               </td>
-              <td style={{ padding: '0.5em' }}>{formatCurrency(tongTien)}</td>
+              <td style={{ fontSize: '1em', padding: '0.5em' }}>{formatCurrency(tongTien)}</td>
             </tr>
           </tbody>
         </table>

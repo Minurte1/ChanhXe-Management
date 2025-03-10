@@ -128,6 +128,7 @@ const DanhSachNhanVien = () => {
       const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = formData;
 
       if (isNew) {
+        filteredData.trang_thai = 'hoat_dong';
         await userService.createUser(filteredData);
       } else {
         await userService.updateUser(filteredData.id, filteredData);
@@ -204,7 +205,7 @@ const DanhSachNhanVien = () => {
             <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm} />
             <InputText placeholder="Tìm kiếm tên nhân viên" value={searchTerm} onChange={onSearchChange} style={{ marginLeft: '8px', width: '30%' }} />
           </div>
-          
+
           <DataTable
             value={filteredNhanVien}
             paginator
@@ -215,15 +216,15 @@ const DanhSachNhanVien = () => {
             // onSort={customSort}
           >
             <Column field="ho_ten" header="Họ Tên"></Column>
-            <Column 
-              field="dia_diem_cong_tac" 
-              header="Địa điểm công tác" 
+            <Column
+              field="dia_diem_cong_tac"
+              header="Địa điểm công tác"
               sortable
               sortField="ten_ben_xe"
               // sortFunction={diaDiemCongTacSort}
-              body={(rowData) => rowData.ten_ben_xe || rowData.ben_xe_nguoi_dung_ten || '(Chưa được phân công)'} 
+              body={(rowData) => rowData.ten_ben_xe || rowData.ben_xe_nguoi_dung_ten || '(Chưa được phân công)'}
             />
-             
+
             <Column field="so_dien_thoai" header="Số Điện Thoại"></Column>
             <Column field="email" header="Email"></Column>
             <Column field="labelVaiTro" sortable header="Vai Trò"></Column>
