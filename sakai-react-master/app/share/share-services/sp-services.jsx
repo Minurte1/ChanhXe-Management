@@ -109,6 +109,92 @@ const spServices = {
       'Hàng thông thường': { text: 'gray', background: 'rgba(128,128,128,0.2)' }
     };
     return colorMap[trangThai] || { text: 'gray', background: 'rgba(128,128,128,0.2)' }; // Mặc định nếu không có
+  },
+
+  chartThemeMoney: (prefix = '', suffix = ' VND') => {
+    return {
+      plugins: {
+        legend: {
+          labels: {
+            color: '#000000'
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              return context.dataset.label + ': ' + prefix + context.raw + suffix;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: '#000000'
+          },
+          grid: {
+            color: 'rgba(15, 85, 224, 0.98)'
+          }
+        },
+        y: {
+          ticks: {
+            color: '#000000',
+            callback: function (value) {
+              return prefix + value + suffix;
+            }
+          },
+          grid: {
+            color: 'rgba(0, 163, 0, 0.3)'
+          },
+          min: 0, // Set the minimum value for the y-axis
+          // max: 10000, // Set the maximum value for the y-axis
+          stepSize: 10000 // Set the step size for the y-axis
+        }
+      }
+    };
+  },
+
+  chartTheme: (prefix = '', suffix = '') => {
+    return {
+      plugins: {
+        legend: {
+          labels: {
+            color: '#ffffff' // Set to white for better visibility
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              return context.dataset.label + ': ' + prefix + context.raw + suffix;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: '#ffffff' // Set to white for better visibility
+          },
+          grid: {
+            color: 'rgba(15, 85, 224, 0.98)'
+          }
+        },
+        y: {
+          ticks: {
+            color: '#ffffff', // Set to white for better visibility
+            callback: function (value) {
+              return prefix + value + suffix;
+            }
+          },
+          grid: {
+            color: 'rgba(0, 163, 0, 0.3)'
+          },
+          min: 1000, // Set the minimum value for the y-axis
+          max: 100000, // Set the maximum value for the y-axis
+          stepSize: 50000 // Set the step size for the y-axis
+        }
+      }
+    };
   }
 };
 

@@ -1890,20 +1890,13 @@
         }
       }
     },
-    "/tai-xe/{id}": {
+    "/tai-xe/lich-trinh": {
       "get": {
         "tags": [
           "Tài xế"
         ],
         "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK"
@@ -1915,7 +1908,9 @@
             "description": "Internal Server Error"
           }
         }
-      },
+      }
+    },
+    "/tai-xe/{id}": {
       "put": {
         "tags": [
           "Tài xế"

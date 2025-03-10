@@ -14,6 +14,8 @@ import BenXeService from '../../../services/benXeServices';
 import { useAxios } from '@/app/authentication/useAxiosClient';
 import { Dropdown } from 'primereact/dropdown';
 import DonHangService from '../../../services/donHangSevices';
+import spServices from '../../../share/share-services/sp-services';
+import { Calendar } from 'primereact/calendar';
 
 const ThongKeChung = () => {
   const [lineOptions, setLineOptions] = useState<ChartOptions>({});
@@ -26,11 +28,13 @@ const ThongKeChung = () => {
 
   const [benXe, setBenXe] = useState([]);
   const [donHang, setDonHang] = useState([]);
-  const [selectedDataset, setSelectedDataset] = useState('cuoc_phi');
+  const [selectedDataset, setSelectedDataset] = useState('');
   const [selectedBenXeDataset, setSelectedBenXeDataset] = useState();
   const [selectedBenXeDatasetLabel, setSelectedBenXeDatasetLabel] = useState();
-  const [selectedDatasetLabel, setSelectedDatasetLabel] = useState('Cước phí thu được');
+  const [selectedDatasetLabel, setSelectedDatasetLabel] = useState('');
   const [datasetBenXeOptions, setDatasetBenXeOptions] = useState([]);
+  const [selectedStartDate, setSelectedStartDate] = useState(null);
+  const [selectedEndDate, setSelectedEndDate] = useState(null);
 
   const axiosInstance = useAxios();
   const benXeService = BenXeService(axiosInstance);
@@ -38,99 +42,14 @@ const ThongKeChung = () => {
   const [theme, setTheme] = useState('light');
   const toast = useRef(null);
 
-  const applyLightTheme = (prefix = '', suffix = '') => {
-    const lineOptions = {
-      plugins: {
-        legend: {
-          labels: {
-            color: '#000000'
-          }
-        },
-        tooltip: {
-          callbacks: {
-            label: function (context) {
-              return context.dataset.label + ': ' + prefix + context.raw + suffix;
-            }
-          }
-        }
-      },
-      scales: {
-        x: {
-          ticks: {
-            color: '#000000'
-          },
-          grid: {
-            color: 'rgba(15, 85, 224, 0.98)'
-          }
-        },
-        y: {
-          ticks: {
-            color: '#000000'
-          },
-          grid: {
-            color: 'rgba(0, 163, 0, 0.3)'
-          },
-          min: 0, // Set the minimum value for the y-axis
-          // max: 10000, // Set the maximum value for the y-axis
-          stepSize: 10000 // Set the step size for the y-axis
-        }
-      }
-    };
-
-    setLineOptions(lineOptions);
-  };
-
-  // const applyDarkTheme = () => {
-  //   const lineOptions = {
-  //     plugins: {
-  //       legend: {
-  //         labels: {
-  //           color: '#000000'
-  //         }
-  //       }
-  //     },
-  //     scales: {
-  //       x: {
-  //         ticks: {
-  //           color: '#000000'
-  //         },
-  //         grid: {
-  //           color: 'rgba(15, 85, 224, 0.98)'
-  //         }
-  //       },
-  //       y: {
-  //         ticks: {
-  //           color: '#000000'
-  //         },
-  //         grid: {
-  //           color: 'rgba(0, 163, 0, 0.3)'
-  //         },
-  //         min: 1000, // Set the minimum value for the y-axis
-  //         // max: 100000, // Set the maximum value for the y-axis
-  //         stepSize: 50000 // Set the step size for the y-axis
-  //       }
-  //     }
-  //   };
-
-  //   setLineOptions(lineOptions);
-  // };
-
   useEffect(() => {
     fetchBenXe();
     fetchDonHang();
   }, []);
 
   useEffect(() => {
-    if (theme === 'light') {
-      applyLightTheme();
-    } else {
-      // applyDarkTheme();
-    }
+    setLineOptions(spServices.chartThemeMoney());
   }, [theme]);
-
-  useEffect(() => {
-    updateChartDataDonHang();
-  }, [donHang, selectedDataset]);
 
   const fetchBenXe = async () => {
     try {
@@ -167,8 +86,19 @@ const ThongKeChung = () => {
   const updateChartDataDonHang = () => {
     const dateMap = new Map();
 
-    donHang.forEach(item => {
-      const date = new Date(item.ngay_tao);
+    // Filter donHang to include only items with trang_thai set to 'giao_thanh_cong'
+    let filteredDonHang = donHang; //.filter(item => item.trang_thai === 'giao_thanh_cong');
+
+    // Apply date filters if selected
+    if (selectedStartDate) {
+      filteredDonHang = filteredDonHang.filter(item => new Date(item.ngay_cap_nhat) >= selectedStartDate);
+    }
+    if (selectedEndDate) {
+      filteredDonHang = filteredDonHang.filter(item => new Date(item.ngay_cap_nhat) <= selectedEndDate);
+    }
+
+    filteredDonHang.forEach(item => {
+      const date = new Date(item.ngay_cap_nhat);
       const day = String(date.getDate()).padStart(2, '0');
       const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
       const year = date.getFullYear();
@@ -179,7 +109,14 @@ const ThongKeChung = () => {
       }
 
       const currentValue = dateMap.get(formattedDate);
-      const newValue = parseFloat(item[selectedDataset]) || 0; // Ensure the value is a number
+      let newValue = 0;
+
+      if (selectedDataset === 'tong_doang_thu') {
+        newValue = (parseFloat(item.cuoc_phi) || 0) + (parseFloat(item.phi_bao_hiem) || 0) + (parseFloat(item.phu_phi) || 0);
+      } else {
+        newValue = parseFloat(item[selectedDataset]) || 0; // Ensure the value is a number
+      }
+
       dateMap.set(formattedDate, currentValue + newValue);
     });
 
@@ -213,50 +150,74 @@ const ThongKeChung = () => {
 
     // Set prefix and suffix based on selected dataset
     let prefix = '';
-    let suffix = '';
+    let suffix = ' VND';
     if (e.value === 'cuoc_phi') {
-      prefix = 'VND';
+      prefix = '$';
     } else if (e.value === 'gia_tri_hang') {
       suffix = ' VND';
     }
 
-    // Apply the theme with the new prefix and suffix
-    if (theme === 'light') {
-      applyLightTheme(prefix, suffix);
-    } else {
-      // applyDarkTheme(prefix, suffix);
-    }
+    setLineOptions(spServices.chartThemeMoney(prefix, suffix));
+  };
+
+  const handleStartDateChange = (e) => {
+    setSelectedStartDate(e.value);
+  };
+
+  const handleEndDateChange = (e) => {
+    setSelectedEndDate(e.value);
+  };
+
+  const handleThongKe = () => {
+    updateChartDataDonHang();
   };
 
   const datasetOptions = [
     { label: 'Tổng doang thu', value: 'tong_doang_thu' },
     { label: 'Cước phí thu được', value: 'cuoc_phi' },
     { label: 'Tổng giá trị hàng đã nhận', value: 'gia_tri_hang' },
-    { label: 'Test', value: 'id' }
+    // { label: 'Test', value: 'id' }
   ];
 
   return (
     <div>
-      <div>
+      {/* <div>
         <button onClick={toggleTheme}>
           Switch to {theme === 'light' ? 'Dark' : 'Light'} Theme
         </button>
-      </div>
+      </div> */}
       <div>
         <div className="card">
           <div style={{ width: '100%' }}>
             <h5>Thống Kê Chung</h5>
-            <Dropdown
-              value={selectedDataset}
-              options={datasetOptions}
-              onChange={(e) => handleDatasetChange(e, datasetOptions, setSelectedDataset, setSelectedDatasetLabel)}
-              placeholder="Chọn một trường thống kê"
-            />
+            <div style={{ flex: 1 }}>
+              <Dropdown
+                value={selectedDataset}
+                options={datasetOptions}
+                onChange={(e) => handleDatasetChange(e, datasetOptions, setSelectedDataset, setSelectedDatasetLabel)}
+                placeholder="Chọn một trường thống kê"
+              />
+              <Calendar
+                id="thoi_gian_thong_ke_1"
+                value={selectedStartDate}
+                onChange={handleStartDateChange}
+                dateFormat="yy-mm-dd"
+                style={{ marginLeft: '5px' }}
+                placeholder="Chọn thời gian bắt đầu"/>
+              <Calendar
+                id="thoi_gian_thong_ke_2"
+                value={selectedEndDate}
+                onChange={handleEndDateChange}
+                dateFormat="yy-mm-dd"
+                style={{ marginLeft: '5px' }}
+                placeholder="Chọn thời gian cuối"/>
+              <Button label="Thống kê" style={{ marginLeft: '5px' }} className="p-button-success" onClick={handleThongKe}/>
+            </div>
             <Chart type="line" data={lineData} options={lineOptions} />
           </div>
         </div>
       </div>
-      <div>
+      {/* <div>
         <div className="card">
           <div style={{ width: '100%' }}>
             <h5>Thống kê theo bến xe</h5>
@@ -270,7 +231,7 @@ const ThongKeChung = () => {
             <Chart type="bar" data={lineData} options={lineOptions} />
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
