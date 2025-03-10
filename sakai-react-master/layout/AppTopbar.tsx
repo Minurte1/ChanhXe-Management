@@ -10,6 +10,7 @@ import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import { ReduxExportServices } from '@/app/redux/redux-services/services-redux-export';
 import spServices from '@/app/share/share-services/sp-services';
+import { User } from '../types'; // Đường dẫn cần thay đổi tùy dự án của bạn
 
 const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
   const { layoutConfig, layoutState, onMenuToggle } = useContext(LayoutContext);
@@ -20,7 +21,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
   const open = Boolean(anchorEl);
   const router = useRouter();
   const { userInfo } = ReduxExportServices();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     setUser(userInfo);
@@ -33,7 +34,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
   }));
 
   // Xử lý mở menu
-  const handleProfileClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -70,7 +71,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
 
       <div ref={topbarmenuRef} className={classNames('layout-topbar-menu', { 'layout-topbar-menu-mobile-active': layoutState.profileSidebarVisible })}>
         <div style={{ marginTop: '14px', cursor: 'pointer' }} ref={topbarmenubuttonRef} onClick={handleProfileClick}>
-          {user ? `${user.ho_ten} ( ${spServices.formatVaiTro(user.vai_tro)} )` : 'Đang tải...'}
+          {user?.ho_ten ? `${user.ho_ten} ( ${spServices.formatVaiTro(user.vai_tro)} )` : 'Đang tải...'}
         </div>
 
         <button className="p-link layout-menu-button layout-topbar-button" type="button" ref={topbarmenubuttonRef} onClick={handleProfileClick}>

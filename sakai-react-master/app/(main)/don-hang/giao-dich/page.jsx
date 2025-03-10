@@ -158,9 +158,7 @@ const DanhSachDonHang = () => {
     },
     (prevProps, nextProps) => prevProps.status === nextProps.status
   );
-
   StatusLabel.displayName = 'StatusLabel';
-
   return (
     <div className="p-grid">
       <Toast ref={toast} />
@@ -168,7 +166,11 @@ const DanhSachDonHang = () => {
         <div className="card">
           <h1>Danh Sách Đơn Hàng</h1>
           <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew} style={{ marginBottom: '10px' }} />
-          <DataTable value={orders} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
+          <DataTable
+            value={orders}
+            paginator
+            rows={10}
+            rowsPerPageOptions={[5, 10, 25]}
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
             currentPageReportTemplate="Hiển thị {first} đến {last} của {totalRecords} đơn hàng"
           >

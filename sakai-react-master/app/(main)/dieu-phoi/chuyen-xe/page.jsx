@@ -9,6 +9,7 @@ import TripDialog from '../../../modal/ChuyenXeDialog'; // Đường dẫn tới
 import DonHangChuyenXeDialog from '../../../modal/DonHangChuyenXeDialog';
 import spServices from '@/app/share/share-services/sp-services';
 import { useAxios } from '@/app/authentication/useAxiosClient';
+import { ReduxExportServices } from '@/app/redux/redux-services/services-redux-export';
 const DanhSachChuyenXe = () => {
   const [tripList, setTripList] = useState([]);
   const [displayDialog, setDisplayDialog] = useState(false);
@@ -30,13 +31,19 @@ const DanhSachChuyenXe = () => {
   const toast = useRef(null);
   const axiosInstance = useAxios();
   const tripService = TripService(axiosInstance);
+  const { userInfo } = ReduxExportServices();
+
   useEffect(() => {
-    fetchTrips();
-  }, []);
+    if (userInfo) {
+      fetchTrips();
+    }
+  }, [userInfo]);
 
   const fetchTrips = async () => {
     try {
-      const response = await tripService.getAllTrips();
+      let id_ben_xe_gui = null;
+      id_ben_xe_gui = userInfo.vai_tro === 'admin' ? null : (id_ben_xe_gui.id_ben_xe_gui = userInfo.id_ben);
+      const response = await tripService.getAllTrips({ id_ben_xe_gui });
       const output = spServices.formatData(response?.DT);
       console.log('output', output);
       setTripList(Array.isArray(output) ? output : []);
