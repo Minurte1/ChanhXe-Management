@@ -1,39 +1,69 @@
 'use client';
 import { Button } from 'primereact/button';
 import { Chart } from 'primereact/chart';
+import { Column } from 'primereact/column';
+import { DataTable } from 'primereact/datatable';
+import { Menu } from 'primereact/menu';
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import { ProductService } from '../../../../demo/service/ProductService';
 import { LayoutContext } from '../../../../layout/context/layoutcontext';
+import Link from 'next/link';
+import { Demo } from '@/types';
 import { ChartData, ChartOptions } from 'chart.js';
+import BenXeService from '../../../services/benXeServices';
 import { useAxios } from '@/app/authentication/useAxiosClient';
 import { Dropdown } from 'primereact/dropdown';
 import DonHangService from '../../../services/donHangSevices';
 import spServices from '../../../share/share-services/sp-services';
 import { Calendar } from 'primereact/calendar';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
 
-const ThongKeChung = () => {
+const ThongKeBenXe = () => {
   const [lineOptions, setLineOptions] = useState<ChartOptions>({});
+  const { layoutConfig } = useContext(LayoutContext);
 
   const [lineData, setLineData] = useState<ChartData>({
     labels: [],
     datasets: []
   });
 
+  const [benXe, setBenXe] = useState([]);
   const [donHang, setDonHang] = useState([]);
   const [selectedDataset, setSelectedDataset] = useState('');
+  const [selectedBenXeDataset, setSelectedBenXeDataset] = useState();
+  const [selectedBenXeDatasetLabel, setSelectedBenXeDatasetLabel] = useState();
   const [selectedDatasetLabel, setSelectedDatasetLabel] = useState('');
+  const [datasetBenXeOptions, setDatasetBenXeOptions] = useState([]);
   const [selectedStartDate, setSelectedStartDate] = useState(null);
   const [selectedEndDate, setSelectedEndDate] = useState(null);
   const [chartType, setChartType] = useState('line');
 
   const axiosInstance = useAxios();
+  const benXeService = BenXeService(axiosInstance);
   const donHangSevices = DonHangService(axiosInstance);
+  const [theme, setTheme] = useState('light');
   const toast = useRef(null);
   const { getColorTrangThai, formatLoaiHangHoa, getColorChartTrangThai } = spServices;
 
   useEffect(() => {
+    fetchBenXe();
     fetchDonHang();
   }, []);
+
+  const fetchBenXe = async () => {
+    try {
+      const response = await benXeService.getAllBenXe();
+      setBenXe(response.DT);
+
+      // Map the fetched data to the dropdown options format
+      const options = response.DT.map(item => ({
+        label: item.ten_ben_xe, // Adjust the property name as needed
+        value: item.id // Adjust the property name as needed
+      }));
+      setDatasetBenXeOptions(options);
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
 
   const fetchDonHang = async () => {
     try {
@@ -46,10 +76,12 @@ const ThongKeChung = () => {
 
   const updateChartDataDonHang = () => {
     setLineOptions(spServices.chartTheme('', ''));
+    console.log('selectedBenXeDataset', selectedBenXeDataset);
     const dateMap = new Map();
 
     // Filter donHang to include only items with trang_thai set to 'giao_thanh_cong'
-    let filteredDonHang = donHang; //.filter(item => item.trang_thai === 'giao_thanh_cong');
+    let filteredDonHang = donHang.filter(item => item.id_ben_xe_nhan === selectedBenXeDataset );
+    console.log('filteredDonHang', filteredDonHang);
 
     // Apply date filters if selected
     if (selectedStartDate) {
@@ -67,7 +99,7 @@ const ThongKeChung = () => {
         const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
         const year = date.getFullYear();
         const formattedDate = `${day}-${month}-${year}`;
-        const loaiHangHoa = formatLoaiHangHoa(item.loai_hang_hoa); 
+        const loaiHangHoa = formatLoaiHangHoa(item.loai_hang_hoa);
 
         if (!dateMap.has(formattedDate)) {
           dateMap.set(formattedDate, new Map());
@@ -185,6 +217,10 @@ const ThongKeChung = () => {
     }
   };
 
+  const toggleTheme = () => {
+    setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
+  };
+
   const handleDatasetChange = (e, options, setDataset, setLabel) => {
     const selectedOption = options.find(option => option.value === e.value);
     setDataset(e.value);
@@ -193,7 +229,6 @@ const ThongKeChung = () => {
 
   const handleStartDateChange = (e) => {
     setSelectedStartDate(e.value);
-    setSelectedEndDate(null);
   };
 
   const handleEndDateChange = (e) => {
@@ -206,7 +241,7 @@ const ThongKeChung = () => {
 
   const datasetOptions = [
     { label: 'Tổng doang thu', value: 'tong_doang_thu' },
-    { label: 'Các đơn hàng đã nhận', value: 'don_hang_nhan'},
+    { label: 'Các đơn hàng đã nhận', value: 'don_hang_nhan' },
     // { label: 'Test', value: 'id' }
   ];
 
@@ -215,12 +250,21 @@ const ThongKeChung = () => {
       <div>
         <div className="card">
           <div style={{ width: '100%' }}>
-            <h5>Thống Kê Chung</h5>
+            <h5>Thống kê theo bến xe</h5>
             <div style={{ flex: 1 }}>
+              <Dropdown
+                id='id_ben_xe'
+                value={selectedBenXeDataset}
+                options={datasetBenXeOptions}
+                onChange={(e) => handleDatasetChange(e, datasetBenXeOptions, setSelectedBenXeDataset, setSelectedBenXeDatasetLabel)}
+                placeholder="Chọn một bến xe"
+              />
               <Dropdown
                 value={selectedDataset}
                 options={datasetOptions}
+                disabled={!selectedBenXeDataset}
                 onChange={(e) => handleDatasetChange(e, datasetOptions, setSelectedDataset, setSelectedDatasetLabel)}
+                style={{ marginLeft: '5px' }}
                 placeholder="Chọn một trường thống kê"
               />
               <Calendar
@@ -228,22 +272,21 @@ const ThongKeChung = () => {
                 value={selectedStartDate}
                 onChange={handleStartDateChange}
                 dateFormat="yy-mm-dd"
+                disabled={!selectedBenXeDataset}
                 style={{ marginLeft: '5px' }}
-                placeholder="Chọn thời gian bắt đầu"/>
+                placeholder="Chọn thời gian bắt đầu" />
               <Calendar
                 id="thoi_gian_thong_ke_2"
                 value={selectedEndDate}
                 onChange={handleEndDateChange}
                 dateFormat="yy-mm-dd"
-                disabled={!selectedStartDate}
+                disabled={!selectedStartDate || !selectedBenXeDataset}
                 minDate={selectedStartDate}
                 style={{ marginLeft: '5px' }}
-                placeholder="Chọn thời gian cuối"/>
-              <Button label="Thống kê" style={{ marginLeft: '5px' }} className="p-button-success" onClick={handleThongKe}/>
+                placeholder="Chọn thời gian cuối" />
+              <Button label="Thống kê" style={{ marginLeft: '5px' }} className="p-button-success" onClick={handleThongKe} />
             </div>
-            <div >
             <Chart type={chartType} data={lineData} options={lineOptions} />
-            </div>
           </div>
         </div>
       </div>
@@ -251,4 +294,4 @@ const ThongKeChung = () => {
   );
 };
 
-export default ThongKeChung;
+export default ThongKeBenXe;

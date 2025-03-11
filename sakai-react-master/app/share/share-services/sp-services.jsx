@@ -164,6 +164,7 @@ const spServices = {
           grid: {
             color: 'rgba(100, 99, 99, 0.98)'
           },
+          
           stepSize: 50000 // Set the step size for the y-axis
         }
       }
