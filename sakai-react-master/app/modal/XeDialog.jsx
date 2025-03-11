@@ -26,13 +26,14 @@ const XeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }) =
   const handleSave = async () => {
     const requiredFields = ['bien_so', 'loai_xe', 'suc_chua', 'trang_thai'];
     const validationErrors = validateForm(formData, requiredFields);
-    console.log('bien_so', formData.bien_so);
 
-    const timBienSo = await xeService.getAllVehicles({ bien_so: formData.bien_so});
-    if (timBienSo.DT.length === 1) {
-      validationErrors.bien_so = 'Biển số đã tồn tại';
-      setErrors(validationErrors);
-      console.log('validationErrors', validationErrors);
+    if (isNew) {
+      const timBienSo = await xeService.getAllVehicles({ bien_so: formData.bien_so });
+      if (timBienSo.DT.length === 1) {
+        validationErrors.bien_so = 'Biển số đã tồn tại';
+        setErrors(validationErrors);
+        console.log('validationErrors', validationErrors);
+      }
     }
 
     if (Object.keys(validationErrors).length === 0) {
@@ -50,12 +51,12 @@ const XeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }) =
     </React.Fragment>
   );
 
-  // Danh sách trạng thái xe
+  // Danh sách trạng thái xe (lọc theo điều kiện)
   const trangThaiOptions = [
     { label: 'Đang hoạt động', value: 'hoat_dong' },
     { label: 'Bảo trì', value: 'bao_tri' },
     { label: 'Ngưng hoạt động', value: 'ngung_hoat_dong' },
-    { label: 'Đang vận chuyển', value: 'dang_van_chuyen' }
+    ...(formData.ten_ben_xe ? [{ label: 'Đang vận chuyển', value: 'dang_van_chuyen' }] : [])
   ];
 
   // Danh sách loại xe
@@ -64,7 +65,7 @@ const XeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }) =
     { label: 'Xe tải trung (2 - 7 tấn)', value: 'Xe tải trung' },
     { label: 'Xe tải nặng (trên 7 tấn)', value: 'Xe tải nặng' }
   ];
-
+  console.log('form', formData);
   return (
     <Dialog visible={visible} style={{ width: '450px' }} header={isNew ? 'Thêm Xe' : 'Chỉnh Sửa Xe'} modal className="p-fluid" footer={dialogFooter} onHide={onHide}>
       <Toast ref={toast} />

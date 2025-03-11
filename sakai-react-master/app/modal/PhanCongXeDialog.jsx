@@ -48,21 +48,11 @@ const PhanCongXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onS
     }
   };
 
-  const fetchXe = async () => {
-    try {
-      const response = await xeService.getAllVehicles();
-      setListXe(Array.isArray(response.DT) ? response.DT : []);
-    } catch (error) {
-      console.error('Lỗi khi tải danh sách xe', error);
-      showError('Lỗi khi tải danh sách xe');
-    }
-  };
-
   const fetchPhanCongXe = async () => {
     try {
-      const response = await PhanCongXeService.getAllVehicleAssignments();
-      console.log('response phan cong xe', response);
-      setListPhanCongXe(Array.isArray(response.DT) ? response.DT : []);
+      const response = await PhanCongXeService.getAllUnassignedVehicles();
+
+      setListXe(Array.isArray(response.DT) ? response.DT : []);
     } catch (error) {
       console.error('Lỗi khi tải danh sách phân công xe', error);
       showError('Lỗi khi tải danh sách phân công xe');
@@ -78,27 +68,10 @@ const PhanCongXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onS
     });
   };
 
-  const showSuccess = (message) => {
-    toast.current.show({
-      severity: 'success',
-      summary: 'Thành công',
-      detail: message,
-      life: 3000
-    });
-  };
-
-  // Xử lý thay đổi đầu vào
-  const handleInputChange = async (e, field) => {
-    const value = e.value;
-    if (field === 'id_ben') {
-      const response = await xeService.getAllVehicles();
-      const updatedListXe = Array.isArray(response.DT) ? response.DT : [];
-      const assignedVehicles = listPhanCongXe.filter((assignment) => assignment.id_ben === value).map((assignment) => assignment.id_xe);
-      const filteredXeOptions = updatedListXe.filter((xe) => !assignedVehicles.includes(xe.id));
-      setSelectedBenXe(value);
-      setListXe(filteredXeOptions);
-    }
-    onInputChange(e, field);
+  // Sử dụng onInputChange từ props thay vì định nghĩa lại
+  const handleInputChange = (e, field) => {
+    const value = e.value; // Giá trị từ Dropdown
+    onInputChange({ target: { name: field, value } }, field); // Gọi prop onInputChange
   };
 
   // Xử lý thay đổi bộ lọc
