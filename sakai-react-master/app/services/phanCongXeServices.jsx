@@ -11,6 +11,15 @@ const VehicleAssignmentService = (axiosInstance) => ({
     }
   },
 
+  getAllUnassignedVehicles: async (params = {}) => {
+    try {
+      const response = await axiosInstance.get(`${API_URL}/chua-phan-cong-xe`, { params });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching vehicle assignments:', error);
+      throw error;
+    }
+  },
   getVehicleAssignmentById: async (id) => {
     try {
       const response = await axiosInstance.get(`${API_URL}/phan-cong-xe/${id}`);

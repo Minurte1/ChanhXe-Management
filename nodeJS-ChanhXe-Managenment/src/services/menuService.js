@@ -1,7 +1,7 @@
 const getMenuItems = (role, selectedRole = null) => {
   const menus = {
     admin: [
-      { label: "Trang chủ", url: "/" },
+      { label: "Trang chủ", url: "/", icon: "pi pi-home" },
       {
         label: "Thống kê cơ bản",
         icon: "pi pi-chart-bar",
@@ -12,31 +12,35 @@ const getMenuItems = (role, selectedRole = null) => {
       },
       {
         label: "Báo cáo doanh thu",
-        icon: "pi pi-dollar",
+        icon: "pi pi-money-bill",
         items: [
-          { label: "Báo cáo doanh thu", url: "/bao-cao/doanh-thu" },
-          { label: "Báo cáo hàng ngày", url: "/bao-cao/hang-ngay" },
+          {
+            label: "Báo cáo doanh thu",
+            url: "/bao-cao/doanh-thu",
+            icon: "pi pi-chart-bar",
+          },
+          {
+            label: "Báo cáo hàng ngày",
+            url: "/bao-cao/hang-ngay",
+            icon: "pi pi-calendar",
+          },
         ],
       },
       {
         label: "Quản lý hệ thống",
-        icon: "pi pi-cog",
+        icon: "pi pi-sliders-h",
         items: [
           {
             label: "Danh sách nhân viên",
             url: "/nhan-vien/danh-sach",
-            icon: "pi pi-user",
+            icon: "pi pi-users",
           },
           {
             label: "Danh sách tài xế",
             url: "/nhan-vien/tai-xe",
-            icon: "pi pi-user",
+            icon: "pi pi-id-card",
           },
-          {
-            label: "Danh sách xe",
-            url: "/xe/danh-sach",
-            icon: "pi pi-car",
-          },
+          { label: "Danh sách xe", url: "/xe/danh-sach", icon: "pi pi-car" },
           {
             label: "Danh sách bến xe",
             url: "/ben-xe/danh-sach",
@@ -44,37 +48,36 @@ const getMenuItems = (role, selectedRole = null) => {
           },
         ],
       },
-
       {
         label: "Quản lý phân quyền",
-        icon: "pi pi-user",
+        icon: "pi pi-lock",
         items: [
           {
             label: "Nhân viên điều phối",
             url: "#",
             admin: "1",
-            icon: "pi pi-user",
+            icon: "pi pi-cog",
             role: "nhan_vien_dieu_phoi",
           },
           {
             label: "Nhân viên kho",
             url: "#",
             admin: "1",
-            icon: "pi pi-user",
+            icon: "pi pi-box",
             role: "nhan_vien_kho",
           },
           {
             label: "Nhân viên giao dịch",
             url: "#",
             admin: "1",
-            icon: "pi pi-user",
+            icon: "pi pi-credit-card",
             role: "nhan_vien_giao_dich",
           },
           {
             label: "Tài xế",
             url: "#",
             admin: "1",
-            icon: "pi pi-user",
+            icon: "pi pi-truck",
             role: "tai_xe",
           },
         ],
@@ -85,9 +88,13 @@ const getMenuItems = (role, selectedRole = null) => {
         label: "Quản lý đơn hàng",
         icon: "pi pi-box",
         items: [
-          { label: "Trang chủ", url: "/" },
-          { label: "Đơn hàng cập bến", url: "/kho-hang" },
-          { label: "Tra cứu đơn hàng", url: "/kho-hang/tra-cuu" },
+          { label: "Trang chủ", url: "/", icon: "pi pi-home" },
+          { label: "Đơn hàng cập bến", url: "/kho-hang", icon: "pi pi-inbox" },
+          {
+            label: "Tra cứu đơn hàng",
+            url: "/kho-hang/tra-cuu",
+            icon: "pi pi-search",
+          },
         ],
       },
       { label: "Quản lý xe", icon: "pi pi-truck", url: "/vehicles" },
@@ -95,17 +102,14 @@ const getMenuItems = (role, selectedRole = null) => {
     nhan_vien_dieu_phoi: [
       {
         label: "Quản lý điều phối",
-        icon: "pi pi-cog",
+        icon: "pi pi-map",
         items: [
-          { label: "Trang chủ", url: "/" },
-          { label: "Phân công chuyến xe", url: "/dieu-phoi/chuyen-xe" },
-          { label: "Ghi nhận xe xuất bến", url: "/dieu-phoi/departure" },
-          { label: "Phân công tài xế", url: "/dieu-phoi/assign-driver" },
+          { label: "Trang chủ", url: "/", icon: "pi pi-home" },
           {
-            label: "Phân công xe vận chuyển đơn hàng",
-            url: "/dieu-phoi/assign-vehicle",
+            label: "Phân công chuyến xe",
+            url: "/dieu-phoi/chuyen-xe",
+            icon: "pi pi-cog",
           },
-          { label: "Cập nhật trạng thái xe", url: "/dieu-phoi/vehicle-status" },
         ],
       },
     ],
@@ -113,11 +117,11 @@ const getMenuItems = (role, selectedRole = null) => {
       {
         label: "Chúng ta là tài xế",
         url: "/",
-        icon: "pi pi-user",
+        icon: "pi pi-id-card",
         items: [
           {
             label: "Lịch trình vận chuyển",
-            icon: "pi pi-map",
+            icon: "pi pi-calendar",
             url: "/tai-xe/lich-trinh",
           },
         ],
@@ -131,7 +135,7 @@ const getMenuItems = (role, selectedRole = null) => {
         items: [
           {
             label: "Lịch trình vận chuyển",
-            icon: "pi pi-map",
+            icon: "pi pi-calendar",
             url: "/tai-xe/lich-trinh",
           },
         ],
@@ -140,12 +144,19 @@ const getMenuItems = (role, selectedRole = null) => {
     nhan_vien_giao_dich: [
       {
         label: "Giao dịch đơn hàng",
-        icon: "pi pi-map",
-
+        icon: "pi pi-credit-card",
         items: [
-          { label: "Trang chủ", url: "/" },
-          { label: "Giao dịch", url: "/don-hang/giao-dich" },
-          { label: "Thêm khách hàng", url: "/don-hang/khach-hang" },
+          { label: "Trang chủ", url: "/", icon: "pi pi-home" },
+          {
+            label: "Giao dịch",
+            url: "/don-hang/giao-dich",
+            icon: "pi pi-money-bill",
+          },
+          {
+            label: "Thêm khách hàng",
+            url: "/don-hang/khach-hang",
+            icon: "pi pi-user-plus",
+          },
         ],
       },
     ],

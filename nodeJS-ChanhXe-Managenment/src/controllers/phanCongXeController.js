@@ -66,6 +66,36 @@ const getAllVehicleAssignments = async (req, res) => {
     });
   }
 };
+const getAllUnassignedVehicles = async (req, res) => {
+  // #swagger.tags = ['Xe chưa phân công']
+  try {
+    let query = `
+      SELECT 
+        xe.id, xe.bien_so, xe.loai_xe, xe.suc_chua, xe.trang_thai, 
+        xe.id_nguoi_cap_nhat, xe.ngay_cap_nhat, xe.ngay_tao
+      FROM xe
+      LEFT JOIN phan_cong_dia_diem_xe pcx ON xe.id = pcx.id_xe
+      WHERE pcx.id IS NULL
+      ORDER BY xe.ngay_cap_nhat DESC
+    `;
+
+    // Thực thi query
+    const [rows] = await pool.query(query);
+
+    return res.status(200).json({
+      EM: "Lấy danh sách xe chưa phân công thành công",
+      EC: 1,
+      DT: rows,
+    });
+  } catch (error) {
+    console.error("Error in getAllUnassignedVehicles:", error);
+    return res.status(500).json({
+      EM: `Lỗi: ${error.message}`,
+      EC: -1,
+      DT: [],
+    });
+  }
+};
 
 // Lấy phân công theo ID
 const getVehicleAssignmentById = async (req, res) => {
@@ -115,13 +145,11 @@ const createVehicleAssignment = async (req, res) => {
       [id_ben, id_xe, id_nguoi_cap_nhat]
     );
 
-    return res
-      .status(201)
-      .json({
-        EM: "Tạo phân công thành công",
-        EC: 1,
-        DT: { id: result.insertId },
-      });
+    return res.status(201).json({
+      EM: "Tạo phân công thành công",
+      EC: 1,
+      DT: { id: result.insertId },
+    });
   } catch (error) {
     console.error("Error in createAssignment:", error);
     return res
@@ -205,4 +233,7 @@ module.exports = {
   createVehicleAssignment,
   updateVehicleAssignment,
   deleteVehicleAssignment,
+
+  //
+  getAllUnassignedVehicles, // Xe chưa được phân công
 };

@@ -143,7 +143,8 @@ const getAllOrders = async (req, res) => {
       query += " AND dh.email_nhan LIKE ?";
       queryParams.push(`%${email_nhan}%`);
     }
-
+    // **Sắp xếp đơn hàng mới nhất**
+    query += " ORDER BY dh.ngay_cap_nhat DESC";
     const [rows] = await pool.query(query, queryParams);
 
     return res.status(200).json({

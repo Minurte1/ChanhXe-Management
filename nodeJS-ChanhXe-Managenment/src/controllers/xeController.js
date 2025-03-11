@@ -244,6 +244,7 @@ const deleteVehicle = async (req, res) => {
   // #swagger.tags = ['Xe']
   try {
     const { id } = req.params;
+    console.log("id", id);
     const [result] = await pool.query("DELETE FROM xe WHERE id = ?", [id]);
 
     if (result.affectedRows === 0) {
@@ -259,6 +260,7 @@ const deleteVehicle = async (req, res) => {
     // Kiểm tra lỗi liên quan đến khóa ngoại (ER_ROW_IS_REFERENCED_2 trong MySQL)
     if (error.code === "ER_ROW_IS_REFERENCED_2") {
       try {
+        const { id } = req.params;
         await pool.query(
           "UPDATE xe SET trang_thai = 'ngung_hoat_dong' WHERE id = ?",
           [id]

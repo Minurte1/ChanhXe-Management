@@ -94,7 +94,8 @@ const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formDat
       <Button label="Lưu" icon="pi pi-check" className="p-button-text" onClick={handleSave} />
     </div>
   );
-
+  console.log('form', formData);
+  console.log('listTaiXe', listTaiXe);
   return (
     <Dialog header={`Phân công bến xe cho tài xế`} visible={visible} style={{ width: '40vw', maxWidth: '600px' }} footer={dialogFooter} onHide={onHide} className="p-dialog-custom">
       <Toast ref={toast} />
@@ -126,12 +127,12 @@ const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formDat
               Chọn tài xế
             </label>
             <Dropdown
-              id="id_tai_xe"
-              value={formData.id_tai_xe}
+              id="tai_xe_id"
+              value={formData.tai_xe_id}
               options={listTaiXe}
               optionLabel="ho_ten"
               optionValue="tai_xe_id"
-              onChange={(e) => handleInputChange(e, 'id_tai_xe')}
+              onChange={(e) => handleInputChange(e, 'tai_xe_id')}
               placeholder="Chọn bến xe trước khi chọn tài xế"
               filter
               filterBy="ho_ten"

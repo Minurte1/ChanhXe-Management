@@ -2,17 +2,18 @@ const express = require("express");
 const router = express.Router();
 
 const {
-    getAllVehicleAssignments,
-    getVehicleAssignmentById,
-    createVehicleAssignment,
-    updateVehicleAssignment,
-    deleteVehicleAssignment,
+  getAllVehicleAssignments,
+  getVehicleAssignmentById,
+  createVehicleAssignment,
+  updateVehicleAssignment,
+  deleteVehicleAssignment,
+  getAllUnassignedVehicles,
 } = require("../controllers/phanCongXeController");
 const {
-    checkUserJWT,
-    checkUserPermission,
+  checkUserJWT,
+  checkUserPermission,
 } = require("../middleware/JWTaction");
-
+router.get("/chua-phan-cong-xe", getAllUnassignedVehicles);
 router.get("/phan-cong-xe", checkUserJWT, getAllVehicleAssignments);
 router.get("/phan-cong-xe/:id", checkUserJWT, getVehicleAssignmentById);
 router.post("/phan-cong-xe", checkUserJWT, createVehicleAssignment);

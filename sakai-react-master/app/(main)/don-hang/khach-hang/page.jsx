@@ -28,7 +28,6 @@ const DanhSachKhachHang = () => {
 
   // State cho tìm kiếm
   const [searchText, setSearchText] = useState('');
-  const [isSearchActive, setIsSearchActive] = useState(false);
 
   useEffect(() => {
     fetchKhachHang();
@@ -114,7 +113,7 @@ const DanhSachKhachHang = () => {
 
   // Lọc danh sách theo từ khóa tìm kiếm
   const filteredKhachHangList = khachHangList.filter((khachHang) => {
-    if (!isSearchActive || !searchText.trim()) return true;
+    if (!searchText.trim()) return true;
     const searchLower = searchText.toLowerCase();
     return khachHang.ho_ten.toLowerCase().includes(searchLower) || khachHang.so_dien_thoai.includes(searchLower);
   });
@@ -125,12 +124,12 @@ const DanhSachKhachHang = () => {
       <div className="p-col-12">
         <div className="card">
           <h1>Danh Sách Khách Hàng Trong Hệ Thống</h1>
-          <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew} style={{ marginBottom: '10px' }} />
 
           {/* Thanh tìm kiếm */}
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-            <Button label={isSearchActive ? 'Tắt tìm kiếm' : 'Bật tìm kiếm'} icon="pi pi-search" className={isSearchActive ? 'p-button-danger' : 'p-button-primary'} onClick={() => setIsSearchActive((prev) => !prev)} style={{ marginRight: '10px' }} />
-            {isSearchActive && <InputText value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Tìm theo họ tên hoặc số điện thoại..." style={{ width: '300px' }} />}
+            <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew} style={{ marginBottom: '10px' }} />
+
+            <InputText value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Tìm theo họ tên hoặc số điện thoại..." style={{ marginBottom: '10px', marginLeft: '10px', width: '300px' }} />
           </div>
 
           <DataTable value={filteredKhachHangList} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}>

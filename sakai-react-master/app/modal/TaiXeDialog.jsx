@@ -9,6 +9,7 @@ import { Toast } from 'primereact/toast';
 import taiXeService from '../services/taiXeServices';
 import { useAxios } from '../authentication/useAxiosClient';
 import { validateForm } from '../(main)/utilities/validation';
+import spServices from '../share/share-services/sp-services';
 
 const TaiXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }) => {
   const [users, setUsers] = useState([]);
@@ -62,7 +63,8 @@ const TaiXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }
       <Button label="Lưu" icon="pi pi-check" onClick={handleSave} />
     </React.Fragment>
   );
-
+  console.log('user', users);
+  console.log('formData', formData);
   return (
     <Dialog visible={visible} style={{ width: '450px' }} header={isNew ? 'Thêm Tài Xế' : 'Chỉnh Sửa Tài Xế'} modal className="p-fluid" footer={dialogFooter} onHide={onHide}>
       <Toast ref={toast} />
@@ -75,7 +77,9 @@ const TaiXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }
               value={formData.nguoi_dung_id || ''}
               options={users.map((user) => ({
                 label: user.ho_ten || '',
-                value: user.id
+                value: user.id,
+                vai_tro: user.vai_tro || '',
+                ho_ten: user.ho_ten || ''
               }))}
               onChange={(e) => onInputChange({ target: { value: e.value } }, 'nguoi_dung_id')}
               placeholder="Chọn người dùng"
@@ -83,6 +87,11 @@ const TaiXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave }
               filterBy="label"
               className="mt-2"
               style={{ width: '100%' }}
+              itemTemplate={(option) => (
+                <div>
+                  <span>{option.ho_ten}</span> {option.vai_tro && <small>({spServices.formatVaiTro(option.vai_tro)})</small>}
+                </div>
+              )}
             />
           ) : (
             <p>Đang tải danh sách người dùng...</p>
