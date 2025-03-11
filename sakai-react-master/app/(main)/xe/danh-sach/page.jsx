@@ -43,7 +43,10 @@ const DanhSachXe = () => {
 
   const fetchXe = async () => {
     try {
-      const response = await vehicleService.getAllVehicles();
+      const filter = {
+        trang_thai: ['bao_tri', 'hoat_dong', 'ngung_hoat_dong', 'dang_van_chuyen']
+      };
+      const response = await vehicleService.getAllVehicles(filter);
       const output = spServices.formatData(response?.DT);
       setXeList(output);
     } catch (error) {
@@ -197,7 +200,11 @@ const DanhSachXe = () => {
             <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm} />
             <InputText placeholder="Tìm kiếm biển số xe" value={searchTerm} onChange={onSearchChange} style={{ marginLeft: '8px', width: '30%' }} />
           </div>
-          <DataTable value={filteredXe} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
+          <DataTable
+            value={filteredXe}
+            paginator
+            rows={10}
+            rowsPerPageOptions={[5, 10, 25]}
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
             currentPageReportTemplate="Hiển thị {first} đến {last} của {totalRecords} xe"
           >

@@ -59,9 +59,19 @@ const getAllVehicles = async (req, res) => {
       queryParams.push(suc_chua);
     }
     if (trang_thai) {
-      query += " AND xe.trang_thai = ?";
-      queryParams.push(trang_thai);
+      const trangThaiList = Array.isArray(trang_thai)
+        ? trang_thai
+        : trang_thai.split(",");
+      query += ` AND xe.trang_thai IN (${trangThaiList
+        .map(() => "?")
+        .join(",")})`;
+      queryParams.push(...trangThaiList);
     }
+
+    // if (trang_thai) {
+    //   query += " AND xe.trang_thai = ?";
+    //   queryParams.push(trang_thai);
+    // }
     if (id_nguoi_cap_nhat) {
       query += " AND xe.id_nguoi_cap_nhat = ?";
       queryParams.push(id_nguoi_cap_nhat);
@@ -261,10 +271,9 @@ const deleteVehicle = async (req, res) => {
     if (error.code === "ER_ROW_IS_REFERENCED_2") {
       try {
         const { id } = req.params;
-        await pool.query(
-          "UPDATE xe SET trang_thai = 'ngung_hoat_dong' WHERE id = ?",
-          [id]
-        );
+        await pool.query("UPDATE xe SET trang_thai = 'da_xoa' WHERE id = ?", [
+          id,
+        ]);
         return res.status(200).json({
           EM: "Xe có liên kết dữ liệu, đã cập nhật trạng thái ngừng hoạt động",
           EC: 1,

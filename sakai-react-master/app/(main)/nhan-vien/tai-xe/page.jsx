@@ -43,7 +43,10 @@ const DanhSachTaiXe = () => {
 
   const fetchTaiXe = async () => {
     try {
-      const response = await TaiXeServices.getAllDrivers();
+      const filter = {
+        trang_thai_tai_xe: ['dang_van_chuyen', 'hoat_dong', 'ngung_hoat_dong']
+      };
+      const response = await TaiXeServices.getAllDrivers(filter);
       const updatedTaiXe = spServices.formatData(response?.DT);
       setTaiXeList(updatedTaiXe);
     } catch (error) {

@@ -49,8 +49,9 @@ SELECT
     tx.id AS tai_xe_id, tx.nguoi_dung_id AS tai_xe_nguoi_dung_id, tx.bang_lai, 
     tx.id_nguoi_cap_nhat AS tai_xe_id_nguoi_cap_nhat, tx.ngay_tao AS tai_xe_ngay_tao, 
     tx.ngay_cap_nhat AS tai_xe_ngay_cap_nhat,
-
-    COALESCE(tx.trang_thai, nd.trang_thai) AS trang_thai
+      
+    nd.trang_thai as trang_thai
+     
 FROM nguoi_dung nd
 LEFT JOIN tai_xe tx ON nd.id = tx.nguoi_dung_id
 LEFT JOIN phan_cong_dia_diem_tai_xe pctx ON tx.id = pctx.id_tai_xe
@@ -62,7 +63,7 @@ LEFT JOIN ben_xe bx2 ON pcd.id_ben = bx2.id
 
     `;
     let queryParams = [];
-
+    // COALESCE(tx.trang_thai, nd.trang_thai) AS trang_thai  ( lưu tạm)
     if (id) {
       query += " AND id = ?";
       queryParams.push(id);
@@ -85,9 +86,21 @@ LEFT JOIN ben_xe bx2 ON pcd.id_ben = bx2.id
       query += " AND vai_tro IN (" + roles.map(() => "?").join(",") + ")";
       queryParams.push(...roles);
     }
+    // if (trang_thai) {
+    //   query += " AND trang_thai = ?";
+    //   queryParams.push(trang_thai);
+    // }
     if (trang_thai) {
-      query += " AND trang_thai = ?";
-      queryParams.push(trang_thai);
+      // Xử lý vai_tro dạng mảng hoặc chuỗi đơn
+      const trang_thaiList = Array.isArray(trang_thai)
+        ? trang_thai
+        : trang_thai.split(",");
+      query +=
+        " AND nd.trang_thai IN (" +
+        trang_thaiList.map(() => "?").join(",") +
+        ")";
+
+      queryParams.push(...trang_thaiList);
     }
     if (id_nguoi_cap_nhat) {
       query += " AND id_nguoi_cap_nhat = ?";
@@ -408,24 +421,52 @@ const updateUser = async (req, res) => {
       .json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
   }
 };
-// Xóa người dùng
 const deleteUser = async (req, res) => {
   // #swagger.tags = ['Người dùng']
   try {
     const { id } = req.params;
+
+    // Thử xóa người dùng
     const [result] = await pool.query("DELETE FROM nguoi_dung WHERE id = ?", [
       id,
     ]);
+
     if (result.affectedRows === 0) {
       return res
         .status(404)
         .json({ EM: "Không tìm thấy người dùng để xóa", EC: -1, DT: {} });
     }
+
     return res
       .status(200)
       .json({ EM: "Xóa người dùng thành công", EC: 1, DT: {} });
   } catch (error) {
     console.error("Error in deleteUser:", error);
+
+    // Nếu lỗi do khóa ngoại, cập nhật trạng thái thay vì xóa
+    if (
+      error.code === "ER_ROW_IS_REFERENCED" ||
+      error.code === "ER_ROW_IS_REFERENCED_2"
+    ) {
+      try {
+        const { id } = req.params;
+        await pool.query(
+          "UPDATE nguoi_dung SET trang_thai = 'da_xoa' WHERE id = ?",
+          [id]
+        );
+        return res.status(200).json({
+          EM: "Đã xóa người dùng thành công",
+          EC: 1,
+          DT: {},
+        });
+      } catch (updateError) {
+        console.error("Error updating user status:", updateError);
+        return res
+          .status(500)
+          .json({ EM: "Lỗi khi cập nhật trạng thái", EC: -1, DT: {} });
+      }
+    }
+
     return res
       .status(500)
       .json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });

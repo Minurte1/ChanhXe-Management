@@ -121,13 +121,18 @@ const getAllDrivers = async (req, res) => {
       queryParams.push(ngay_tao_tai_xe);
     }
     if (trang_thai_tai_xe) {
-      query += " AND tai_xe.trang_thai = ?";
-      queryParams.push(trang_thai_tai_xe);
+      const trangThaiArr = Array.isArray(trang_thai_tai_xe)
+        ? trang_thai_tai_xe
+        : trang_thai_tai_xe.split(",");
+      query += ` AND tai_xe.trang_thai IN (${trangThaiArr
+        .map(() => "?")
+        .join(",")})`;
+      queryParams.push(...trangThaiArr);
     }
 
     // Sắp xếp theo ngày cập nhật của tai_xe
     query += " ORDER BY tai_xe.ngay_cap_nhat DESC";
-
+    console.log("query", query);
     // Thực thi query
     const [rows] = await pool.query(query, queryParams);
 
@@ -372,7 +377,7 @@ const deleteDriver = async (req, res) => {
       if (deleteError.errno === 1451) {
         // Cập nhật trạng thái thành ngung_hoat_dong
         const [updateResult] = await connection.query(
-          "UPDATE tai_xe SET trang_thai = 'ngung_hoat_dong' WHERE id = ?",
+          "UPDATE tai_xe SET trang_thai = 'da_xoa' WHERE id = ?",
           [id]
         );
 

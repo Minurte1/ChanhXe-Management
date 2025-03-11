@@ -48,7 +48,10 @@ const DanhSachNhanVien = () => {
 
   const fetchNhanVien = async () => {
     try {
-      const response = await userService.getAllUsers();
+      const filter = {
+        trang_thai: ['hoat_dong', 'tam_ngung', 'ngung_hoat_dong']
+      };
+      const response = await userService.getAllUsers(filter);
       const updatedNhanVien = spServices.formatData(response?.DT);
       setNhanVien(updatedNhanVien);
     } catch (error) {
@@ -193,6 +196,7 @@ const DanhSachNhanVien = () => {
     return () => clearTimeout(timer); // Xóa timer khi searchTerm thay đổi hoặc component unmount
   }, [searchTerm, nhanVien]);
 
+  console.log('nhan', nhanVien);
   return (
     <div className="p-grid">
       <Toast ref={toast} />

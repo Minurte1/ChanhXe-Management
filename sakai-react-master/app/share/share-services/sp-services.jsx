@@ -27,7 +27,8 @@ const spServices = {
       dang_van_chuyen: 'Đang vận chuyển',
       giao_thanh_cong: 'Giao thành công',
       giao_that_bai: 'Giao thất bại',
-      bao_tri: 'Bảo Trì'
+      bao_tri: 'Bảo Trì',
+      tam_ngung: 'Tạm Ngưng'
       // Bạn tự thêm các trạng thái khác vào đây
     };
     return trangThaiMap[trangThai] || trangThai;
@@ -164,7 +165,7 @@ const spServices = {
           grid: {
             color: 'rgba(100, 99, 99, 0.98)'
           },
-          
+
           stepSize: 50000 // Set the step size for the y-axis
         }
       }
