@@ -35,21 +35,19 @@ const ThongKeChung = () => {
   const [datasetBenXeOptions, setDatasetBenXeOptions] = useState([]);
   const [selectedStartDate, setSelectedStartDate] = useState(null);
   const [selectedEndDate, setSelectedEndDate] = useState(null);
+  const [chartType, setChartType] = useState('line');
 
   const axiosInstance = useAxios();
   const benXeService = BenXeService(axiosInstance);
   const donHangSevices = DonHangService(axiosInstance);
   const [theme, setTheme] = useState('light');
   const toast = useRef(null);
+  const { getColorTrangThai, formatLoaiHangHoa, getColorChartTrangThai } = spServices;
 
   useEffect(() => {
     fetchBenXe();
     fetchDonHang();
   }, []);
-
-  useEffect(() => {
-    setLineOptions(spServices.chartThemeMoney());
-  }, [theme]);
 
   const fetchBenXe = async () => {
     try {
@@ -76,14 +74,8 @@ const ThongKeChung = () => {
     }
   };
 
-  const formatCurrency = (value: number) => {
-    return value?.toLocaleString('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    });
-  };
-
   const updateChartDataDonHang = () => {
+    setLineOptions(spServices.chartTheme('', ''));
     const dateMap = new Map();
 
     // Filter donHang to include only items with trang_thai set to 'giao_thanh_cong'
@@ -91,52 +83,136 @@ const ThongKeChung = () => {
 
     // Apply date filters if selected
     if (selectedStartDate) {
-      filteredDonHang = filteredDonHang.filter(item => new Date(item.ngay_cap_nhat) >= selectedStartDate);
+      filteredDonHang = filteredDonHang.filter(item => new Date(item.ngay_tao) >= selectedStartDate);
     }
     if (selectedEndDate) {
-      filteredDonHang = filteredDonHang.filter(item => new Date(item.ngay_cap_nhat) <= selectedEndDate);
+      filteredDonHang = filteredDonHang.filter(item => new Date(item.ngay_tao) <= selectedEndDate);
     }
 
-    filteredDonHang.forEach(item => {
-      const date = new Date(item.ngay_cap_nhat);
-      const day = String(date.getDate()).padStart(2, '0');
-      const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-      const year = date.getFullYear();
-      const formattedDate = `${day}-${month}-${year}`;
+    if (selectedDataset === 'don_hang_nhan') {
+      // Group items by ngay_tao and loai_hang_hoa
+      filteredDonHang.forEach(item => {
+        const date = new Date(item.ngay_tao);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+        const year = date.getFullYear();
+        const formattedDate = `${day}-${month}-${year}`;
+        const loaiHangHoa = formatLoaiHangHoa(item.loai_hang_hoa); 
 
-      if (!dateMap.has(formattedDate)) {
-        dateMap.set(formattedDate, 0);
-      }
-
-      const currentValue = dateMap.get(formattedDate);
-      let newValue = 0;
-
-      if (selectedDataset === 'tong_doang_thu') {
-        newValue = (parseFloat(item.cuoc_phi) || 0) + (parseFloat(item.phi_bao_hiem) || 0) + (parseFloat(item.phu_phi) || 0);
-      } else {
-        newValue = parseFloat(item[selectedDataset]) || 0; // Ensure the value is a number
-      }
-
-      dateMap.set(formattedDate, currentValue + newValue);
-    });
-
-    // Convert the map to arrays for labels and data
-    const labels = Array.from(dateMap.keys());
-    const dataset1 = Array.from(dateMap.values());
-
-    setLineData({
-      labels,
-      datasets: [
-        {
-          label: selectedDatasetLabel,
-          data: dataset1,
-          fill: false,
-          backgroundColor: '#2f4860',
-          borderColor: '#2f4860',
-          tension: 0.4
+        if (!dateMap.has(formattedDate)) {
+          dateMap.set(formattedDate, new Map());
         }
-      ]
-    });
+
+        const loaiHangHoaMap = dateMap.get(formattedDate);
+        if (!loaiHangHoaMap.has(loaiHangHoa)) {
+          loaiHangHoaMap.set(loaiHangHoa, 0);
+        }
+        loaiHangHoaMap.set(loaiHangHoa, loaiHangHoaMap.get(loaiHangHoa) + 1);
+      });
+
+      // Convert the map to arrays for labels and data
+      const labels = Array.from(dateMap.keys());
+      const datasets = [];
+
+      const loaiHangHoaSet = new Set();
+      dateMap.forEach(loaiHangHoaMap => {
+        loaiHangHoaMap.forEach((_, loaiHangHoa) => {
+          loaiHangHoaSet.add(loaiHangHoa);
+        });
+      });
+
+      loaiHangHoaSet.forEach(loaiHangHoa => {
+        const data = labels.map(label => {
+          const loaiHangHoaMap = dateMap.get(label);
+          return loaiHangHoaMap.has(loaiHangHoa) ? loaiHangHoaMap.get(loaiHangHoa) : 0;
+        });
+
+        const { text, background } = getColorChartTrangThai(loaiHangHoa);
+
+        datasets.push({
+          label: loaiHangHoa,
+          data,
+          backgroundColor: background,
+          borderColor: text,
+        });
+      });
+
+      setLineData({
+        labels,
+        datasets
+      });
+
+      setLineOptions({
+        ...lineOptions,
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                return context.dataset.label + ': ' + '' + context.raw + '';
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            stacked: true,
+            grid: {
+              color: 'rgba(100, 99, 99, 0.98)'
+            }
+          },
+          y: {
+            stacked: true,
+            grid: {
+              color: 'rgba(100, 99, 99, 0.98)'
+            }
+          }
+        }
+      });
+      setChartType('bar');
+    } else {
+      filteredDonHang.forEach(item => {
+        const date = new Date(item.ngay_tao);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+        const year = date.getFullYear();
+        const formattedDate = `${day}-${month}-${year}`;
+
+        if (!dateMap.has(formattedDate)) {
+          dateMap.set(formattedDate, 0);
+        }
+
+        const currentValue = dateMap.get(formattedDate);
+        let newValue = 0;
+
+        if (selectedDataset === 'tong_doang_thu') {
+          newValue = (parseFloat(item.cuoc_phi) || 0) + (parseFloat(item.phi_bao_hiem) || 0) + (parseFloat(item.phu_phi) || 0);
+        } else {
+          newValue = parseFloat(item[selectedDataset]) || 0; // Ensure the value is a number
+        }
+
+        dateMap.set(formattedDate, currentValue + newValue);
+      });
+
+      // Convert the map to arrays for labels and data
+      const labels = Array.from(dateMap.keys());
+      const dataset1 = Array.from(dateMap.values());
+
+      setLineData({
+        labels,
+        datasets: [
+          {
+            label: selectedDatasetLabel,
+            data: dataset1,
+            fill: false,
+            backgroundColor: '#2f4860',
+            borderColor: '#2f4860',
+            tension: 0.4
+          }
+        ]
+      });
+      setLineOptions(spServices.chartTheme('', ' VND'));
+      setChartType('line');
+    }
   };
 
   const toggleTheme = () => {
@@ -147,17 +223,6 @@ const ThongKeChung = () => {
     const selectedOption = options.find(option => option.value === e.value);
     setDataset(e.value);
     setLabel(selectedOption.label);
-
-    // Set prefix and suffix based on selected dataset
-    let prefix = '';
-    let suffix = ' VND';
-    if (e.value === 'cuoc_phi') {
-      prefix = '$';
-    } else if (e.value === 'gia_tri_hang') {
-      suffix = ' VND';
-    }
-
-    setLineOptions(spServices.chartThemeMoney(prefix, suffix));
   };
 
   const handleStartDateChange = (e) => {
@@ -174,8 +239,9 @@ const ThongKeChung = () => {
 
   const datasetOptions = [
     { label: 'Tổng doang thu', value: 'tong_doang_thu' },
-    { label: 'Cước phí thu được', value: 'cuoc_phi' },
-    { label: 'Tổng giá trị hàng đã nhận', value: 'gia_tri_hang' },
+    // { label: 'Cước phí thu được', value: 'cuoc_phi' },
+    // { label: 'Tổng giá trị hàng đã nhận', value: 'gia_tri_hang' },
+    { label: 'Các đơn hàng đã nhận', value: 'don_hang_nhan'},
     // { label: 'Test', value: 'id' }
   ];
 
@@ -213,7 +279,7 @@ const ThongKeChung = () => {
                 placeholder="Chọn thời gian cuối"/>
               <Button label="Thống kê" style={{ marginLeft: '5px' }} className="p-button-success" onClick={handleThongKe}/>
             </div>
-            <Chart type="line" data={lineData} options={lineOptions} />
+            <Chart type={chartType} data={lineData} options={lineOptions} />
           </div>
         </div>
       </div>

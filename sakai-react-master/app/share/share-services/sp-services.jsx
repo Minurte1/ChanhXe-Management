@@ -111,61 +111,36 @@ const spServices = {
     return colorMap[trangThai] || { text: 'gray', background: 'rgba(128,128,128,0.2)' }; // Mặc định nếu không có
   },
 
-  chartThemeMoney: (prefix = '', suffix = ' VND') => {
-    return {
-      plugins: {
-        legend: {
-          labels: {
-            color: '#000000'
-          }
-        },
-        tooltip: {
-          callbacks: {
-            label: function (context) {
-              return context.dataset.label + ': ' + prefix + context.raw + suffix;
-            }
-          }
-        }
-      },
-      scales: {
-        x: {
-          ticks: {
-            color: '#000000'
-          },
-          grid: {
-            color: 'rgba(15, 85, 224, 0.98)'
-          }
-        },
-        y: {
-          ticks: {
-            color: '#000000',
-            callback: function (value) {
-              return prefix + value + suffix;
-            }
-          },
-          grid: {
-            color: 'rgba(0, 163, 0, 0.3)'
-          },
-          min: 0, // Set the minimum value for the y-axis
-          // max: 10000, // Set the maximum value for the y-axis
-          stepSize: 10000 // Set the step size for the y-axis
-        }
-      }
+  getColorChartTrangThai: (trangThai) => {
+    const colorMap = {
+      'Đang Vận Chuyển': { text: 'orange', background: 'rgba(10, 168, 4, 0.7)' },
+      'Hoạt Động': { text: 'green', background: 'rgba(138, 185, 9, 0.58)' },
+      'Ngưng Hoạt Động': { text: 'red', background: 'rgba(189, 4, 4, 0.81)' },
+      'Chờ xuất bến': { text: 'blue', background: 'rgba(3, 6, 155, 0.67)' },
+      'Giao thành công': { text: 'green', background: 'rgb(4, 82, 4)' },
+      'Giao thất bại': { text: 'red', background: 'rgba(255,0,0,0.2)' },
+      'Đã cập bến': { text: 'green', background: 'rgb(180, 72, 0)' },
+      'Hàng dễ vỡ': { text: 'purple', background: 'rgba(73, 1, 63, 0.84)' },
+      'Hàng khô': { text: 'brown', background: 'rgba(99, 3, 3, 0.86)' },
+      'Hàng đông lạnh': { text: 'cyan', background: 'rgba(15, 5, 156, 0.7)' },
+      'Hàng nguy hiểm': { text: 'darkred', background: 'rgb(255, 9, 9)' },
+      'Hàng thông thường': { text: 'gray', background: 'rgba(48, 38, 38, 0.83)' }
     };
+    return colorMap[trangThai] || { text: 'gray', background: 'rgba(27, 27, 27, 0.8)' }; // Mặc định nếu không có
   },
 
-  chartTheme: (prefix = '', suffix = '') => {
+  chartTheme: (prefix = '', suffix = '', valueFormat = (value) => value) => {
     return {
       plugins: {
         legend: {
           labels: {
-            color: '#ffffff' // Set to white for better visibility
+            color: '#000000' // Set to black for better visibility
           }
         },
         tooltip: {
           callbacks: {
             label: function (context) {
-              return context.dataset.label + ': ' + prefix + context.raw + suffix;
+              return context.dataset.label + ': ' + prefix + valueFormat(context.raw) + suffix;
             }
           }
         }
@@ -173,24 +148,22 @@ const spServices = {
       scales: {
         x: {
           ticks: {
-            color: '#ffffff' // Set to white for better visibility
+            color: '#000000' // Set to black for better visibility
           },
           grid: {
-            color: 'rgba(15, 85, 224, 0.98)'
+            color: 'rgba(100, 99, 99, 0.98)'
           }
         },
         y: {
           ticks: {
-            color: '#ffffff', // Set to white for better visibility
+            color: '#000000', // Set to black for better visibility
             callback: function (value) {
-              return prefix + value + suffix;
+              return prefix + valueFormat(value) + suffix;
             }
           },
           grid: {
-            color: 'rgba(0, 163, 0, 0.3)'
+            color: 'rgba(100, 99, 99, 0.98)'
           },
-          min: 1000, // Set the minimum value for the y-axis
-          max: 100000, // Set the maximum value for the y-axis
           stepSize: 50000 // Set the step size for the y-axis
         }
       }
