@@ -15,10 +15,12 @@ const {
   sendOtp,
   checkOtp,
   registerUser,
+  getAllUnassignedUsers,
 } = require("../controllers/nguoiDungController");
 const { getMenuUser } = require("../controllers/menuUserController");
 const { checkUserJWT } = require("../middleware/JWTaction");
 router.get("/users", getAllUsers);
+router.get("/user/chua-phan-cong", checkUserJWT, getAllUnassignedUsers);
 router.get("/users/:id", getUserById);
 router.post("/users", checkUserJWT, createUser);
 

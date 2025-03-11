@@ -12,6 +12,7 @@ import PhanCongTaiXeDialog from '../../../modal/PhanCongTaiXeDialog';
 import phanCongTaiXeService from '../../../services/phanCongTaiXeServices';
 import spServices from '@/app/share/share-services/sp-services';
 import { useAxios } from '@/app/authentication/useAxiosClient';
+import UserService from '@/app/services/userAccountService';
 
 const DanhSachTaiXe = () => {
   const [taiXeList, setTaiXeList] = useState([]);
@@ -25,6 +26,7 @@ const DanhSachTaiXe = () => {
   });
   const axiosInstance = useAxios();
   const TaiXeServices = taiXeService(axiosInstance);
+  const userService = UserService(axiosInstance);
   const PhanCongTaiXeService = phanCongTaiXeService(axiosInstance);
   const [assignData, setAssignData] = useState({
     id_ben: '',
@@ -117,6 +119,7 @@ const DanhSachTaiXe = () => {
     const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = formData;
     try {
       if (isNew) {
+        filteredData.trang_thai = 'hoat_dong';
         await TaiXeServices.createDriver(filteredData);
       } else {
         await TaiXeServices.updateDriver(formData.tai_xe_id, filteredData);
@@ -193,7 +196,11 @@ const DanhSachTaiXe = () => {
             <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm} />
             <InputText placeholder="Tìm kiếm tên tài xế" value={searchTerm} onChange={onSearchChange} style={{ marginLeft: '8px', width: '30%' }} />
           </div>
-          <DataTable value={filteredTaiXe} paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
+          <DataTable
+            value={filteredTaiXe}
+            paginator
+            rows={10}
+            rowsPerPageOptions={[5, 10, 25]}
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
             currentPageReportTemplate="Hiển thị {first} đến {last} của {totalRecords} tài xế"
           >
@@ -230,8 +237,14 @@ const DanhSachTaiXe = () => {
               header="Hành Động"
               body={(rowData) => (
                 <>
-                  <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editTaiXe(rowData)} />
-                  <Button icon="pi pi-trash" style={{ marginLeft: '5px' }} className="p-button-rounded p-button-warning" onClick={() => confirmDeleteTaiXe(rowData.tai_xe_id)} />
+                  <Button title="Chỉnh sửa thông tin tài xế" icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editTaiXe(rowData)} />
+                  <Button
+                    title="Xóa tài xế, nếu tài xế có dữ liệu lớn thì trạng thái sẽ tắt ngưng hoạt động"
+                    icon="pi pi-trash"
+                    style={{ marginLeft: '5px' }}
+                    className="p-button-rounded p-button-warning"
+                    onClick={() => confirmDeleteTaiXe(rowData.tai_xe_id)}
+                  />
                 </>
               )}
             />

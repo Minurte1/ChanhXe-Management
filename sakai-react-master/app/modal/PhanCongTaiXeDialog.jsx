@@ -11,27 +11,27 @@ import { useAxios } from '../authentication/useAxiosClient';
 import taiXeService from '../services/taiXeServices';
 import spServices from '../share/share-services/sp-services';
 import { validateForm } from '../(main)/utilities/validation';
-
+import phanCongNguoiDungService from '../services/phanCongNguoiDungServices';
 const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, onInputChange, onSave }) => {
   const [listBenXe, setListBenXe] = useState([]);
   const [listTaiXe, setListTaiXe] = useState([]);
-  const [listPhanCongTaiXe, setListPhanCongTaiXe] = useState([]);
-  const [selectedBenXe, setSelectedBenXe] = useState([]);
-  const [filters, setFilters] = useState({});
+
   const [errors, setErrors] = useState({});
   const toast = useRef(null);
 
   const axiosInstance = useAxios();
   const benXeService = BenXeService(axiosInstance);
-  const TaiXeServices = taiXeService(axiosInstance);
+
   const phanCongTaiXeServices = phanCongTaiXeService(axiosInstance);
+  const PhanCongNguoiDungService = phanCongNguoiDungService(axiosInstance);
 
   useEffect(() => {
     if (visible) {
       fetchBenXe();
-      fetchPhanCongTaiXe();
+
+      fetchAllUnassignedUsers();
     }
-  }, [visible, filters]);
+  }, [visible]);
 
   useEffect(() => {
     if (!visible) {
@@ -50,27 +50,6 @@ const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formDat
     }
   };
 
-  const fetchTaiXe = async () => {
-    try {
-      const response = await TaiXeServices.getAllDrivers({ trang_thai_tai_xe: 'hoat_dong' });
-      setListTaiXe(Array.isArray(response.DT) ? response.DT : []);
-    } catch (error) {
-      console.error('Lỗi khi tải danh sách tài xe', error);
-      showError('Lỗi khi tải danh sách tài xe');
-    }
-  };
-
-  const fetchPhanCongTaiXe = async () => {
-    try {
-      const response = await phanCongTaiXeServices.getAllDriverAssignments();
-      console.log('response phan cong tai xe', response);
-      setListPhanCongTaiXe(Array.isArray(response.DT) ? response.DT : []);
-    } catch (error) {
-      console.error('Lỗi khi tải danh sách phân công tai xe', error);
-      showError('Lỗi khi tải danh sách phân công tai xe');
-    }
-  };
-
   const showError = (message) => {
     toast.current.show({
       severity: 'error',
@@ -80,36 +59,21 @@ const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formDat
     });
   };
 
-  const showSuccess = (message) => {
-    toast.current.show({
-      severity: 'success',
-      summary: 'Thành công',
-      detail: message,
-      life: 3000
-    });
-  };
-
-  // Xử lý thay đổi bộ lọc
-  const onFilterChange = (e, field) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [field]: e.value
-    }));
-  };
-
-  // Xử lý thay đổi đầu vào
-  const handleInputChange = async (e, field) => {
-    const value = e.value;
-    if (field === 'id_ben') {
-      const response = await TaiXeServices.getAllDrivers({ trang_thai_tai_xe: 'hoat_dong' });
-      const updatedListTaiXe = Array.isArray(response.DT) ? response.DT : [];
-      const assignedDriver = listPhanCongTaiXe.filter((assignment) => assignment.id_ben === value).map((assignment) => assignment.tai_xe_id);
-      console.log('listPhanCongTaiXe', listPhanCongTaiXe);
-      const filteredTaiXeOptions = updatedListTaiXe.filter((driver) => !assignedDriver.includes(driver.tai_xe_id));
-      setSelectedBenXe(value);
-      setListTaiXe(filteredTaiXeOptions);
+  const fetchAllUnassignedUsers = async () => {
+    try {
+      const params = { vai_tro: ['tai_xe', 'tai_xe_phu'] };
+      const response = await PhanCongNguoiDungService.getAllUnassignedUsers(params);
+      setListTaiXe(response ? response.DT : []);
+    } catch (error) {
+      console.error('Lỗi khi tải danh sách người dùng', error);
+      showError('Lỗi khi tải danh sách người dùng');
     }
-    onInputChange(e, field);
+  };
+
+  // Sử dụng onInputChange từ props thay vì định nghĩa lại
+  const handleInputChange = (e, field) => {
+    const value = e.value; // Giá trị từ Dropdown
+    onInputChange({ target: { name: field, value } }, field); // Gọi prop onInputChange
   };
 
   const handleSave = () => {

@@ -14,9 +14,7 @@ import { validateForm } from '../(main)/utilities/validation';
 const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, onInputChange, onSave }) => {
   const [listBenXe, setListBenXe] = useState([]);
   const [listNguoiDung, setListNguoiDung] = useState([]);
-  const [selectedBenXe, setSelectedBenXe] = useState([]);
   const [listPhanCongNguoiDung, setListPhanCongNguoiDung] = useState([]);
-  const [filters, setFilters] = useState({});
   const [errors, setErrors] = useState({});
   const toast = useRef(null);
 
@@ -29,9 +27,9 @@ const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, for
     if (visible) {
       fetchPhanCongNguoiDung();
       fetchBenXe();
-      fetchUser();
+      fetchAllUnassignedUsers();
     }
-  }, [visible, filters]);
+  }, [visible]);
 
   useEffect(() => {
     if (!visible) {
@@ -50,21 +48,17 @@ const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, for
     }
   };
 
-  const fetchUser = async () => {
+  const fetchAllUnassignedUsers = async () => {
     try {
-      const response = await userService.getAllUsers();
-      const allUsers = Array.isArray(response.DT) ? response.DT : [];
-      const filters = { vai_tro: ['tai_xe', 'tai_xe_phu'] };
-
-      const filteredUsers = allUsers.filter((user) => !filters.vai_tro.includes(user.vai_tro));
-
-      setListNguoiDung(filteredUsers);
+      const params = { vai_tro: ['nhan_vien_kho', 'nhan_vien_dieu_phoi', 'nhan_vien_giao_dich'] };
+      const response = await PhanCongNguoiDungService.getAllUnassignedUsers(params);
+      setListNguoiDung(response ? response.DT : []);
     } catch (error) {
       console.error('Lỗi khi tải danh sách người dùng', error);
       showError('Lỗi khi tải danh sách người dùng');
     }
   };
-  console.log('listNguoiDung', listNguoiDung);
+
   const fetchPhanCongNguoiDung = async () => {
     try {
       const response = await PhanCongNguoiDungService.getAllUserAssignments();
@@ -85,37 +79,10 @@ const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, for
     });
   };
 
-  const showSuccess = (message) => {
-    toast.current.show({
-      severity: 'success',
-      summary: 'Thành công',
-      detail: message,
-      life: 3000
-    });
-  };
-
-  // Xử lý thay đổi bộ lọc
-  const onFilterChange = (e, field) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [field]: e.value
-    }));
-  };
-
-  // Xử lý thay đổi đầu vào
-  const handleInputChange = async (e, field) => {
-    const value = e.value;
-    if (field === 'id_ben') {
-      const filters = { vai_tro: ['tai_xe', 'tai_xe_phu'], trang_thai: 'hoat_dong' };
-
-      const filteredUsers = listNguoiDung.filter((user) => !filters.vai_tro.includes(user.vai_tro) && user.trang_thai === filters.trang_thai);
-
-      const assignedUser = listPhanCongNguoiDung.filter((assignment) => assignment.id_ben === value).map((assignment) => assignment.id_nguoi_dung);
-      const filteredNguoiDungOptions = filteredUsers.filter((user) => !assignedUser.includes(user.id));
-      setSelectedBenXe(value);
-      setListNguoiDung(filteredNguoiDungOptions);
-    }
-    onInputChange(e, field);
+  // Sử dụng onInputChange từ props thay vì định nghĩa lại
+  const handleInputChange = (e, field) => {
+    const value = e.value; // Giá trị từ Dropdown
+    onInputChange({ target: { name: field, value } }, field); // Gọi prop onInputChange
   };
 
   const handleSave = () => {
@@ -129,7 +96,6 @@ const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, for
     }
   };
 
-  // Footer của modal
   const dialogFooter = (
     <div>
       <Button label="Hủy" icon="pi pi-times" className="p-button-text" onClick={onHide} />
@@ -138,7 +104,7 @@ const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, for
   );
 
   return (
-    <Dialog header={`Phân công bến xe cho người dùng`} visible={visible} style={{ width: '40vw', maxWidth: '600px' }} footer={dialogFooter} onHide={onHide} className="p-dialog-custom">
+    <Dialog header="Phân công bến xe cho người dùng" visible={visible} style={{ width: '40vw', maxWidth: '600px' }} footer={dialogFooter} onHide={onHide} className="p-dialog-custom">
       <Toast ref={toast} />
 
       <div className="p-mb-4">
@@ -169,7 +135,7 @@ const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, for
             </label>
             <Dropdown
               id="id_nguoi_dung"
-              value={formData.id_nguoi_dung}
+              value={formData.id_nguoi_dung} // Sử dụng formData thay vì formPhanCong
               options={listNguoiDung}
               optionLabel="ho_ten"
               optionValue="id"
@@ -179,7 +145,7 @@ const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, for
               filterBy="ho_ten"
               className="p-inputtext-sm"
               style={{ width: '100%' }}
-              disabled={!formData.id_ben}
+              // disabled={!formData.id_ben}
             />
             {errors.id_nguoi_dung && <small className="p-error">{errors.id_nguoi_dung}</small>}
           </div>
