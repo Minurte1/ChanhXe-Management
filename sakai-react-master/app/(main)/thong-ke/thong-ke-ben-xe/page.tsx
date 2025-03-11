@@ -1,15 +1,9 @@
 'use client';
 import { Button } from 'primereact/button';
 import { Chart } from 'primereact/chart';
-import { Column } from 'primereact/column';
-import { DataTable } from 'primereact/datatable';
-import { Menu } from 'primereact/menu';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { ProductService } from '../../../../demo/service/ProductService';
-import { LayoutContext } from '../../../../layout/context/layoutcontext';
-import Link from 'next/link';
-import { Demo } from '@/types';
 import { ChartData, ChartOptions } from 'chart.js';
+import { Toast } from 'primereact/toast';
 import BenXeService from '../../../services/benXeServices';
 import { useAxios } from '@/app/authentication/useAxiosClient';
 import { Dropdown } from 'primereact/dropdown';
@@ -19,7 +13,6 @@ import { Calendar } from 'primereact/calendar';
 
 const ThongKeBenXe = () => {
   const [lineOptions, setLineOptions] = useState<ChartOptions>({});
-  const { layoutConfig } = useContext(LayoutContext);
 
   const [lineData, setLineData] = useState<ChartData>({
     labels: [],
@@ -74,146 +67,171 @@ const ThongKeBenXe = () => {
     }
   };
 
+  const showError = (message) => {
+    toast.current.show({
+      severity: 'error',
+      summary: 'Lỗi',
+      detail: message,
+      life: 3000
+    });
+  };
+
   const updateChartDataDonHang = () => {
-    setLineOptions(spServices.chartTheme('', ''));
-    console.log('selectedBenXeDataset', selectedBenXeDataset);
-    const dateMap = new Map();
 
-    // Filter donHang to include only items with trang_thai set to 'giao_thanh_cong'
-    let filteredDonHang = donHang.filter(item => item.id_ben_xe_nhan === selectedBenXeDataset );
-    console.log('filteredDonHang', filteredDonHang);
+    if (!selectedBenXeDataset || !selectedDataset || !selectedStartDate || !selectedEndDate) {
+      showError('Chọn đầy đủ các trường thống kê');
+    } else {
+      setLineOptions(spServices.chartTheme('', ''));
+      const dateMap = new Map();
 
-    // Apply date filters if selected
-    if (selectedStartDate) {
-      filteredDonHang = filteredDonHang.filter(item => new Date(item.ngay_tao) >= selectedStartDate);
-    }
-    if (selectedEndDate) {
-      filteredDonHang = filteredDonHang.filter(item => new Date(item.ngay_tao) <= selectedEndDate);
-    }
+      let filteredDonHang = donHang;
 
-    if (selectedDataset === 'don_hang_nhan') {
-      // Group items by ngay_tao and loai_hang_hoa
-      filteredDonHang.forEach(item => {
-        const date = new Date(item.ngay_tao);
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-        const year = date.getFullYear();
-        const formattedDate = `${day}-${month}-${year}`;
-        const loaiHangHoa = formatLoaiHangHoa(item.loai_hang_hoa);
+      filteredDonHang.sort((a, b) => new Date(a.ngay_tao) - new Date(b.ngay_tao));
 
-        if (!dateMap.has(formattedDate)) {
-          dateMap.set(formattedDate, new Map());
-        }
+      if (selectedStartDate) {
+        filteredDonHang = filteredDonHang.filter(item => new Date(item.ngay_tao) >= selectedStartDate);
+      }
+      if (selectedEndDate) {
+        filteredDonHang = filteredDonHang.filter(item => new Date(item.ngay_tao) <= selectedEndDate);
+      }
 
-        const loaiHangHoaMap = dateMap.get(formattedDate);
-        if (!loaiHangHoaMap.has(loaiHangHoa)) {
-          loaiHangHoaMap.set(loaiHangHoa, 0);
-        }
-        loaiHangHoaMap.set(loaiHangHoa, loaiHangHoaMap.get(loaiHangHoa) + 1);
-      });
+      if (selectedDataset === 'don_hang_nhan' || selectedDataset === 'don_hang_gui') {
 
-      // Convert the map to arrays for labels and data
-      const labels = Array.from(dateMap.keys());
-      const datasets = [];
+        if (selectedDataset === 'don_hang_nhan') {
+          filteredDonHang = filteredDonHang.filter(item => item.id_ben_xe_nhan === selectedBenXeDataset);
+        };
+        if (selectedDataset === 'don_hang_gui') {
+          filteredDonHang = filteredDonHang.filter(item => item.id_ben_xe_gui === selectedBenXeDataset);
+        };
 
-      const loaiHangHoaSet = new Set();
-      dateMap.forEach(loaiHangHoaMap => {
-        loaiHangHoaMap.forEach((_, loaiHangHoa) => {
-          loaiHangHoaSet.add(loaiHangHoa);
-        });
-      });
+        filteredDonHang.forEach(item => {
+          const date = new Date(item.ngay_tao);
+          const day = String(date.getDate()).padStart(2, '0');
+          const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+          const year = date.getFullYear();
+          const formattedDate = `${day}-${month}-${year}`;
+          const loaiHangHoa = formatLoaiHangHoa(item.loai_hang_hoa);
 
-      loaiHangHoaSet.forEach(loaiHangHoa => {
-        const data = labels.map(label => {
-          const loaiHangHoaMap = dateMap.get(label);
-          return loaiHangHoaMap.has(loaiHangHoa) ? loaiHangHoaMap.get(loaiHangHoa) : 0;
+          if (!dateMap.has(formattedDate)) {
+            dateMap.set(formattedDate, new Map());
+          }
+
+          const loaiHangHoaMap = dateMap.get(formattedDate);
+          if (!loaiHangHoaMap.has(loaiHangHoa)) {
+            loaiHangHoaMap.set(loaiHangHoa, 0);
+          }
+          loaiHangHoaMap.set(loaiHangHoa, loaiHangHoaMap.get(loaiHangHoa) + 1);
         });
 
-        const { text, background } = getColorChartTrangThai(loaiHangHoa);
+        // Convert the map to arrays for labels and data
+        const labels = Array.from(dateMap.keys());
+        const datasets = [];
 
-        datasets.push({
-          label: loaiHangHoa,
-          data,
-          backgroundColor: background,
-          borderColor: text,
+        const loaiHangHoaSet = new Set();
+        dateMap.forEach(loaiHangHoaMap => {
+          loaiHangHoaMap.forEach((_, loaiHangHoa) => {
+            loaiHangHoaSet.add(loaiHangHoa);
+          });
         });
-      });
 
-      setLineData({
-        labels,
-        datasets
-      });
+        loaiHangHoaSet.forEach(loaiHangHoa => {
+          const data = labels.map(label => {
+            const loaiHangHoaMap = dateMap.get(label);
+            return loaiHangHoaMap.has(loaiHangHoa) ? loaiHangHoaMap.get(loaiHangHoa) : 0;
+          });
 
-      setLineOptions({
-        ...lineOptions,
-        plugins: {
-          tooltip: {
-            callbacks: {
-              label: function (context) {
-                return context.dataset.label + ': ' + '' + context.raw + '';
+          const { text, background } = getColorChartTrangThai(loaiHangHoa);
+
+          datasets.push({
+            label: loaiHangHoa,
+            data,
+            backgroundColor: background,
+            borderColor: text,
+          });
+        });
+
+        setLineData({
+          labels,
+          datasets
+        });
+
+        setLineOptions({
+          ...lineOptions,
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function (context) {
+                  return context.dataset.label + ': ' + '' + context.raw + '';
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              stacked: true,
+              grid: {
+                color: 'rgba(100, 99, 99, 0.98)'
+              }
+            },
+            y: {
+              stacked: true,
+              grid: {
+                color: 'rgba(100, 99, 99, 0.98)'
+              },
+              ticks: {
+                callback: function (value) {
+                  return Number(value).toFixed(0); // Ensure no decimal values
+                }
               }
             }
           }
-        },
-        scales: {
-          x: {
-            stacked: true,
-            grid: {
-              color: 'rgba(100, 99, 99, 0.98)'
-            }
-          },
-          y: {
-            stacked: true,
-            grid: {
-              color: 'rgba(100, 99, 99, 0.98)'
-            }
+        });
+        setChartType('bar');
+      } else {
+        filteredDonHang = filteredDonHang.filter(item => item.id_ben_xe_gui === selectedBenXeDataset);
+        filteredDonHang.forEach(item => {
+          const date = new Date(item.ngay_tao);
+          const day = String(date.getDate()).padStart(2, '0');
+          const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+          const year = date.getFullYear();
+          const formattedDate = `${day}-${month}-${year}`;
+
+          if (!dateMap.has(formattedDate)) {
+            dateMap.set(formattedDate, 0);
           }
-        }
-      });
-      setChartType('bar');
-    } else {
-      filteredDonHang.forEach(item => {
-        const date = new Date(item.ngay_tao);
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-        const year = date.getFullYear();
-        const formattedDate = `${day}-${month}-${year}`;
 
-        if (!dateMap.has(formattedDate)) {
-          dateMap.set(formattedDate, 0);
-        }
+          const currentValue = dateMap.get(formattedDate);
+          let newValue = 0;
 
-        const currentValue = dateMap.get(formattedDate);
-        let newValue = 0;
-
-        if (selectedDataset === 'tong_doang_thu') {
-          newValue = (parseFloat(item.cuoc_phi) || 0) + (parseFloat(item.phi_bao_hiem) || 0) + (parseFloat(item.phu_phi) || 0);
-        } else {
-          newValue = parseFloat(item[selectedDataset]) || 0; // Ensure the value is a number
-        }
-
-        dateMap.set(formattedDate, currentValue + newValue);
-      });
-
-      // Convert the map to arrays for labels and data
-      const labels = Array.from(dateMap.keys());
-      const dataset1 = Array.from(dateMap.values());
-
-      setLineData({
-        labels,
-        datasets: [
-          {
-            label: selectedDatasetLabel,
-            data: dataset1,
-            fill: false,
-            backgroundColor: '#2f4860',
-            borderColor: '#2f4860',
-            tension: 0.4
+          if (selectedDataset === 'tong_doang_thu') {
+            newValue = (parseFloat(item.cuoc_phi) || 0) + (parseFloat(item.phi_bao_hiem) || 0) + (parseFloat(item.phu_phi) || 0);
+          } else {
+            newValue = parseFloat(item[selectedDataset]) || 0; // Ensure the value is a number
           }
-        ]
-      });
-      setLineOptions(spServices.chartTheme('', '', (value) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)));
-      setChartType('line');
+
+          dateMap.set(formattedDate, currentValue + newValue);
+        });
+
+        // Convert the map to arrays for labels and data
+        const labels = Array.from(dateMap.keys());
+        const dataset1 = Array.from(dateMap.values());
+
+        setLineData({
+          labels,
+          datasets: [
+            {
+              label: selectedDatasetLabel,
+              data: dataset1,
+              fill: false,
+              backgroundColor: '#2f4860',
+              borderColor: '#2f4860',
+              tension: 0.4
+            }
+          ]
+        });
+        setLineOptions(spServices.chartTheme('', '', (value) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)));
+        setChartType('line');
+      }
     }
   };
 
@@ -229,6 +247,7 @@ const ThongKeBenXe = () => {
 
   const handleStartDateChange = (e) => {
     setSelectedStartDate(e.value);
+    setSelectedEndDate(null);
   };
 
   const handleEndDateChange = (e) => {
@@ -241,12 +260,14 @@ const ThongKeBenXe = () => {
 
   const datasetOptions = [
     { label: 'Tổng doang thu', value: 'tong_doang_thu' },
-    { label: 'Các đơn hàng đã nhận', value: 'don_hang_nhan' },
+    { label: 'Các đơn hàng bến nhận', value: 'don_hang_nhan' },
+    { label: 'Các đơn hàng được gửi từ bến', value: 'don_hang_gui' },
     // { label: 'Test', value: 'id' }
   ];
 
   return (
     <div>
+      <Toast ref={toast} />
       <div>
         <div className="card">
           <div style={{ width: '100%' }}>
@@ -264,11 +285,13 @@ const ThongKeBenXe = () => {
                 options={datasetOptions}
                 disabled={!selectedBenXeDataset}
                 onChange={(e) => handleDatasetChange(e, datasetOptions, setSelectedDataset, setSelectedDatasetLabel)}
-                style={{ marginLeft: '5px' }}
-                placeholder="Chọn một trường thống kê"
+                style={{ marginLeft: '10px' }}
+                placeholder="Chọn một điều kiện thống kê"
               />
+            </div>
+            <div style={{ flex: 1,  marginTop: '15px' }}>
               <Calendar
-                id="thoi_gian_thong_ke_1"
+                id='thoi_gian_thong_ke_1'
                 value={selectedStartDate}
                 onChange={handleStartDateChange}
                 dateFormat="yy-mm-dd"
@@ -276,17 +299,19 @@ const ThongKeBenXe = () => {
                 style={{ marginLeft: '5px' }}
                 placeholder="Chọn thời gian bắt đầu" />
               <Calendar
-                id="thoi_gian_thong_ke_2"
+                id='thoi_gian_thong_ke_2'
                 value={selectedEndDate}
                 onChange={handleEndDateChange}
                 dateFormat="yy-mm-dd"
                 disabled={!selectedStartDate || !selectedBenXeDataset}
-                minDate={selectedStartDate}
-                style={{ marginLeft: '5px' }}
-                placeholder="Chọn thời gian cuối" />
-              <Button label="Thống kê" style={{ marginLeft: '5px' }} className="p-button-success" onClick={handleThongKe} />
+                minDate={selectedStartDate ? new Date(new Date(selectedStartDate).setDate(new Date(selectedStartDate).getDate() + 1)) : null}
+                style={{ marginLeft: '10px' }}
+                placeholder="Chọn thời gian kết thúc" />
+              <Button label="Thống kê" style={{ marginLeft: '10px' }} className="p-button-success" onClick={handleThongKe} />
             </div>
+            <div style={{ marginTop: '25px' }}>
             <Chart type={chartType} data={lineData} options={lineOptions} />
+            </div>
           </div>
         </div>
       </div>
