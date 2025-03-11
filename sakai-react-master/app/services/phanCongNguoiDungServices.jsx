@@ -20,7 +20,16 @@ const UserAssignmentService = (axiosInstance) => ({
       throw error;
     }
   },
-
+  getAllUnassignedUsers: async (params = {}) => {
+    console.log('params', params);
+    try {
+      const response = await axiosInstance.get(`${API_URL}/user/chua-phan-cong`, { params });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching user assignments:', error);
+      throw error;
+    }
+  },
   createUserAssignment: async (vehicleAssignmentData) => {
     try {
       const response = await axiosInstance.post(`${API_URL}/phan-cong-nguoi-dung`, vehicleAssignmentData);

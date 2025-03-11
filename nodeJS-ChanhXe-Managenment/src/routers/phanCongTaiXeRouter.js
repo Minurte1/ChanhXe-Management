@@ -2,15 +2,15 @@ const express = require("express");
 const router = express.Router();
 
 const {
-    getAllDriverAssignments,
-    getDriverAssignmentById,
-    createDriverAssignment,
-    updateDriverAssignment,
-    deleteDriverAssignment,
+  getAllDriverAssignments,
+  getDriverAssignmentById,
+  createDriverAssignment,
+  updateDriverAssignment,
+  deleteDriverAssignment,
 } = require("../controllers/phanCongTaiXeController");
 const {
-    checkUserJWT,
-    checkUserPermission,
+  checkUserJWT,
+  checkUserPermission,
 } = require("../middleware/JWTaction");
 
 router.get("/phan-cong-tai-xe", checkUserJWT, getAllDriverAssignments);

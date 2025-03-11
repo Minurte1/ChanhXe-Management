@@ -121,6 +121,75 @@ LEFT JOIN ben_xe bx2 ON pcd.id_ben = bx2.id
   }
 };
 
+// Danh sách người dùng chưa được phân công
+const getAllUnassignedUsers = async (req, res) => {
+  // #swagger.tags = ['Người dùng']
+  try {
+    const { id, ho_ten, so_dien_thoai, email, vai_tro, trang_thai } = req.query;
+
+    let query = `
+SELECT 
+    nd.*, 
+    tx.id AS tai_xe_id, tx.bang_lai, 
+    COALESCE(tx.trang_thai, nd.trang_thai) AS trang_thai
+FROM nguoi_dung nd
+LEFT JOIN tai_xe tx ON nd.id = tx.nguoi_dung_id
+LEFT JOIN phan_cong_dia_diem_tai_xe pctx ON tx.id = pctx.id_tai_xe
+LEFT JOIN phan_cong_dia_diem_nguoi_dung pcd ON nd.id = pcd.id_nguoi_dung
+WHERE pcd.id IS NULL AND pctx.id IS NULL
+    `;
+
+    let queryParams = [];
+
+    if (id) {
+      query += " AND nd.id = ?";
+      queryParams.push(id);
+    }
+    if (ho_ten) {
+      query += " AND nd.ho_ten LIKE ?";
+      queryParams.push(`%${ho_ten}%`);
+    }
+    if (so_dien_thoai) {
+      query += " AND nd.so_dien_thoai = ?";
+      queryParams.push(so_dien_thoai);
+    }
+    if (email) {
+      query += " AND nd.email LIKE ?";
+      queryParams.push(`%${email}%`);
+    }
+    if (vai_tro) {
+      const roles = Array.isArray(vai_tro)
+        ? vai_tro
+        : vai_tro.split(",").map((role) => role.trim());
+      if (roles.length > 0) {
+        query += " AND nd.vai_tro IN (" + roles.map(() => "?").join(",") + ")";
+        queryParams.push(...roles);
+      }
+    }
+    if (trang_thai) {
+      query += " AND COALESCE(tx.trang_thai, nd.trang_thai) = ?";
+      queryParams.push(trang_thai);
+    }
+
+    query += " ORDER BY nd.ngay_cap_nhat DESC";
+
+    const [rows] = await pool.query(query, queryParams);
+
+    return res.status(200).json({
+      EM: "Lấy danh sách người dùng chưa phân công thành công",
+      EC: 1,
+      DT: rows,
+    });
+  } catch (error) {
+    console.error("Error in getAllUnassignedUsers:", error);
+    return res.status(500).json({
+      EM: `Lỗi: ${error.message}`,
+      EC: -1,
+      DT: [],
+    });
+  }
+};
+
 // Lấy người dùng theo ID
 const getUserById = async (req, res) => {
   // #swagger.tags = ['Người dùng']
@@ -1030,4 +1099,5 @@ module.exports = {
   checkOtp,
   sendOtp,
   registerUser,
+  getAllUnassignedUsers,
 };

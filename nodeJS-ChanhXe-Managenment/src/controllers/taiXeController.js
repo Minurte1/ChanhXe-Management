@@ -341,15 +341,68 @@ const deleteDriver = async (req, res) => {
   // #swagger.tags = ['Tài xế']
   try {
     const { id } = req.params;
-    const [result] = await pool.query("DELETE FROM tai_xe WHERE id = ?", [id]);
-    if (result.affectedRows === 0) {
+
+    // Bắt đầu một transaction để đảm bảo tính toàn vẹn dữ liệu
+    const connection = await pool.getConnection();
+    await connection.beginTransaction();
+
+    try {
+      // Thử xóa tài xế
+      const [deleteResult] = await connection.query(
+        "DELETE FROM tai_xe WHERE id = ?",
+        [id]
+      );
+
+      if (deleteResult.affectedRows === 0) {
+        await connection.rollback();
+        connection.release();
+        return res
+          .status(404)
+          .json({ EM: "Không tìm thấy tài xế để xóa", EC: -1, DT: {} });
+      }
+
+      // Nếu xóa thành công, commit transaction
+      await connection.commit();
+      connection.release();
       return res
-        .status(404)
-        .json({ EM: "Không tìm thấy tài xế để xóa", EC: -1, DT: {} });
+        .status(200)
+        .json({ EM: "Xóa tài xế thành công", EC: 1, DT: {} });
+    } catch (deleteError) {
+      // Nếu lỗi do ràng buộc khóa ngoại (error code 1451 trong MySQL)
+      if (deleteError.errno === 1451) {
+        // Cập nhật trạng thái thành ngung_hoat_dong
+        const [updateResult] = await connection.query(
+          "UPDATE tai_xe SET trang_thai = 'ngung_hoat_dong' WHERE id = ?",
+          [id]
+        );
+
+        if (updateResult.affectedRows === 0) {
+          await connection.rollback();
+          connection.release();
+          return res
+            .status(404)
+            .json({ EM: "Không tìm thấy tài xế để cập nhật", EC: -1, DT: {} });
+        }
+
+        await connection.commit();
+        connection.release();
+        return res.status(200).json({
+          EM: "Tài xế đang được sử dụng, đã cập nhật trạng thái thành ngừng hoạt động",
+          EC: 1,
+          DT: {},
+        });
+      }
+
+      // Nếu là lỗi khác, throw lại để xử lý ở catch ngoài
+      throw deleteError;
     }
-    return res.status(200).json({ EM: "Xóa tài xế thành công", EC: 1, DT: {} });
   } catch (error) {
     console.error("Error in deleteDriver:", error);
+    // Đảm bảo connection được release nếu còn trong pool
+    if (connection) {
+      await connection.rollback();
+      connection.release();
+    }
     return res
       .status(500)
       .json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });

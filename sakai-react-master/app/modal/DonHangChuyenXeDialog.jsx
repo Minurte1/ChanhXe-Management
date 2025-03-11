@@ -173,7 +173,7 @@ const DonHangChuyenXeDialog = ({ visible, onHide, selectedChuyenXe }) => {
         rows={5}
         rowsPerPageOptions={[5, 10, 25]}
         emptyMessage="Không có đơn hàng nào"
-        className="p-datatable-sm p-datatable-striped" // Thu nhỏ và thêm kẻ sọc
+        className="p-datatable-sm p-datatable-striped " // Thu nhỏ và thêm kẻ sọc
         style={{ marginTop: '20px' }} // Thêm khoảng cách phía trên
       >
         <Column
