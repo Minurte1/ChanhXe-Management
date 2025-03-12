@@ -16,29 +16,23 @@ const getAllVehicles = async (req, res) => {
     } = req.query;
 
     let query = `
-      SELECT 
-        xe.id,
-        xe.bien_so,
-        xe.loai_xe,
-        xe.suc_chua,
-        xe.trang_thai,
-        xe.id_nguoi_cap_nhat,
-        xe.ngay_cap_nhat,
-        xe.ngay_tao,
-        pcdx.id AS id_phan_cong,
-        pcdx.id_ben,
-        pcdx.ngay_tao AS ngay_phan_cong,
-        pcdx.ngay_cap_nhat AS ngay_cap_nhat_phan_cong,
-        ben_xe.ten_ben_xe,
-        ben_xe.dia_chi,
-        ben_xe.tinh,
-        ben_xe.huyen,
-        ben_xe.xa
-      FROM xe
-      LEFT JOIN phan_cong_dia_diem_xe pcdx ON xe.id = pcdx.id_xe
-      LEFT JOIN ben_xe ON pcdx.id_ben = ben_xe.id
-      WHERE 1=1
-    `;
+  SELECT 
+    xe.id,
+    xe.bien_so,
+    xe.loai_xe,
+    xe.suc_chua,
+    xe.trang_thai,
+    xe.id_nguoi_cap_nhat,
+    xe.ngay_cap_nhat,
+    xe.ngay_tao,
+    GROUP_CONCAT(DISTINCT pcdx.id_ben ORDER BY pcdx.id_ben ASC SEPARATOR ', ') AS ben_xe_ids,
+    GROUP_CONCAT(DISTINCT ben_xe.ten_ben_xe ORDER BY ben_xe.ten_ben_xe ASC SEPARATOR ', ') AS ten_ben_xe,
+    COUNT(DISTINCT pcdx.id_ben) > 1 AS multiple_ben_xe
+  FROM xe
+  LEFT JOIN phan_cong_dia_diem_xe pcdx ON xe.id = pcdx.id_xe
+  LEFT JOIN ben_xe ON pcdx.id_ben = ben_xe.id
+  WHERE 1=1
+`;
     let queryParams = [];
 
     // Thêm điều kiện tìm kiếm động
@@ -67,11 +61,6 @@ const getAllVehicles = async (req, res) => {
         .join(",")})`;
       queryParams.push(...trangThaiList);
     }
-
-    // if (trang_thai) {
-    //   query += " AND xe.trang_thai = ?";
-    //   queryParams.push(trang_thai);
-    // }
     if (id_nguoi_cap_nhat) {
       query += " AND xe.id_nguoi_cap_nhat = ?";
       queryParams.push(id_nguoi_cap_nhat);
@@ -84,6 +73,9 @@ const getAllVehicles = async (req, res) => {
       query += " AND DATE(xe.ngay_tao) = ?";
       queryParams.push(ngay_tao);
     }
+
+    // GROUP BY để gom nhóm theo xe.id
+    query += " GROUP BY xe.id";
 
     // Sắp xếp theo ngày cập nhật mới nhất
     query += " ORDER BY xe.ngay_cap_nhat DESC";

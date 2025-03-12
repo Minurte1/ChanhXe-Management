@@ -77,7 +77,7 @@ const PhanCongTaiXeDialog = ({ visible, onHide, selectedChuyenXe, isNew, formDat
   };
 
   const handleSave = () => {
-    const requiredFields = ['id_ben', 'id_tai_xe'];
+    const requiredFields = ['id_ben', 'tai_xe_id'];
     const validationErrors = validateForm(formData, requiredFields);
     if (Object.keys(validationErrors).length === 0) {
       onSave();

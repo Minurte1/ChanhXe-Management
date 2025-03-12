@@ -139,6 +139,7 @@ const DanhSachXe = () => {
   const savePhanCong = async () => {
     const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = assignData;
     try {
+      console.log('assignData', assignData);
       if (isNew) {
         await vehicleAssignmentService.createVehicleAssignment(assignData);
       } else {
@@ -194,7 +195,7 @@ const DanhSachXe = () => {
       <ConfirmDialog /> {/* Thêm component này */}
       <div className="p-col-12">
         <div className="card">
-          <h1>Danh Sách Xe</h1>
+          <h1>Quản lý hệ thống xe</h1>
           <div style={{ marginBottom: '10px' }}>
             <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew} style={{ marginRight: '10px' }} />
             <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm} />

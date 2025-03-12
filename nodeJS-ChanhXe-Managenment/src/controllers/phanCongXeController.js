@@ -2,17 +2,31 @@ const pool = require("../config/database"); // Kết nối cơ sở dữ liệu
 
 // Lấy tất cả phân công địa điểm xe
 const getAllVehicleAssignments = async (req, res) => {
-  // #swagger.tags = ['Phân công xe']
   try {
-    const { id, id_ben, id_xe, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat } =
-      req.query;
+    const {
+      id,
+      id_ben,
+      id_xe,
+      id_nguoi_cap_nhat,
+      ngay_tao,
+      ngay_cap_nhat,
+      trang_thai,
+    } = req.query;
 
-    // Query cơ bản
     let query = `
       SELECT 
-        pcx.id, pcx.id_ben, pcx.id_xe, pcx.id_nguoi_cap_nhat, pcx.ngay_tao, pcx.ngay_cap_nhat,
-        bx.dia_chi, bx.ten_ben_xe, bx.tinh, bx.huyen, bx.xa, bx.id_nguoi_cap_nhat AS ben_id_nguoi_cap_nhat, bx.ngay_tao AS ben_ngay_tao, bx.ngay_cap_nhat AS ben_ngay_cap_nhat,
-        xe.bien_so, xe.loai_xe, xe.suc_chua, xe.trang_thai, xe.id_nguoi_cap_nhat AS xe_id_nguoi_cap_nhat, xe.ngay_cap_nhat AS xe_ngay_cap_nhat, xe.ngay_tao AS xe_ngay_tao
+        pcx.id_xe,
+        xe.bien_so, xe.loai_xe, xe.suc_chua, xe.trang_thai, 
+        xe.id_nguoi_cap_nhat AS xe_id_nguoi_cap_nhat, 
+        xe.ngay_cap_nhat AS xe_ngay_cap_nhat, 
+        xe.ngay_tao AS xe_ngay_tao,
+        GROUP_CONCAT(DISTINCT bx.ten_ben_xe ORDER BY bx.ten_ben_xe SEPARATOR ', ') AS ben_xe,
+        GROUP_CONCAT(DISTINCT bx.dia_chi ORDER BY bx.dia_chi SEPARATOR ', ') AS dia_chi_ben,
+        GROUP_CONCAT(DISTINCT bx.tinh ORDER BY bx.tinh SEPARATOR ', ') AS tinh_ben,
+        CASE 
+          WHEN COUNT(DISTINCT bx.id) > 1 THEN true
+          ELSE false
+        END AS multiple_ben_xe
       FROM phan_cong_dia_diem_xe pcx
       JOIN ben_xe bx ON pcx.id_ben = bx.id
       JOIN xe ON pcx.id_xe = xe.id
@@ -25,29 +39,47 @@ const getAllVehicleAssignments = async (req, res) => {
       query += " AND pcx.id = ?";
       queryParams.push(id);
     }
+
+    // Xử lý id_ben khi nhận mảng
     if (id_ben) {
-      query += " AND pcx.id_ben = ?";
-      queryParams.push(id_ben);
+      let idBenArray = Array.isArray(id_ben) ? id_ben : [id_ben];
+      let placeholders = idBenArray.map(() => "?").join(",");
+      query += ` AND pcx.id_ben IN (${placeholders})`;
+      queryParams.push(...idBenArray);
     }
+
     if (id_xe) {
       query += " AND pcx.id_xe = ?";
       queryParams.push(id_xe);
     }
+
     if (id_nguoi_cap_nhat) {
       query += " AND pcx.id_nguoi_cap_nhat = ?";
       queryParams.push(id_nguoi_cap_nhat);
     }
+
     if (ngay_tao) {
       query += " AND DATE(pcx.ngay_tao) = ?";
       queryParams.push(ngay_tao);
     }
+
     if (ngay_cap_nhat) {
       query += " AND DATE(pcx.ngay_cap_nhat) = ?";
       queryParams.push(ngay_cap_nhat);
     }
 
-    // Sắp xếp theo ngày cập nhật
-    query += " ORDER BY pcx.ngay_cap_nhat DESC";
+    // Lọc theo trạng thái của xe
+    if (trang_thai) {
+      let trangThaiArray = Array.isArray(trang_thai)
+        ? trang_thai
+        : [trang_thai];
+      let placeholders = trangThaiArray.map(() => "?").join(",");
+      query += ` AND xe.trang_thai IN (${placeholders})`;
+      queryParams.push(...trangThaiArray);
+    }
+
+    // Gom nhóm theo id_xe
+    query += " GROUP BY pcx.id_xe ORDER BY xe.ngay_cap_nhat DESC";
 
     // Thực thi query
     const [rows] = await pool.query(query, queryParams);
@@ -66,6 +98,7 @@ const getAllVehicleAssignments = async (req, res) => {
     });
   }
 };
+
 const getAllUnassignedVehicles = async (req, res) => {
   // #swagger.tags = ['Xe chưa phân công']
   try {
@@ -124,10 +157,10 @@ const getVehicleAssignmentById = async (req, res) => {
 
 // Thêm mới phân công
 const createVehicleAssignment = async (req, res) => {
-  // #swagger.tags = ['Phân công xe']
   try {
-    const { id_ben, id_xe } = req.body;
+    const { id_ben, id_xe, id_ben_2 } = req.body;
     const id_nguoi_cap_nhat = req.user?.id;
+
     if (!id_nguoi_cap_nhat) {
       return res
         .status(403)
@@ -140,10 +173,20 @@ const createVehicleAssignment = async (req, res) => {
         .json({ EM: "Thiếu thông tin bắt buộc", EC: -1, DT: {} });
     }
 
-    const [result] = await pool.query(
-      "INSERT INTO phan_cong_dia_diem_xe (id_ben, id_xe, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat) VALUES (?, ?, ?, NOW(), NOW())",
-      [id_ben, id_xe, id_nguoi_cap_nhat]
-    );
+    const query = `
+      INSERT INTO phan_cong_dia_diem_xe (id_ben, id_xe, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat)
+      VALUES (?, ?, ?, NOW(), NOW()), (?, ?, ?, NOW(), NOW())`;
+
+    const values = [
+      id_ben,
+      id_xe,
+      id_nguoi_cap_nhat,
+      id_ben_2,
+      id_xe,
+      id_nguoi_cap_nhat,
+    ];
+
+    const [result] = await pool.query(query, values);
 
     return res.status(201).json({
       EM: "Tạo phân công thành công",

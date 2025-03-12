@@ -11,6 +11,7 @@ const getAllDriverAssignments = async (req, res) => {
       id_nguoi_cap_nhat,
       ngay_tao,
       ngay_cap_nhat,
+      trang_thai_tai_xe, // Thêm trạng thái tài xế
     } = req.query;
 
     let query = `
@@ -65,6 +66,15 @@ const getAllDriverAssignments = async (req, res) => {
       query += " AND DATE(pcdt.ngay_cap_nhat) = ?";
       queryParams.push(ngay_cap_nhat);
     }
+    if (trang_thai_tai_xe) {
+      const trangThaiList = Array.isArray(trang_thai_tai_xe)
+        ? trang_thai_tai_xe
+        : trang_thai_tai_xe.split(",");
+      query += ` AND tai_xe.trang_thai IN (${trangThaiList
+        .map(() => "?")
+        .join(",")})`;
+      queryParams.push(...trangThaiList);
+    }
 
     // Sắp xếp theo ngày cập nhật mới nhất
     query += " ORDER BY pcdt.ngay_cap_nhat DESC";
@@ -116,7 +126,7 @@ const getDriverAssignmentById = async (req, res) => {
 const createDriverAssignment = async (req, res) => {
   // #swagger.tags = ['Phân công tài xế']
   try {
-    const { id_ben, id_tai_xe } = req.body;
+    const { id_ben, id_tai_xe, tai_xe_id } = req.body;
     const id_nguoi_cap_nhat = req.user?.id;
     if (!id_nguoi_cap_nhat) {
       return res
@@ -124,7 +134,7 @@ const createDriverAssignment = async (req, res) => {
         .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
     }
 
-    if (!id_ben || !id_tai_xe) {
+    if (!id_ben || !tai_xe_id) {
       return res
         .status(400)
         .json({ EM: "Thiếu thông tin bắt buộc", EC: -1, DT: {} });
@@ -132,7 +142,7 @@ const createDriverAssignment = async (req, res) => {
 
     const [result] = await pool.query(
       "INSERT INTO phan_cong_dia_diem_tai_xe (id_ben, id_tai_xe, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat) VALUES (?, ?, ?, NOW(), NOW())",
-      [id_ben, id_tai_xe, id_nguoi_cap_nhat]
+      [id_ben, tai_xe_id, id_nguoi_cap_nhat]
     );
 
     return res.status(201).json({

@@ -64,11 +64,7 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
   const dialogFooter = (
     <React.Fragment>
       <Button label="Hủy" icon="pi pi-times" className="p-button-text" onClick={onHide} />
-      <Button
-        label="Lưu"
-        icon="pi pi-check"
-        onClick={handleSave}
-      />
+      <Button label="Lưu" icon="pi pi-check" onClick={handleSave} />
     </React.Fragment>
   );
 
@@ -87,8 +83,8 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
     const fetchData = async () => {
       try {
         const [xeResponse, taiXeResponse, benXeResponse] = await Promise.all([
-          phanCongXe.getAllVehicleAssignments({ id_ben: formData?.id_ben_xe_gui }),
-          phanCongTaiXe.getAllDriverAssignments({ id_ben: formData?.id_ben_xe_gui }),
+          phanCongXe.getAllVehicleAssignments({ id_ben: [formData?.id_ben_xe_gui, formData?.id_ben_xe_nhan], trang_thai: ['hoat_dong'] }),
+          phanCongTaiXe.getAllDriverAssignments({ id_ben: formData?.id_ben_xe_gui, trang_thai_tai_xe: ['hoat_dong'] }),
           benXeService.getAllBenXe()
         ]);
 
@@ -96,7 +92,10 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
         const taiXeChinh = allTaiXe.filter((taiXe) => taiXe.vai_tro === 'tai_xe');
         const taiXePhu = allTaiXe.filter((taiXe) => taiXe.vai_tro === 'tai_xe_phu');
 
-        setXeList(Array.isArray(xeResponse.DT) ? xeResponse.DT : []);
+        // Lọc xe có "multiple_ben_xe": 1
+        const filteredXeList = Array.isArray(xeResponse.DT) ? xeResponse.DT.filter((xe) => xe.multiple_ben_xe === 1) : [];
+
+        setXeList(filteredXeList);
         setTaiXeList(taiXeChinh);
         setTaiXePhuList(taiXePhu);
         setListBenXe(Array.isArray(benXeResponse.DT) ? benXeResponse.DT : []);
@@ -108,21 +107,22 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
     if (visible) {
       fetchData();
     }
-  }, [visible, formData?.id_ben_xe_gui]);
-
+  }, [visible, formData?.id_ben_xe_gui, formData?.id_ben_xe_nhan]);
+  console.log('taiXePhuList', taiXePhuList);
+  console.log('taiXePhuOptions', taiXePhuList);
   useEffect(() => {
     if (!visible) {
       setErrors({});
     }
   }, [visible]);
 
-  const xeOptions = xeList.map((xe) => ({ label: `${xe.bien_so} (${xe.loai_xe})`, value: xe.id_xe }));
+  const xeOptions = xeList.map((xe) => ({ label: `${xe.bien_so} (${xe.ben_xe})`, value: xe.id_xe }));
   const taiXeOptions = taiXeList.map((taiXe) => ({
-    label: `${taiXe.ho_ten} (${taiXe.bang_lai})`,
+    label: `${taiXe.ho_ten} (${taiXe.ten_ben_xe}) - (${taiXe.bang_lai})`,
     value: taiXe.tai_xe_id
   }));
   const taiXePhuOptions = taiXePhuList.map((taiXe) => ({
-    label: `${taiXe.ho_ten} (${taiXe.bang_lai})`,
+    label: `${taiXe.ho_ten} (${taiXe.ten_ben_xe}) - (${taiXe.bang_lai})`,
     value: taiXe.tai_xe_id
   }));
   const benXeOptions = listBenXe.map((benXe) => ({ label: benXe.ten_ben_xe, value: benXe.id }));
@@ -159,23 +159,23 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
       <Toast ref={toast} />
       <div className="p-field mt-2">
         <label htmlFor="id_ben_xe_gui">Bến Xe Gửi</label>
-        <Dropdown id="id_ben_xe_gui" value={formData.id_ben_xe_gui} options={benXeOptions} onChange={(e) => onInputChange(e, 'id_ben_xe_gui')} placeholder="Chọn bến xe gửi" filter filterBy="label" style={{ marginTop: '3px' }}/>
+        <Dropdown id="id_ben_xe_gui" value={formData.id_ben_xe_gui} options={benXeOptions} onChange={(e) => onInputChange(e, 'id_ben_xe_gui')} placeholder="Chọn bến xe gửi" filter filterBy="label" style={{ marginTop: '3px' }} />
         {errors.id_ben_xe_gui && <small className="p-error">{errors.id_ben_xe_gui}</small>}
       </div>
       <div className="p-field mt-2">
         <label htmlFor="id_ben_xe_nhan">Bến Xe Nhận</label>
-        <Dropdown id="id_ben_xe_nhan" value={formData.id_ben_xe_nhan} options={benXeOptions} onChange={(e) => onInputChange(e, 'id_ben_xe_nhan')} placeholder="Chọn bến xe nhận" filter filterBy="label" style={{ marginTop: '3px' }}/>
+        <Dropdown id="id_ben_xe_nhan" value={formData.id_ben_xe_nhan} options={benXeOptions} onChange={(e) => onInputChange(e, 'id_ben_xe_nhan')} placeholder="Chọn bến xe nhận" filter filterBy="label" style={{ marginTop: '3px' }} />
         {errors.id_ben_xe_nhan && <small className="p-error">{errors.id_ben_xe_nhan}</small>}
       </div>
       <div className="p-field mt-2">
         <label htmlFor="xe_id">Xe</label>
-        <Dropdown id="xe_id" value={formData?.xe_id} options={xeOptions} onChange={(e) => onInputChange(e, 'xe_id')} placeholder="Chọn xe" filter filterBy="label" style={{ marginTop: '3px' }}/>
+        <Dropdown id="xe_id" value={formData?.xe_id} options={xeOptions} onChange={(e) => onInputChange(e, 'xe_id')} placeholder="Chọn xe" filter filterBy="label" style={{ marginTop: '3px' }} />
         {errors.xe_id && <small className="p-error">{errors.xe_id}</small>}
       </div>
 
       <div className="p-field mt-2">
         <label htmlFor="tai_xe_id">Tài Xế</label>
-        <Dropdown id="tai_xe_id" value={formData?.tai_xe_id} options={taiXeOptions} onChange={(e) => onInputChange(e, 'tai_xe_id')} placeholder="Chọn tài xế" filter filterBy="label" style={{ marginTop: '3px' }}/>
+        <Dropdown id="tai_xe_id" value={formData?.tai_xe_id} options={taiXeOptions} onChange={(e) => onInputChange(e, 'tai_xe_id')} placeholder="Chọn tài xế" filter filterBy="label" style={{ marginTop: '3px' }} />
         {errors.tai_xe_id && <small className="p-error">{errors.tai_xe_id}</small>}
       </div>
 
