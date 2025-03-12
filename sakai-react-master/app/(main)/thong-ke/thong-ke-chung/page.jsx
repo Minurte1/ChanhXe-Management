@@ -19,10 +19,12 @@ const ThongKeChung = () => {
   });
 
   const [donHang, setDonHang] = useState([]);
-  const [selectedDataset, setSelectedDataset] = useState('');
-  const [selectedDatasetLabel, setSelectedDatasetLabel] = useState('');
-  const [selectedStartDate, setSelectedStartDate] = useState(null);
-  const [selectedEndDate, setSelectedEndDate] = useState(null);
+  const [selectedDataset, setSelectedDataset] = useState('tong_doanh_thu');
+  const [selectedDatasetLabel, setSelectedDatasetLabel] = useState('Tổng Doanh Thu');
+
+  const firstDateOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+  const [selectedStartDate, setSelectedStartDate] = useState(firstDateOfMonth);
+  const [selectedEndDate, setSelectedEndDate] = useState(new Date());
   const [chartType, setChartType] = useState('line');
 
   const axiosInstance = useAxios();
@@ -33,6 +35,10 @@ const ThongKeChung = () => {
   useEffect(() => {
     fetchDonHang();
   }, []);
+
+  useEffect(() => {
+    updateChartDataDonHang();
+  }, [selectedDataset, selectedStartDate, selectedEndDate, donHang]);
 
   const fetchDonHang = async () => {
     try {
@@ -53,164 +59,167 @@ const ThongKeChung = () => {
   };
 
   const updateChartDataDonHang = () => {
-    if (!selectedDataset || !selectedStartDate || !selectedEndDate) {
-      showError('Chọn đầy đủ các trường thống kê');
-    } else {
-      setLineOptions(spServices.chartTheme('', ''));
-      const dateMap = new Map();
+    console.log("a", selectedDataset);
+    setLineOptions(spServices.chartTheme('', ''));
+    const dateMap = new Map();
 
-      let filteredDonHang = donHang;
+    let filteredDonHang = donHang;
 
-      filteredDonHang.sort((a, b) => new Date(a.ngay_tao) - new Date(b.ngay_tao));
+    console.log("b", donHang);
 
-      if (selectedStartDate) {
-        filteredDonHang = filteredDonHang.filter(item => new Date(item.ngay_tao) >= selectedStartDate);
-      }
-      if (selectedEndDate) {
-        filteredDonHang = filteredDonHang.filter(item => new Date(item.ngay_tao) <= selectedEndDate);
-      }
+    filteredDonHang.sort((a, b) => new Date(a.ngay_tao) - new Date(b.ngay_tao));
 
-      if (selectedDataset === 'don_hang_nhan') {
-        // Group items by ngay_tao and loai_hang_hoa
-        filteredDonHang.forEach(item => {
-          const date = new Date(item.ngay_tao);
-          const day = String(date.getDate()).padStart(2, '0');
-          const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-          const year = date.getFullYear();
-          const formattedDate = `${day}-${month}-${year}`;
-          const loaiHangHoa = formatLoaiHangHoa(item.loai_hang_hoa);
+    if (selectedStartDate) {
+      filteredDonHang = filteredDonHang.filter(item => new Date(item.ngay_tao) >= selectedStartDate);
+    }
+    if (selectedEndDate) {
+      filteredDonHang = filteredDonHang.filter(item => new Date(item.ngay_tao) <= selectedEndDate);
+    }
 
-          if (!dateMap.has(formattedDate)) {
-            dateMap.set(formattedDate, new Map());
-          }
+    if (selectedDataset === 'don_hang_nhan') {
+      // Group items by ngay_tao and loai_hang_hoa
+      filteredDonHang.forEach(item => {
+        const date = new Date(item.ngay_tao);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+        const year = date.getFullYear();
+        const formattedDate = `${day}-${month}-${year}`;
+        const loaiHangHoa = formatLoaiHangHoa(item.loai_hang_hoa);
 
-          const loaiHangHoaMap = dateMap.get(formattedDate);
-          if (!loaiHangHoaMap.has(loaiHangHoa)) {
-            loaiHangHoaMap.set(loaiHangHoa, 0);
-          }
-          loaiHangHoaMap.set(loaiHangHoa, loaiHangHoaMap.get(loaiHangHoa) + 1);
+        if (!dateMap.has(formattedDate)) {
+          dateMap.set(formattedDate, new Map());
+        }
+
+        const loaiHangHoaMap = dateMap.get(formattedDate);
+        if (!loaiHangHoaMap.has(loaiHangHoa)) {
+          loaiHangHoaMap.set(loaiHangHoa, 0);
+        }
+        loaiHangHoaMap.set(loaiHangHoa, loaiHangHoaMap.get(loaiHangHoa) + 1);
+      });
+
+      // Convert the map to arrays for labels and data
+      const labels = Array.from(dateMap.keys());
+      const datasets = [];
+
+      const loaiHangHoaSet = new Set();
+      dateMap.forEach(loaiHangHoaMap => {
+        loaiHangHoaMap.forEach((_, loaiHangHoa) => {
+          loaiHangHoaSet.add(loaiHangHoa);
+        });
+      });
+
+      loaiHangHoaSet.forEach(loaiHangHoa => {
+        const data = labels.map(label => {
+          const loaiHangHoaMap = dateMap.get(label);
+          return loaiHangHoaMap.has(loaiHangHoa) ? loaiHangHoaMap.get(loaiHangHoa) : 0;
         });
 
-        // Convert the map to arrays for labels and data
-        const labels = Array.from(dateMap.keys());
-        const datasets = [];
+        const { text, background } = getColorChartTrangThai(loaiHangHoa);
 
-        const loaiHangHoaSet = new Set();
-        dateMap.forEach(loaiHangHoaMap => {
-          loaiHangHoaMap.forEach((_, loaiHangHoa) => {
-            loaiHangHoaSet.add(loaiHangHoa);
-          });
+        datasets.push({
+          label: loaiHangHoa,
+          data,
+          backgroundColor: background,
+          borderColor: text,
         });
+      });
 
-        loaiHangHoaSet.forEach(loaiHangHoa => {
-          const data = labels.map(label => {
-            const loaiHangHoaMap = dateMap.get(label);
-            return loaiHangHoaMap.has(loaiHangHoa) ? loaiHangHoaMap.get(loaiHangHoa) : 0;
-          });
+      setLineData({
+        labels,
+        datasets
+      });
 
-          const { text, background } = getColorChartTrangThai(loaiHangHoa);
-
-          datasets.push({
-            label: loaiHangHoa,
-            data,
-            backgroundColor: background,
-            borderColor: text,
-          });
-        });
-
-        setLineData({
-          labels,
-          datasets
-        });
-
-        setLineOptions({
-          ...lineOptions,
-          plugins: {
-            tooltip: {
-              callbacks: {
-                label: function (context) {
-                  return context.dataset.label + ': ' + '' + context.raw + '';
-                }
+      setLineOptions({
+        ...lineOptions,
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                return context.dataset.label + ': ' + '' + context.raw + '';
               }
+            }
+          }
+        },
+        scales: {
+          x: {
+            stacked: true,
+            grid: {
+              color: 'rgba(100, 99, 99, 0.98)'
             }
           },
-          scales: {
-            x: {
-              stacked: true,
-              grid: {
-                color: 'rgba(100, 99, 99, 0.98)'
-              }
+          y: {
+            stacked: true,
+            grid: {
+              color: 'rgba(100, 99, 99, 0.98)'
             },
-            y: {
-              stacked: true,
-              grid: {
-                color: 'rgba(100, 99, 99, 0.98)'
-              },
-              ticks: {
-                callback: function (value) {
-                  return Number(value).toFixed(0); // Ensure no decimal values
-                }
+            ticks: {
+              callback: function (value) {
+                return Number(value).toFixed(0); // Ensure no decimal values
               }
             }
           }
-        });
-        setChartType('bar');
-      } else {
-        filteredDonHang.forEach(item => {
-          const date = new Date(item.ngay_tao);
-          const day = String(date.getDate()).padStart(2, '0');
-          const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-          const year = date.getFullYear();
-          const formattedDate = `${day}-${month}-${year}`;
+        }
+      });
+      setChartType('bar');
+    } else {
+      filteredDonHang.forEach(item => {
+        const date = new Date(item.ngay_tao);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+        const year = date.getFullYear();
+        const formattedDate = `${day}-${month}-${year}`;
 
-          if (!dateMap.has(formattedDate)) {
-            dateMap.set(formattedDate, 0);
+        if (!dateMap.has(formattedDate)) {
+          dateMap.set(formattedDate, 0);
+        }
+
+        const currentValue = dateMap.get(formattedDate);
+        let newValue = 0;
+
+        if (selectedDataset === 'tong_doanh_thu') {
+          newValue = (parseFloat(item.cuoc_phi) || 0) + (parseFloat(item.phi_bao_hiem) || 0) + (parseFloat(item.phu_phi) || 0);
+        } else {
+          newValue = parseFloat(item[selectedDataset]) || 0; // Ensure the value is a number
+        }
+
+        dateMap.set(formattedDate, currentValue + newValue);
+      });
+
+      // Convert the map to arrays for labels and data
+      const labels = Array.from(dateMap.keys());
+      const dataset1 = Array.from(dateMap.values());
+
+      setLineData({
+        labels,
+        datasets: [
+          {
+            label: selectedDatasetLabel,
+            data: dataset1,
+            fill: false,
+            backgroundColor: '#2f4860',
+            borderColor: '#2f4860',
+            tension: 0.4
           }
-
-          const currentValue = dateMap.get(formattedDate);
-          let newValue = 0;
-
-          if (selectedDataset === 'tong_doang_thu') {
-            newValue = (parseFloat(item.cuoc_phi) || 0) + (parseFloat(item.phi_bao_hiem) || 0) + (parseFloat(item.phu_phi) || 0);
-          } else {
-            newValue = parseFloat(item[selectedDataset]) || 0; // Ensure the value is a number
-          }
-
-          dateMap.set(formattedDate, currentValue + newValue);
-        });
-
-        // Convert the map to arrays for labels and data
-        const labels = Array.from(dateMap.keys());
-        const dataset1 = Array.from(dateMap.values());
-
-        setLineData({
-          labels,
-          datasets: [
-            {
-              label: selectedDatasetLabel,
-              data: dataset1,
-              fill: false,
-              backgroundColor: '#2f4860',
-              borderColor: '#2f4860',
-              tension: 0.4
-            }
-          ]
-        });
-        setLineOptions(spServices.chartTheme('', '', (value) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)));
-        setChartType('line');
-      }
+        ]
+      });
+      setLineOptions(spServices.chartTheme('', '', (value) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)));
+      setChartType('line');
     }
   };
 
   const handleDatasetChange = (e, options, setDataset, setLabel) => {
     const selectedOption = options.find(option => option.value === e.value);
-    setDataset(e.value);
+    console.log("selectedOption", selectedOption);
+
+    setDataset(selectedOption.value);
+
+    console.log("selectedDataset", selectedDataset);
     setLabel(selectedOption.label);
+
   };
 
   const handleStartDateChange = (e) => {
     setSelectedStartDate(e.value);
-    setSelectedEndDate(null);
   };
 
   const handleEndDateChange = (e) => {
@@ -222,9 +231,8 @@ const ThongKeChung = () => {
   };
 
   const datasetOptions = [
-    { label: 'Tổng doang thu', value: 'tong_doang_thu' },
+    { label: 'Tổng doanh thu', value: 'tong_doanh_thu' },
     { label: 'Các đơn hàng đã tiếp nhận', value: 'don_hang_nhan' },
-    // { label: 'Test', value: 'id' }
   ];
 
   return (
@@ -234,30 +242,41 @@ const ThongKeChung = () => {
         <div className="card">
           <div style={{ width: '100%' }}>
             <h5>Thống Kê Chung</h5>
-            <div style={{ flex: 1 }}>
-              <Dropdown
-                value={selectedDataset}
-                options={datasetOptions}
-                onChange={(e) => handleDatasetChange(e, datasetOptions, setSelectedDataset, setSelectedDatasetLabel)}
-                placeholder="Chọn một điều kiện thống kê"
-              />
-              <Calendar
-                id='thoi_gian_thong_ke_1'
-                value={selectedStartDate}
-                onChange={handleStartDateChange}
-                dateFormat="yy-mm-dd"
-                style={{ marginLeft: '10px' }}
-                placeholder="Chọn thời gian bắt đầu" />
-              <Calendar
-                id='thoi_gian_thong_ke_2'
-                value={selectedEndDate}
-                onChange={handleEndDateChange}
-                dateFormat="yy-mm-dd"
-                disabled={!selectedStartDate}
-                minDate={selectedStartDate ? new Date(new Date(selectedStartDate).setDate(new Date(selectedStartDate).getDate() + 1)) : null}
-                style={{ marginLeft: '10px' }}
-                placeholder="Chọn thời gian kết thúc" />
-              <Button label="Thống kê" style={{ marginLeft: '5px' }} className="p-button-success" onClick={handleThongKe} />
+            <div style={{ marginTop: '15px', display: 'flex', flexDirection: 'row' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', marginBottom: '10px', marginRight: '15px' }}>
+                <label htmlFor='d_k_thong_ke' style={{ marginBottom: '5px' }}>Điều kiện thống kê:</label>
+                <Dropdown
+                  id='d_k_thong_ke'
+                  value={selectedDataset}
+                  options={datasetOptions}
+                  onChange={(e) => handleDatasetChange(e, datasetOptions, setSelectedDataset, setSelectedDatasetLabel)}
+                  placeholder="Chọn một điều kiện thống kê"
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', marginBottom: '10px', marginRight: '15px' }}>
+                <label htmlFor='thoi_gian_thong_ke_1' style={{ marginBottom: '5px' }}>Từ ngày:</label>
+                <Calendar
+                  id='thoi_gian_thong_ke_1'
+                  value={selectedStartDate}
+                  onChange={handleStartDateChange}
+                  dateFormat="yy-mm-dd"
+                  showIcon
+                  readOnlyInput
+                  maxDate={selectedEndDate ? new Date(new Date(selectedEndDate).setDate(new Date(selectedEndDate).getDate() - 1)) : null}
+                  placeholder="Chọn thời gian bắt đầu" />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', marginBottom: '10px', marginRight: '15px' }}>
+              <label htmlFor='thoi_gian_thong_ke_1' style={{ marginBottom: '5px' }}>Đến ngày:</label>
+                <Calendar
+                  id='thoi_gian_thong_ke_2'
+                  value={selectedEndDate}
+                  onChange={handleEndDateChange}
+                  dateFormat="yy-mm-dd"
+                  showIcon
+                  readOnlyInput
+                  minDate={selectedStartDate ? new Date(new Date(selectedStartDate).setDate(new Date(selectedStartDate).getDate() + 1)) : null}
+                  placeholder="Chọn thời gian kết thúc" />
+              </div>
             </div>
             <div style={{ marginTop: '25px' }}>
               <Chart type={chartType} data={lineData} options={lineOptions} />
