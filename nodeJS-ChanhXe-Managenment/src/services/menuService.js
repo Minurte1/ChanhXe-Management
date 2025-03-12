@@ -6,8 +6,7 @@ const getMenuItems = (role, selectedRole = null) => {
         label: "Thống kê cơ bản",
         icon: "pi pi-chart-bar",
         items: [
-          { label: "Thống kê chung", url: "/thong-ke/thong-ke-chung" },
-          { label: "Thống kê theo bến xe", url: "/thong-ke/thong-ke-ben-xe" },
+          { label: "Thống kê hoạt động", url: "/thong-ke/thong-ke-hoat-dong" },
         ],
       },
       {

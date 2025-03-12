@@ -600,14 +600,16 @@
     },
     "/user/chua-phan-cong": {
       "get": {
-        "tags": [
-          "Người dùng"
-        ],
         "description": "",
         "parameters": [
           {
             "name": "x-pathname",
             "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "phanCongTaiXe",
+            "in": "query",
             "type": "string"
           },
           {
@@ -756,6 +758,68 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/users-profile/{id}": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ho_ten": {
+                  "example": "any"
+                },
+                "so_dien_thoai": {
+                  "example": "any"
+                },
+                "email": {
+                  "example": "any"
+                },
+                "mat_khau_cu": {
+                  "example": "any"
+                },
+                "mat_khau_moi": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
@@ -1050,9 +1114,6 @@
     },
     "/xe": {
       "get": {
-        "tags": [
-          "Xe"
-        ],
         "description": "",
         "parameters": [
           {
@@ -2646,9 +2707,6 @@
     },
     "/phan-cong-xe": {
       "get": {
-        "tags": [
-          "Phân công xe"
-        ],
         "description": "",
         "parameters": [
           {
@@ -2685,6 +2743,11 @@
             "name": "ngay_cap_nhat",
             "in": "query",
             "type": "string"
+          },
+          {
+            "name": "trang_thai",
+            "in": "query",
+            "type": "string"
           }
         ],
         "responses": {
@@ -2706,9 +2769,6 @@
         }
       },
       "post": {
-        "tags": [
-          "Phân công xe"
-        ],
         "description": "",
         "parameters": [
           {
@@ -2726,6 +2786,9 @@
                   "example": "any"
                 },
                 "id_xe": {
+                  "example": "any"
+                },
+                "id_ben_2": {
                   "example": "any"
                 }
               }
@@ -2911,6 +2974,11 @@
             "name": "ngay_cap_nhat",
             "in": "query",
             "type": "string"
+          },
+          {
+            "name": "trang_thai_tai_xe",
+            "in": "query",
+            "type": "string"
           }
         ],
         "responses": {
@@ -2951,7 +3019,16 @@
                 "id_ben": {
                   "example": "any"
                 },
-                "id_tai_xe": {
+                "id_nguoi_dung": {
+                  "example": "any"
+                },
+                "ho_ten": {
+                  "example": "any"
+                },
+                "vai_tro": {
+                  "example": "any"
+                },
+                "bang_lai": {
                   "example": "any"
                 }
               }

@@ -156,6 +156,7 @@ const spServices = {
           }
         },
         y: {
+          type: 'logarithmic',
           ticks: {
             color: '#000000', // Set to black for better visibility
             callback: function (value) {
@@ -165,8 +166,6 @@ const spServices = {
           grid: {
             color: 'rgba(100, 99, 99, 0.98)'
           },
-
-          stepSize: 50000 // Set the step size for the y-axis
         }
       }
     };
