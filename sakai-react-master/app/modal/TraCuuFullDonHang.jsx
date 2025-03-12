@@ -133,9 +133,31 @@ const TraCuuOrderDialog = ({ confirmOrder, visible, onHide, formData, onInputCha
                   </td>
                   <td style={{ padding: '0.5em' }}>
                     {key === 'khach_hang_ho_ten' ? (
-                      <AutoComplete value={formData[key]} suggestions={suggestions} completeMethod={completeMethod} onChange={(e) => onInputChange(e, key)} style={{ fontSize: '0.8em', width: '100%' }} />
+                      <span
+                        style={{
+                          fontSize: '1.2em', // Larger text for emphasis
+                          fontWeight: 'bold', // Bold to stand out
+                          color: '#262626', // White text for contrast
+                          background: 'linear-gradient(90deg,rgb(182, 221, 248),rgb(252, 252, 252))', // Green gradient background
+                          padding: '0.5em 1em', // Generous padding
+                          borderRadius: '8px', // Rounded corners
+                          display: 'block', // Full width
+                          boxShadow: '0 2px 4px rgba(43, 40, 40, 0.1)', // Subtle shadow for depth
+                          textAlign: 'left' // Centered text
+                        }}
+                      >
+                        {formData[key]}
+                      </span>
                     ) : (
-                      <span style={{ fontSize: '1em', display: 'block', padding: '0.5em', backgroundColor: '#f8f9fa', borderRadius: '5px' }}>
+                      <span
+                        style={{
+                          fontSize: '1em',
+                          display: 'block',
+                          padding: '0.5em',
+                          backgroundColor: '#f8f9fa',
+                          borderRadius: '5px'
+                        }}
+                      >
                         {['ngay_tao', 'ngay_cap_nhat', 'khach_hang_ngay_tao', 'khach_hang_ngay_cap_nhat'].includes(key) ? formatDate(formData[key]) : formData[key]}
                       </span>
                     )}
@@ -143,10 +165,10 @@ const TraCuuOrderDialog = ({ confirmOrder, visible, onHide, formData, onInputCha
                 </tr>
               ))}
               <tr>
-                <td className="p-text-secondary" style={{ fontSize: '1em', padding: '0.5em' }}>
+                <td className="p-text-secondary" style={{ fontSize: '1em', padding: '0.5em', fontWeight: 'bold' }}>
                   {getLabel('tong_tien')}
                 </td>
-                <td style={{ fontSize: '1em', padding: '0.5em' }}>{formatCurrency(tongTien)}</td>
+                <td style={{ fontSize: '1em', padding: '0.5em', fontWeight: 'bold' }}>{formatCurrency(tongTien)}</td>
               </tr>
             </tbody>
           </table>

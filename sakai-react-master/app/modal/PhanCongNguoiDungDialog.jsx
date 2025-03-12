@@ -25,7 +25,6 @@ const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, for
 
   useEffect(() => {
     if (visible) {
-      fetchPhanCongNguoiDung();
       fetchBenXe();
       fetchAllUnassignedUsers();
     }
@@ -50,23 +49,12 @@ const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, for
 
   const fetchAllUnassignedUsers = async () => {
     try {
-      const params = { vai_tro: ['nhan_vien_kho', 'nhan_vien_dieu_phoi', 'nhan_vien_giao_dich'] };
+      const params = { vai_tro: ['nhan_vien_kho', 'nhan_vien_dieu_phoi', 'nhan_vien_giao_dich'], phanCongTaiXe: 'false' };
       const response = await PhanCongNguoiDungService.getAllUnassignedUsers(params);
       setListNguoiDung(response ? response.DT : []);
     } catch (error) {
       console.error('Lỗi khi tải danh sách người dùng', error);
       showError('Lỗi khi tải danh sách người dùng');
-    }
-  };
-
-  const fetchPhanCongNguoiDung = async () => {
-    try {
-      const response = await PhanCongNguoiDungService.getAllUserAssignments();
-      console.log('response phan cong nguoi dung', response);
-      setListPhanCongNguoiDung(Array.isArray(response.DT) ? response.DT : []);
-    } catch (error) {
-      console.error('Lỗi khi tải danh sách phân công nguoi dung', error);
-      showError('Lỗi khi tải danh sách phân công nguoi dung');
     }
   };
 

@@ -106,6 +106,7 @@ const DanhSachChuyenXe = () => {
     const { id, ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = formData;
     try {
       if (isNew) {
+        filteredData.trang_thai = 'cho_xuat_ben';
         await tripService.createTrip(filteredData);
       } else {
         await tripService.updateTrip(formData.chuyen_xe_id, filteredData);

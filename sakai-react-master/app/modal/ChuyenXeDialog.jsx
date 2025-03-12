@@ -46,7 +46,7 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
   });
 
   const handleSave = () => {
-    const requiredFields = ['id_ben_xe_gui', 'id_ben_xe_nhan', 'xe_id', 'tai_xe_id', 'thoi_gian_xuat_ben', 'trang_thai'];
+    const requiredFields = ['id_ben_xe_gui', 'id_ben_xe_nhan', 'xe_id', 'tai_xe_id', 'thoi_gian_xuat_ben'];
     const validationErrors = validateForm(formData, requiredFields);
     if (Object.keys(validationErrors).length === 0 && validateTimes()) {
       const formattedData = {
@@ -91,7 +91,7 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
         const allTaiXe = Array.isArray(taiXeResponse.DT) ? taiXeResponse.DT : [];
         const taiXeChinh = allTaiXe.filter((taiXe) => taiXe.vai_tro === 'tai_xe');
         const taiXePhu = allTaiXe.filter((taiXe) => taiXe.vai_tro === 'tai_xe_phu');
-
+        console.log('allTaiXe', allTaiXe);
         // Lọc xe có "multiple_ben_xe": 1
         const filteredXeList = Array.isArray(xeResponse.DT) ? xeResponse.DT.filter((xe) => xe.multiple_ben_xe === 1) : [];
 
@@ -154,6 +154,7 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
     return true;
   };
 
+  console.log('form', formData);
   return (
     <Dialog visible={visible} style={{ width: '450px' }} header={isNew ? 'Thêm Chuyến Xe' : 'Chỉnh Sửa Chuyến Xe'} modal className="p-fluid" footer={dialogFooter} onHide={onHide}>
       <Toast ref={toast} />
@@ -210,7 +211,7 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
         {errors.thoi_gian_xuat_ben && <small className="p-error">{errors.thoi_gian_xuat_ben}</small>}
       </div>
 
-      <div className="p-field mt-2">
+      {/* <div className="p-field mt-2">
         <label htmlFor="trang_thai">Trạng Thái</label>
         <Dropdown
           id="trang_thai"
@@ -222,7 +223,7 @@ const ChuyenXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
           disabled={formData?.trang_thai === 'da_cap_ben'} // Vô hiệu hóa nếu đã là "Đã cập bến"
         />
         {errors.trang_thai && <small className="p-error">{errors.trang_thai}</small>}
-      </div>
+      </div> */}
     </Dialog>
   );
 };

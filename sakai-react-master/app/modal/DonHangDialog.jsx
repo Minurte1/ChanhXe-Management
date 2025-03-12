@@ -116,7 +116,6 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
   };
 
   useEffect(() => {
-    console.log('selectedWards', selectedWards);
     formData.dia_chi = [street, selectedWards?.full_name, selectedDistrict?.full_name, selectedProvince?.full_name].filter((part) => part).join(', ');
     setAddress(formData.dia_chi);
   }, [street, selectedProvince, selectedDistrict, selectedWards]);

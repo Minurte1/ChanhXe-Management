@@ -138,6 +138,7 @@ LEFT JOIN ben_xe bx2 ON pcd.id_ben = bx2.id
 const getAllUnassignedUsers = async (req, res) => {
   try {
     const { id, ho_ten, so_dien_thoai, email, vai_tro, trang_thai } = req.query;
+    let phanCongTaiXe = req.query.phanCongTaiXe || "true"; // Mặc định là "true"
 
     let query = `
 SELECT 
@@ -149,10 +150,14 @@ LEFT JOIN tai_xe tx ON nd.id = tx.nguoi_dung_id
 LEFT JOIN phan_cong_dia_diem_tai_xe pctx ON tx.id = pctx.id_tai_xe
 LEFT JOIN phan_cong_dia_diem_nguoi_dung pcd ON nd.id = pcd.id_nguoi_dung
 WHERE pcd.id IS NULL AND pctx.id IS NULL
-AND tx.id IS NOT NULL
     `;
 
     let queryParams = [];
+
+    // Mặc định thêm điều kiện nếu không truyền hoặc bằng "true"
+    if (phanCongTaiXe === "true") {
+      query += " AND tx.id IS NOT NULL";
+    }
 
     if (id) {
       query += " AND nd.id = ?";
@@ -202,6 +207,7 @@ AND tx.id IS NOT NULL
     });
   }
 };
+
 const getUserById = async (req, res) => {
   // #swagger.tags = ['Người dùng']
   try {
