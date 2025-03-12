@@ -53,12 +53,13 @@ SELECT
     nd.trang_thai as trang_thai
      
 FROM nguoi_dung nd
-LEFT JOIN tai_xe tx ON nd.id = tx.nguoi_dung_id
-LEFT JOIN phan_cong_dia_diem_tai_xe pctx ON tx.id = pctx.id_tai_xe
+LEFT JOIN tai_xe tx ON nd.id = tx.nguoi_dung_id 
+LEFT JOIN phan_cong_dia_diem_tai_xe pctx ON tx.id = pctx.id_tai_xe AND (pctx.isDelete IS NULL OR pctx.isDelete = FALSE)
 LEFT JOIN ben_xe bx ON pctx.id_ben = bx.id
-LEFT JOIN phan_cong_dia_diem_nguoi_dung pcd ON nd.id = pcd.id_nguoi_dung AND pcd.isDelete = 0
+LEFT JOIN phan_cong_dia_diem_nguoi_dung pcd ON nd.id = pcd.id_nguoi_dung 
+    AND (pcd.isDelete IS NULL OR pcd.isDelete = FALSE) 
 LEFT JOIN ben_xe bx2 ON pcd.id_ben = bx2.id
-WHERE pcd.id IS NOT NULL
+WHERE nd.trang_thai != 'da_xoa'  -- Điều kiện loại bỏ người dùng có trạng thái 'da_xoa'
     `;
 
     let queryParams = [];

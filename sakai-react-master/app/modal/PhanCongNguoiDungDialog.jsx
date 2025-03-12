@@ -7,26 +7,24 @@ import { Toast } from 'primereact/toast';
 import { Dropdown } from 'primereact/dropdown';
 import BenXeService from '../services/benXeServices';
 import UserService from '../services/userAccountService';
-import phanCongNguoiDungService from '../services/phanCongNguoiDungServices';
+
 import { useAxios } from '../authentication/useAxiosClient';
 import { validateForm } from '../(main)/utilities/validation';
 
 const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, formData, onInputChange, onSave }) => {
   const [listBenXe, setListBenXe] = useState([]);
-  const [listNguoiDung, setListNguoiDung] = useState([]);
-  const [listPhanCongNguoiDung, setListPhanCongNguoiDung] = useState([]);
+
   const [errors, setErrors] = useState({});
   const toast = useRef(null);
-
+  const [isEditing, setIsEditing] = useState(!formData.bang_lai);
+  console.log('form', formData);
   const axiosInstance = useAxios();
-  const userService = UserService(axiosInstance);
+
   const benXeService = BenXeService(axiosInstance);
-  const PhanCongNguoiDungService = phanCongNguoiDungService(axiosInstance);
-  console.log('formData', formData);
+
   useEffect(() => {
     if (visible) {
       fetchBenXe();
-      fetchAllUnassignedUsers();
     }
   }, [visible]);
 
@@ -44,17 +42,6 @@ const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, for
     } catch (error) {
       console.error('Lỗi khi tải danh sách bến xe', error);
       showError('Lỗi khi tải danh sách bến xe');
-    }
-  };
-
-  const fetchAllUnassignedUsers = async () => {
-    try {
-      const params = { vai_tro: ['nhan_vien_kho', 'nhan_vien_dieu_phoi', 'nhan_vien_giao_dich'], phanCongTaiXe: 'false' };
-      const response = await PhanCongNguoiDungService.getAllUnassignedUsers(params);
-      setListNguoiDung(response ? response.DT : []);
-    } catch (error) {
-      console.error('Lỗi khi tải danh sách người dùng', error);
-      showError('Lỗi khi tải danh sách người dùng');
     }
   };
 
@@ -116,6 +103,23 @@ const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, for
             />
             {errors.id_ben && <small className="p-error">{errors.id_ben}</small>}
           </div>
+          {(formData.vai_tro === 'tai_xe' || formData.vai_tro === 'tai_xe_phu') && (
+            <div className="p-col-12" style={{ marginBottom: '2rem' }}>
+              <label htmlFor="bang_lai" className="p-d-block p-mb-2">
+                Bằng lái
+              </label>
+
+              {isEditing ? (
+                <input type="text" id="bang_lai" name="bang_lai" value={formData.bang_lai || ''} onChange={(e) => onInputChange(e, 'bang_lai')} className="p-inputtext p-component" placeholder="Nhập số bằng lái" style={{ width: '100%' }} />
+              ) : (
+                <div className="p-inputtext-sm p-d-flex p-ai-center" style={{ width: '100%', padding: '0.5rem', border: '1px solid #ced4da', borderRadius: '4px', background: '#f8f9fa' }} onClick={() => setIsEditing(true)}>
+                  {formData.bang_lai}
+                </div>
+              )}
+
+              {errors.bang_lai && <small className="p-error">{errors.bang_lai}</small>}
+            </div>
+          )}
 
           <div className="p-col-12" style={{ marginBottom: '2rem' }}>
             <label className="p-d-block p-mb-2">Chọn xe</label>

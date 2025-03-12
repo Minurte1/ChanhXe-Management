@@ -10,6 +10,8 @@ import { InputText } from 'primereact/inputtext';
 import NhanVienDialog from '../../../modal/NhanVienDialog';
 import PhanCongNguoiDungDialog from '../../../modal/PhanCongNguoiDungDialog';
 import PhanCongNguoiDungService from '../../../services/phanCongNguoiDungServices';
+import PhanCongTaiXeService from '../../../services/phanCongTaiXeServices';
+
 import spServices from '../../../share/share-services/sp-services';
 import UserService from '@/app/services/userAccountService';
 import { useAxios } from '@/app/authentication/useAxiosClient';
@@ -38,7 +40,7 @@ const DanhSachNhanVien = () => {
   const axiosInstance = useAxios();
   const userService = UserService(axiosInstance);
   const phanCongNguoiDungService = PhanCongNguoiDungService(axiosInstance);
-
+  const phanCongTaiXeService = PhanCongTaiXeService(axiosInstance);
   useEffect(() => {
     fetchNhanVien();
   }, []);
@@ -93,12 +95,15 @@ const DanhSachNhanVien = () => {
 
   const openPhanCongForm = (data) => {
     console.log('data', data);
-    // console.log('data ben_xe_id', data.ben_xe_id);
+
     setAssignData({
-      id_ben: data.vai_tro === 'tai_xe' || data.vai_tro === 'tai_xe_phu' ? data.ben_xe_id : data.ben_xe_nguoi_dung_id,
+      id_ben: data.ben_xe_id ?? data.ben_xe_nguoi_dung_id, // Lấy giá trị đầu tiên không phải null/undefined
       id_nguoi_dung: data.id,
-      ho_ten: data.ho_ten
+      ho_ten: data.ho_ten,
+      vai_tro: data.vai_tro,
+      bang_lai: data.vai_tro === 'tai_xe' || data.vai_tro === 'tai_xe_phu' ? data.bang_lai : null
     });
+
     setIsNew(true);
     setDisplayAssignDialog(true);
   };
@@ -151,10 +156,18 @@ const DanhSachNhanVien = () => {
 
   const savePhanCong = async () => {
     const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = assignData;
+
     try {
-      if (isNew) {
-        await phanCongNguoiDungService.createUserAssignment(assignData);
+      console.log('assignData', assignData);
+
+      if (assignData?.vai_tro === 'tai_xe' || assignData?.vai_tro === 'tai_xe_phu') {
+        // Nếu là tài xế hoặc tài xế phụ → gọi API phân công tài xế
+        await phanCongTaiXeService.createDriverAssignment(filteredData);
+      } else {
+        // Nếu không phải → gọi API phân công người dùng
+        await phanCongNguoiDungService.createUserAssignment(filteredData);
       }
+
       fetchNhanVien();
       setDisplayAssignDialog(false);
       showSuccess(isNew ? 'Thêm phân công thành công' : 'Cập nhật phân công thành công');
@@ -260,7 +273,7 @@ const DanhSachNhanVien = () => {
               body={(rowData) => (
                 <>
                   <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editNhanVien(rowData)} />
-                  <Button icon="pi pi-trash" className="p-button-rounded p-button-warning" style={{ marginLeft: '8px' }} onClick={() => confirmDelete(rowData.id)} />
+                  <Button icon="pi pi-trash" className="p-button-rounded p-button-warning" style={{ marginLeft: '4px', marginRight: '4px' }} onClick={() => confirmDelete(rowData.id)} />
                   <Button icon="pi pi-user-edit" className="p-button-rounded p-button-info p-button-sm" onClick={() => openPhanCongForm(rowData)} />
                 </>
               )}

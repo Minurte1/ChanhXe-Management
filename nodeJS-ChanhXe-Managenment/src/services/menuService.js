@@ -35,11 +35,11 @@ const getMenuItems = (role, selectedRole = null) => {
             url: "/nhan-vien/danh-sach",
             icon: "pi pi-users",
           },
-          {
-            label: "Danh sách tài xế",
-            url: "/nhan-vien/tai-xe",
-            icon: "pi pi-id-card",
-          },
+          // {
+          //   label: "Danh sách tài xế",
+          //   url: "/nhan-vien/tai-xe",
+          //   icon: "pi pi-id-card",
+          // },
           { label: "Danh sách xe", url: "/xe/danh-sach", icon: "pi pi-car" },
           {
             label: "Danh sách bến xe",

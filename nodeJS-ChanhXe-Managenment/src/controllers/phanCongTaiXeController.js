@@ -126,21 +126,64 @@ const getDriverAssignmentById = async (req, res) => {
 const createDriverAssignment = async (req, res) => {
   // #swagger.tags = ['Phân công tài xế']
   try {
-    const { id_ben, id_tai_xe, tai_xe_id } = req.body;
+    const { id_ben, id_nguoi_dung, ho_ten, vai_tro, bang_lai } = req.body;
     const id_nguoi_cap_nhat = req.user?.id;
+
     if (!id_nguoi_cap_nhat) {
       return res
         .status(403)
         .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
     }
 
-    if (!id_ben || !tai_xe_id) {
+    if (!id_ben || !id_nguoi_dung || !bang_lai) {
       return res
         .status(400)
         .json({ EM: "Thiếu thông tin bắt buộc", EC: -1, DT: {} });
     }
 
-    const [result] = await pool.query(
+    // Kiểm tra xem người dùng đã có trong bảng tai_xe chưa
+    const [taiXeCheck] = await pool.query(
+      "SELECT id, bang_lai FROM tai_xe WHERE nguoi_dung_id = ?",
+      [id_nguoi_dung]
+    );
+
+    let tai_xe_id;
+    if (taiXeCheck.length === 0) {
+      // Chưa có → Thêm mới vào bảng tai_xe
+      const [taiXeInsert] = await pool.query(
+        "INSERT INTO tai_xe (nguoi_dung_id, bang_lai, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat, trang_thai) VALUES (?, ?, ?, NOW(), NOW(), 1)",
+        [id_nguoi_dung, bang_lai, id_nguoi_cap_nhat]
+      );
+      tai_xe_id = taiXeInsert.insertId;
+    } else {
+      // Đã có → Lấy id tài xế
+      tai_xe_id = taiXeCheck[0].id;
+
+      // Kiểm tra nếu bằng lái mới khác với dữ liệu cũ thì cập nhật
+      if (taiXeCheck[0].bang_lai !== bang_lai) {
+        await pool.query(
+          "UPDATE tai_xe SET bang_lai = ?, id_nguoi_cap_nhat = ?, ngay_cap_nhat = NOW() WHERE id = ?",
+          [bang_lai, id_nguoi_cap_nhat, tai_xe_id]
+        );
+      }
+    }
+
+    // Kiểm tra xem tài xế này đã có phân công chưa
+    const [phanCongCheck] = await pool.query(
+      "SELECT id FROM phan_cong_dia_diem_tai_xe WHERE id_tai_xe = ? AND isDelete = false",
+      [tai_xe_id]
+    );
+
+    if (phanCongCheck.length > 0) {
+      // Nếu đã có phân công → Cập nhật isDelete = true
+      await pool.query(
+        "UPDATE phan_cong_dia_diem_tai_xe SET isDelete = true WHERE id_tai_xe = ?",
+        [tai_xe_id]
+      );
+    }
+
+    // Thêm phân công mới
+    const [phanCongInsert] = await pool.query(
       "INSERT INTO phan_cong_dia_diem_tai_xe (id_ben, id_tai_xe, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat) VALUES (?, ?, ?, NOW(), NOW())",
       [id_ben, tai_xe_id, id_nguoi_cap_nhat]
     );
@@ -148,10 +191,10 @@ const createDriverAssignment = async (req, res) => {
     return res.status(201).json({
       EM: "Tạo phân công thành công",
       EC: 1,
-      DT: { id: result.insertId },
+      DT: { id: phanCongInsert.insertId },
     });
   } catch (error) {
-    console.error("Error in createAssignment:", error);
+    console.error("Error in createDriverAssignment:", error);
     return res
       .status(500)
       .json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
