@@ -56,42 +56,35 @@ FROM nguoi_dung nd
 LEFT JOIN tai_xe tx ON nd.id = tx.nguoi_dung_id
 LEFT JOIN phan_cong_dia_diem_tai_xe pctx ON tx.id = pctx.id_tai_xe
 LEFT JOIN ben_xe bx ON pctx.id_ben = bx.id
-LEFT JOIN phan_cong_dia_diem_nguoi_dung pcd ON nd.id = pcd.id_nguoi_dung
+LEFT JOIN phan_cong_dia_diem_nguoi_dung pcd ON nd.id = pcd.id_nguoi_dung AND pcd.isDelete = 0
 LEFT JOIN ben_xe bx2 ON pcd.id_ben = bx2.id
-
-
-
+WHERE pcd.id IS NOT NULL
     `;
+
     let queryParams = [];
-    // COALESCE(tx.trang_thai, nd.trang_thai) AS trang_thai  ( lưu tạm)
+
     if (id) {
-      query += " AND id = ?";
+      query += " AND nd.id = ?";
       queryParams.push(id);
     }
     if (ho_ten) {
-      query += " AND ho_ten LIKE ?";
+      query += " AND nd.ho_ten LIKE ?";
       queryParams.push(`%${ho_ten}%`);
     }
     if (so_dien_thoai) {
-      query += " AND so_dien_thoai = ?";
+      query += " AND nd.so_dien_thoai = ?";
       queryParams.push(so_dien_thoai);
     }
     if (email) {
-      query += " AND email LIKE ?";
+      query += " AND nd.email LIKE ?";
       queryParams.push(`%${email}%`);
     }
     if (vai_tro) {
-      // Xử lý vai_tro dạng mảng hoặc chuỗi đơn
       const roles = Array.isArray(vai_tro) ? vai_tro : vai_tro.split(",");
-      query += " AND vai_tro IN (" + roles.map(() => "?").join(",") + ")";
+      query += " AND nd.vai_tro IN (" + roles.map(() => "?").join(",") + ")";
       queryParams.push(...roles);
     }
-    // if (trang_thai) {
-    //   query += " AND trang_thai = ?";
-    //   queryParams.push(trang_thai);
-    // }
     if (trang_thai) {
-      // Xử lý vai_tro dạng mảng hoặc chuỗi đơn
       const trang_thaiList = Array.isArray(trang_thai)
         ? trang_thai
         : trang_thai.split(",");
@@ -99,23 +92,22 @@ LEFT JOIN ben_xe bx2 ON pcd.id_ben = bx2.id
         " AND nd.trang_thai IN (" +
         trang_thaiList.map(() => "?").join(",") +
         ")";
-
       queryParams.push(...trang_thaiList);
     }
     if (id_nguoi_cap_nhat) {
-      query += " AND id_nguoi_cap_nhat = ?";
+      query += " AND nd.id_nguoi_cap_nhat = ?";
       queryParams.push(id_nguoi_cap_nhat);
     }
     if (ngay_cap_nhat) {
-      query += " AND DATE(ngay_cap_nhat) = ?";
+      query += " AND DATE(nd.ngay_cap_nhat) = ?";
       queryParams.push(ngay_cap_nhat);
     }
     if (ngay_tao) {
-      query += " AND DATE(ngay_tao) = ?";
+      query += " AND DATE(nd.ngay_tao) = ?";
       queryParams.push(ngay_tao);
     }
 
-    query += " ORDER BY ngay_cap_nhat DESC";
+    query += " ORDER BY nd.ngay_cap_nhat DESC";
 
     const [rows] = await pool.query(query, queryParams);
 

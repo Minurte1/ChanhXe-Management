@@ -2,7 +2,6 @@ const pool = require("../config/database"); // Kết nối cơ sở dữ liệu
 
 // Lấy tất cả xe với search động kèm thông tin bến xe
 const getAllVehicles = async (req, res) => {
-  // #swagger.tags = ['Xe']
   try {
     const {
       id,
@@ -16,26 +15,26 @@ const getAllVehicles = async (req, res) => {
     } = req.query;
 
     let query = `
-  SELECT 
-    xe.id,
-    xe.bien_so,
-    xe.loai_xe,
-    xe.suc_chua,
-    xe.trang_thai,
-    xe.id_nguoi_cap_nhat,
-    xe.ngay_cap_nhat,
-    xe.ngay_tao,
-    GROUP_CONCAT(DISTINCT pcdx.id_ben ORDER BY pcdx.id_ben ASC SEPARATOR ', ') AS ben_xe_ids,
-    GROUP_CONCAT(DISTINCT ben_xe.ten_ben_xe ORDER BY ben_xe.ten_ben_xe ASC SEPARATOR ', ') AS ten_ben_xe,
-    COUNT(DISTINCT pcdx.id_ben) > 1 AS multiple_ben_xe
-  FROM xe
-  LEFT JOIN phan_cong_dia_diem_xe pcdx ON xe.id = pcdx.id_xe
-  LEFT JOIN ben_xe ON pcdx.id_ben = ben_xe.id
-  WHERE 1=1
-`;
+      SELECT 
+        xe.id,
+        xe.bien_so,
+        xe.loai_xe,
+        xe.suc_chua,
+        xe.trang_thai,
+        xe.id_nguoi_cap_nhat,
+        xe.ngay_cap_nhat,
+        xe.ngay_tao,
+        GROUP_CONCAT(DISTINCT pcdx.id_ben ORDER BY pcdx.id_ben ASC SEPARATOR ', ') AS ben_xe_ids,
+        GROUP_CONCAT(DISTINCT ben_xe.ten_ben_xe ORDER BY ben_xe.ten_ben_xe ASC SEPARATOR ', ') AS ten_ben_xe,
+        COUNT(DISTINCT pcdx.id_ben) > 1 AS multiple_ben_xe
+      FROM xe
+      LEFT JOIN phan_cong_dia_diem_xe pcdx ON xe.id = pcdx.id_xe AND pcdx.isDelete = false
+      LEFT JOIN ben_xe ON pcdx.id_ben = ben_xe.id
+      WHERE 1=1
+    `;
+
     let queryParams = [];
 
-    // Thêm điều kiện tìm kiếm động
     if (id) {
       query += " AND xe.id = ?";
       queryParams.push(id);
@@ -74,13 +73,8 @@ const getAllVehicles = async (req, res) => {
       queryParams.push(ngay_tao);
     }
 
-    // GROUP BY để gom nhóm theo xe.id
-    query += " GROUP BY xe.id";
+    query += " GROUP BY xe.id ORDER BY xe.ngay_cap_nhat DESC";
 
-    // Sắp xếp theo ngày cập nhật mới nhất
-    query += " ORDER BY xe.ngay_cap_nhat DESC";
-
-    // Thực thi truy vấn
     const [rows] = await pool.query(query, queryParams);
 
     return res.status(200).json({

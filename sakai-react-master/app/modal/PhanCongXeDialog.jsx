@@ -85,7 +85,7 @@ const PhanCongXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onS
       <Button label="Lưu" icon="pi pi-check" className="p-button-text" onClick={handleSave} />
     </div>
   );
-
+  console.log('formData', formData);
   return (
     <Dialog header="Phân công bến đỗ cho xe" visible={visible} style={{ width: '40vw', maxWidth: '600px' }} footer={dialogFooter} onHide={onHide} className="p-dialog-custom">
       <Toast ref={toast} />
@@ -136,24 +136,10 @@ const PhanCongXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onS
 
           {/* Chọn xe */}
           <div className="p-col-12" style={{ marginBottom: '2rem' }}>
-            <label htmlFor="id_xe" className="p-d-block p-mb-2">
-              Chọn xe
-            </label>
-            <Dropdown
-              id="id_xe"
-              value={formData.id_xe}
-              options={listXe}
-              optionLabel="bien_so"
-              optionValue="id"
-              onChange={(e) => handleInputChange(e, 'id_xe')}
-              placeholder="Chọn xe"
-              filter
-              filterBy="bien_so"
-              className="p-inputtext-sm"
-              style={{ width: '100%' }}
-              disabled={!formData.id_ben || !formData.id_ben_2}
-            />
-            {errors.id_xe && <small className="p-error">{errors.id_xe}</small>}
+            <label className="p-d-block p-mb-2">Chọn xe</label>
+            <div className="p-inputtext-sm p-d-flex p-ai-center" style={{ width: '100%', padding: '0.5rem', border: '1px solid #ced4da', borderRadius: '4px', background: '#f8f9fa' }}>
+              {formData.bien_so || 'Không có dữ liệu'}
+            </div>
           </div>
         </div>
       </div>

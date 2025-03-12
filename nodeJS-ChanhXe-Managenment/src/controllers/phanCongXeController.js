@@ -30,7 +30,7 @@ const getAllVehicleAssignments = async (req, res) => {
       FROM phan_cong_dia_diem_xe pcx
       JOIN ben_xe bx ON pcx.id_ben = bx.id
       JOIN xe ON pcx.id_xe = xe.id
-      WHERE 1=1
+      WHERE pcx.isDelete = FALSE
     `;
 
     let queryParams = [];
@@ -40,7 +40,6 @@ const getAllVehicleAssignments = async (req, res) => {
       queryParams.push(id);
     }
 
-    // Xử lý id_ben khi nhận mảng
     if (id_ben) {
       let idBenArray = Array.isArray(id_ben) ? id_ben : [id_ben];
       let placeholders = idBenArray.map(() => "?").join(",");
@@ -68,7 +67,6 @@ const getAllVehicleAssignments = async (req, res) => {
       queryParams.push(ngay_cap_nhat);
     }
 
-    // Lọc theo trạng thái của xe
     if (trang_thai) {
       let trangThaiArray = Array.isArray(trang_thai)
         ? trang_thai
@@ -78,10 +76,8 @@ const getAllVehicleAssignments = async (req, res) => {
       queryParams.push(...trangThaiArray);
     }
 
-    // Gom nhóm theo id_xe
     query += " GROUP BY pcx.id_xe ORDER BY xe.ngay_cap_nhat DESC";
 
-    // Thực thi query
     const [rows] = await pool.query(query, queryParams);
 
     return res.status(200).json({
@@ -107,7 +103,8 @@ const getAllUnassignedVehicles = async (req, res) => {
         xe.id, xe.bien_so, xe.loai_xe, xe.suc_chua, xe.trang_thai, 
         xe.id_nguoi_cap_nhat, xe.ngay_cap_nhat, xe.ngay_tao
       FROM xe
-      LEFT JOIN phan_cong_dia_diem_xe pcx ON xe.id = pcx.id_xe
+      LEFT JOIN phan_cong_dia_diem_xe pcx 
+        ON xe.id = pcx.id_xe AND pcx.isDelete = FALSE
       WHERE pcx.id IS NULL
       ORDER BY xe.ngay_cap_nhat DESC
     `;
@@ -173,28 +170,56 @@ const createVehicleAssignment = async (req, res) => {
         .json({ EM: "Thiếu thông tin bắt buộc", EC: -1, DT: {} });
     }
 
-    const query = `
-      INSERT INTO phan_cong_dia_diem_xe (id_ben, id_xe, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat)
-      VALUES (?, ?, ?, NOW(), NOW()), (?, ?, ?, NOW(), NOW())`;
+    const connection = await pool.getConnection();
 
-    const values = [
-      id_ben,
-      id_xe,
-      id_nguoi_cap_nhat,
-      id_ben_2,
-      id_xe,
-      id_nguoi_cap_nhat,
-    ];
+    try {
+      await connection.beginTransaction();
 
-    const [result] = await pool.query(query, values);
+      // Kiểm tra xem xe đã tồn tại chưa
+      const [existingRecords] = await connection.query(
+        `SELECT id FROM phan_cong_dia_diem_xe WHERE id_xe = ? AND isDelete = FALSE`,
+        [id_xe]
+      );
 
-    return res.status(201).json({
-      EM: "Tạo phân công thành công",
-      EC: 1,
-      DT: { id: result.insertId },
-    });
+      if (existingRecords.length > 0) {
+        // Nếu xe đã tồn tại, cập nhật isDelete = TRUE
+        await connection.query(
+          `UPDATE phan_cong_dia_diem_xe SET isDelete = TRUE, ngay_cap_nhat = NOW() WHERE id_xe = ?`,
+          [id_xe]
+        );
+      }
+
+      // Thêm mới phân công
+      const query = `
+        INSERT INTO phan_cong_dia_diem_xe (id_ben, id_xe, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat, isDelete)
+        VALUES (?, ?, ?, NOW(), NOW(), FALSE), (?, ?, ?, NOW(), NOW(), FALSE)`;
+
+      const values = [
+        id_ben,
+        id_xe,
+        id_nguoi_cap_nhat,
+        id_ben_2,
+        id_xe,
+        id_nguoi_cap_nhat,
+      ];
+
+      const [result] = await connection.query(query, values);
+
+      await connection.commit();
+      connection.release();
+
+      return res.status(201).json({
+        EM: "Tạo phân công thành công",
+        EC: 1,
+        DT: { id: result.insertId },
+      });
+    } catch (error) {
+      await connection.rollback();
+      connection.release();
+      throw error;
+    }
   } catch (error) {
-    console.error("Error in createAssignment:", error);
+    console.error("Error in createVehicleAssignment:", error);
     return res
       .status(500)
       .json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });

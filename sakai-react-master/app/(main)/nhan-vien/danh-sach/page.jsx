@@ -30,7 +30,8 @@ const DanhSachNhanVien = () => {
   });
   const [assignData, setAssignData] = useState({
     id_ben: '',
-    id_nguoi_dung: ''
+    id_nguoi_dung: '',
+    ten_nguoi_dung: ''
   });
 
   const toast = useRef(null);
@@ -90,10 +91,13 @@ const DanhSachNhanVien = () => {
     setDisplayDialog(true);
   };
 
-  const openPhanCongForm = () => {
+  const openPhanCongForm = (data) => {
+    console.log('data', data);
+    // console.log('data ben_xe_id', data.ben_xe_id);
     setAssignData({
-      id_ben: '',
-      id_xe: ''
+      id_ben: data.vai_tro === 'tai_xe' || data.vai_tro === 'tai_xe_phu' ? data.ben_xe_id : data.ben_xe_nguoi_dung_id,
+      id_nguoi_dung: data.id,
+      ho_ten: data.ho_ten
     });
     setIsNew(true);
     setDisplayAssignDialog(true);
@@ -150,8 +154,6 @@ const DanhSachNhanVien = () => {
     try {
       if (isNew) {
         await phanCongNguoiDungService.createUserAssignment(assignData);
-      } else {
-        await phanCongNguoiDungService.updateUserAssignment(filteredData.id, filteredData);
       }
       fetchNhanVien();
       setDisplayAssignDialog(false);
@@ -206,7 +208,7 @@ const DanhSachNhanVien = () => {
           <h1>Danh Sách Nhân Viên</h1>
           <div style={{ marginBottom: '10px' }}>
             <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew} style={{ marginRight: '10px' }} />
-            <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm} />
+            {/* <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm} /> */}
             <InputText placeholder="Tìm kiếm tên nhân viên" value={searchTerm} onChange={onSearchChange} style={{ marginLeft: '8px', width: '30%' }} />
           </div>
 
@@ -259,6 +261,7 @@ const DanhSachNhanVien = () => {
                 <>
                   <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editNhanVien(rowData)} />
                   <Button icon="pi pi-trash" className="p-button-rounded p-button-warning" style={{ marginLeft: '8px' }} onClick={() => confirmDelete(rowData.id)} />
+                  <Button icon="pi pi-user-edit" className="p-button-rounded p-button-info p-button-sm" onClick={() => openPhanCongForm(rowData)} />
                 </>
               )}
             />

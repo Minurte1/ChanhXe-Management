@@ -22,7 +22,7 @@ const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, for
   const userService = UserService(axiosInstance);
   const benXeService = BenXeService(axiosInstance);
   const PhanCongNguoiDungService = phanCongNguoiDungService(axiosInstance);
-
+  console.log('formData', formData);
   useEffect(() => {
     if (visible) {
       fetchBenXe();
@@ -118,24 +118,10 @@ const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, for
           </div>
 
           <div className="p-col-12" style={{ marginBottom: '2rem' }}>
-            <label htmlFor="id_nguoi_dung" className="p-d-block p-mb-2">
-              Chọn người dùng
-            </label>
-            <Dropdown
-              id="id_nguoi_dung"
-              value={formData.id_nguoi_dung} // Sử dụng formData thay vì formPhanCong
-              options={listNguoiDung}
-              optionLabel="ho_ten"
-              optionValue="id"
-              onChange={(e) => handleInputChange(e, 'id_nguoi_dung')}
-              placeholder="Chọn bến xe trước khi chọn người dùng"
-              filter
-              filterBy="ho_ten"
-              className="p-inputtext-sm"
-              style={{ width: '100%' }}
-              // disabled={!formData.id_ben}
-            />
-            {errors.id_nguoi_dung && <small className="p-error">{errors.id_nguoi_dung}</small>}
+            <label className="p-d-block p-mb-2">Chọn xe</label>
+            <div className="p-inputtext-sm p-d-flex p-ai-center" style={{ width: '100%', padding: '0.5rem', border: '1px solid #ced4da', borderRadius: '4px', background: '#f8f9fa' }}>
+              {formData.ho_ten || 'Không có dữ liệu'}
+            </div>
           </div>
         </div>
       </div>

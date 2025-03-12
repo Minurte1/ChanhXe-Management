@@ -27,7 +27,8 @@ const DanhSachXe = () => {
   });
   const [assignData, setAssignData] = useState({
     id_ben: '',
-    id_xe: ''
+    id_xe: '',
+    id_ben_2: ''
   });
   //
   const axiosInstance = useAxios();
@@ -84,11 +85,17 @@ const DanhSachXe = () => {
     setDisplayDialog(true);
   };
 
-  const openPhanCongForm = () => {
+  const openPhanCongForm = (data) => {
+    const test = data.ben_xe_ids ? data.ben_xe_ids.split(',').map((id) => Number(id.trim())) : [];
+    console.log('data', data);
     setAssignData({
-      id_ben: '',
-      id_xe: ''
+      id_ben: test[0], // Gán mảng đã ép kiểu vào state
+      id_xe: data.id,
+      id_ben_2: test[1],
+      ten_xe: data.ten_xe,
+      bien_so: data.bien_so
     });
+
     setIsNew(true);
     setDisplayAssignDialog(true);
   };
@@ -198,7 +205,7 @@ const DanhSachXe = () => {
           <h1>Quản lý hệ thống xe</h1>
           <div style={{ marginBottom: '10px' }}>
             <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew} style={{ marginRight: '10px' }} />
-            <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm} />
+            {/* <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm} /> */}
             <InputText placeholder="Tìm kiếm biển số xe" value={searchTerm} onChange={onSearchChange} style={{ marginLeft: '8px', width: '30%' }} />
           </div>
           <DataTable
@@ -238,8 +245,9 @@ const DanhSachXe = () => {
             <Column
               body={(rowData) => (
                 <>
-                  <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editXe(rowData)} />
-                  <Button icon="pi pi-trash" className="p-button-rounded p-button-warning" onClick={() => confirmDeleteXe(rowData.id)} />
+                  <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-button-sm p-mr-1" onClick={() => editXe(rowData)} />
+                  <Button style={{ marginLeft: '3px', marginRight: '3px' }} icon="pi pi-trash" className="p-button-rounded p-button-warning p-button-sm p-mr-1" onClick={() => confirmDeleteXe(rowData.id)} />
+                  <Button icon="pi pi-user-edit" className="p-button-rounded p-button-info p-button-sm" onClick={() => openPhanCongForm(rowData)} />
                 </>
               )}
             />
