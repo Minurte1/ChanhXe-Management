@@ -16,6 +16,7 @@ const {
   checkOtp,
   registerUser,
   getAllUnassignedUsers,
+  updateProfileUser,
 } = require("../controllers/nguoiDungController");
 const { getMenuUser } = require("../controllers/menuUserController");
 const { checkUserJWT } = require("../middleware/JWTaction");
@@ -23,7 +24,7 @@ router.get("/users", getAllUsers);
 router.get("/user/chua-phan-cong", checkUserJWT, getAllUnassignedUsers);
 router.get("/users/:id", getUserById);
 router.post("/users", checkUserJWT, createUser);
-
+router.put("/users-profile/:id", checkUserJWT, updateProfileUser);
 router.put("/users/:id", checkUserJWT, updateUser);
 router.delete("/users/:id", deleteUser);
 

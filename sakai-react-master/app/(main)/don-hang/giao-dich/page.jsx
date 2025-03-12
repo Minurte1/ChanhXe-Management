@@ -146,6 +146,7 @@ const DanhSachDonHang = () => {
     const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = formData;
     try {
       if (isNew) {
+        filteredData.trang_thai = 'cho_xu_ly';
         await orderService.createOrderAndCustomer(filteredData);
       } else {
         console.log('Chỉ tạo mới đơn hàng và khách hàng');
@@ -158,9 +159,10 @@ const DanhSachDonHang = () => {
     }
   };
   const benXeOptions = [
-    { label: 'Đơn sắp gửi', value: 1 },
-    { label: 'Đơn đã nhận', value: 2 }
+    { label: 'Đơn nhận từ bến xe khác', value: 2 }, // Đơn hàng mình nhận từ bến xe khác gửi về
+    { label: 'Đơn nhận từ khách hàng', value: 1 } // Đơn hàng mình nhận từ khách hàng, đợi gửi đi
   ];
+
   const [xemOrderDialog, setXemOrderDialog] = useState(false);
   const xemOrder = (order) => {
     const { id_ben_xe_gui, id_ben_xe_nhan, id_nguoi_cap_nhat, khach_hang_id, khach_hang_id_nguoi_cap_nhat, nguoi_gui_id, labelTrangThai, ...filteredData } = order || {};
@@ -199,7 +201,7 @@ const DanhSachDonHang = () => {
             <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew} />
 
             <label style={{ marginLeft: '10px', marginRight: '10px' }}>Chọn Bến Xe Gửi:</label>
-            <Dropdown name="id_ben_xe_gui" value={searchFilters} options={benXeOptions} onChange={(e) => setSearchFilters(e.target.value)} placeholder="Chọn Bến Xe" style={{ width: '200px' }} />
+            <Dropdown name="id_ben_xe_gui" value={searchFilters} options={benXeOptions} onChange={(e) => setSearchFilters(e.target.value)} placeholder="Chọn Bến Xe" style={{ width: '250px' }} />
           </div>
 
           <DataTable
@@ -211,11 +213,11 @@ const DanhSachDonHang = () => {
             currentPageReportTemplate="Hiển thị {first} đến {last} của {totalRecords} đơn hàng"
           >
             <Column field="ma_van_don" header="Mã Vận Đơn" />
+            <Column field="khach_hang_ho_ten" header="Khách hàng gửi" />
             <Column field="ten_nguoi_nhan" header="Tên Người Nhận" />
             <Column field="so_dien_thoai_nhan" header="Số Điện Thoại Nhận" />
             <Column field="labelLoaiHangHoa" header="Loại Hàng Hóa" sortable body={(rowData) => <StatusLabel status={rowData.labelLoaiHangHoa} />} />
             <Column field="labelTrangThaiDonHang" header="Trạng Thái" sortable body={(rowData) => <StatusLabel status={rowData.labelTrangThaiDonHang} />} />
-
             <Column
               body={(rowData) => {
                 return (

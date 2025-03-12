@@ -46,7 +46,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
   // Xử lý xem thông tin
   const handleViewProfile = () => {
     handleClose();
-    router.push('/profile');
+    router.push('/thong-tin-nguoi-dung');
   };
 
   // Xử lý đăng xuất

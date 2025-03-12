@@ -434,7 +434,6 @@ const createOrderAndCustomer = async (req, res) => {
     if (
       !ma_van_don ||
       !ma_qr_code ||
-      !nguoi_gui_id ||
       !id_ben_xe_nhan ||
       !id_ben_xe_gui ||
       !loai_hang_hoa ||

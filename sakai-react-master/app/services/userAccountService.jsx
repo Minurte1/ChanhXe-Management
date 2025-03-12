@@ -59,6 +59,17 @@ const UserService = (axiosInstance) => ({
       throw error;
     }
   },
+  updateUserProfile: async (id, formData) => {
+    try {
+      const response = await axiosInstance.put(`${BASE_URL}/users-profile/${id}`, formData);
+      enqueueSnackbar(response.data.EM || 'Cập nhật người dùng thành công', { variant: 'success' });
+      return response.data;
+    } catch (error) {
+      console.error('Error updating user:', error);
+      enqueueSnackbar(error.response?.data?.EM || 'Lỗi khi cập nhật người dùng', { variant: 'error' });
+      throw error;
+    }
+  },
 
   deleteUser: async (id) => {
     try {

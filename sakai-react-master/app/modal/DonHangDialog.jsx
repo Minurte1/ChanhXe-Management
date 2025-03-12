@@ -366,7 +366,7 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
       {!isNew && (
         <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
           <label htmlFor="trang_thai">Trạng Thái</label>
-          <Dropdown id="trang_thai" value={formData.trang_thai || ''} options={trangThaiOptions} onChange={(e) => onInputChange({ target: { value: e.value } }, 'trang_thai')} placeholder="Chọn trạng thái" className="mt-2" required />
+          <Dropdown disabled id="trang_thai" value={formData.trang_thai || ''} options={trangThaiOptions} onChange={(e) => onInputChange({ target: { value: e.value } }, 'trang_thai')} placeholder="Chọn trạng thái" className="mt-2" required />
           {errors.trang_thai && <small className="p-error">{errors.trang_thai}</small>}
         </div>
       )}

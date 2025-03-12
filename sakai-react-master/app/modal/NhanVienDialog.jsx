@@ -95,11 +95,13 @@ const NhanVienDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
         <InputText id="email" style={{ marginTop: '3px' }} value={formData.email} onChange={(e) => onInputChange(e, 'email')} />
         {errors.email && <small className="p-error">{errors.email}</small>}
       </div>
-      <div className="p-field mt-2">
-        <label htmlFor="mat_khau">Mật Khẩu</label>
-        <InputText id="mat_khau" style={{ marginTop: '3px' }} type="password" value={formData.mat_khau} onChange={(e) => onInputChange(e, 'mat_khau')} />
-        {errors.mat_khau && <small className="p-error">{errors.mat_khau}</small>}
-      </div>
+      {isNew && (
+        <div className="p-field mt-2">
+          <label htmlFor="mat_khau">Mật Khẩu</label>
+          <InputText id="mat_khau" style={{ marginTop: '3px' }} type="password" value={formData.mat_khau} onChange={(e) => onInputChange(e, 'mat_khau')} />
+          {errors.mat_khau && <small className="p-error">{errors.mat_khau}</small>}
+        </div>
+      )}
       <div className="p-field mt-2">
         <label htmlFor="vai_tro">Vai Trò</label>
         <Dropdown id="vai_tro" style={{ marginTop: '3px' }} value={formData.vai_tro} options={vaiTroOptions} onChange={(e) => onInputChange(e, 'vai_tro')} placeholder="Chọn vai trò" />
