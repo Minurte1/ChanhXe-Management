@@ -103,7 +103,7 @@ const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, for
             />
             {errors.id_ben && <small className="p-error">{errors.id_ben}</small>}
           </div>
-          {/* {(formData.vai_tro === 'tai_xe' || formData.vai_tro === 'tai_xe_phu') && (
+          {(formData.vai_tro === 'tai_xe' || formData.vai_tro === 'tai_xe_phu') && (
             <div className="p-col-12" style={{ marginBottom: '2rem' }}>
               <label htmlFor="bang_lai" className="p-d-block p-mb-2">
                 Bằng lái
@@ -119,7 +119,7 @@ const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, for
 
               {errors.bang_lai && <small className="p-error">{errors.bang_lai}</small>}
             </div>
-          )} */}
+          )}
 
           <div className="p-col-12" style={{ marginBottom: '2rem' }}>
             <label className="p-d-block p-mb-2">Chọn người dùng</label>

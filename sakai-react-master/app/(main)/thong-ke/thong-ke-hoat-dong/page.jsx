@@ -441,7 +441,7 @@ const ThongKeHoatDong = () => {
 
   const dataOptionsBenXe = [
     { label: 'Tổng doang thu', value: 'tong_doanh_thu' },
-    { label: 'Các đơn hàng bến tiếp nhận', value: 'don_hang_nhan' },
+    { label: 'Các đơn hàng bến nhận', value: 'don_hang_nhan' },
     { label: 'Các đơn hàng được gửi từ bến', value: 'don_hang_gui' },
     // { label: 'Test', value: 'id' }
   ];

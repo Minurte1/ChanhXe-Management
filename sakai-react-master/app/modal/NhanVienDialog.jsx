@@ -107,12 +107,6 @@ const NhanVienDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
         <Dropdown id="vai_tro" style={{ marginTop: '3px' }} value={formData.vai_tro} options={vaiTroOptions} onChange={(e) => onInputChange(e, 'vai_tro')} placeholder="Chọn vai trò" />
         {errors.vai_tro && <small className="p-error">{errors.vai_tro}</small>}
       </div>
-      {(formData?.vai_tro === "tai_xe" || formData?.vai_tro === "tai_xe_phu") && (
-        <div className="p-field mt-2">
-          <label htmlFor="bang_lai">Bằng lái</label>
-          <InputText id="bang_lai" style={{ marginTop: '3px' }} value={formData.bang_lai} onChange={(e) => onInputChange(e, 'bang_lai')} />
-        </div>
-      )}
       {!isNew && (
         <div className="p-field mt-2">
           <label htmlFor="trang_thai">Trạng Thái</label>
