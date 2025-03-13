@@ -10,8 +10,6 @@ import { InputText } from 'primereact/inputtext';
 import NhanVienDialog from '../../../modal/NhanVienDialog';
 import PhanCongNguoiDungDialog from '../../../modal/PhanCongNguoiDungDialog';
 import PhanCongNguoiDungService from '../../../services/phanCongNguoiDungServices';
-import PhanCongTaiXeService from '../../../services/phanCongTaiXeServices';
-
 import spServices from '../../../share/share-services/sp-services';
 import UserService from '@/app/services/userAccountService';
 import { useAxios } from '@/app/authentication/useAxiosClient';
@@ -32,15 +30,14 @@ const DanhSachNhanVien = () => {
   });
   const [assignData, setAssignData] = useState({
     id_ben: '',
-    id_nguoi_dung: '',
-    ten_nguoi_dung: ''
+    id_nguoi_dung: ''
   });
 
   const toast = useRef(null);
   const axiosInstance = useAxios();
   const userService = UserService(axiosInstance);
   const phanCongNguoiDungService = PhanCongNguoiDungService(axiosInstance);
-  const phanCongTaiXeService = PhanCongTaiXeService(axiosInstance);
+
   useEffect(() => {
     fetchNhanVien();
   }, []);
@@ -51,10 +48,7 @@ const DanhSachNhanVien = () => {
 
   const fetchNhanVien = async () => {
     try {
-      const filter = {
-        trang_thai: ['hoat_dong', 'tam_ngung', 'ngung_hoat_dong']
-      };
-      const response = await userService.getAllUsers(filter);
+      const response = await userService.getAllUsers();
       const updatedNhanVien = spServices.formatData(response?.DT);
       setNhanVien(updatedNhanVien);
     } catch (error) {
@@ -93,17 +87,11 @@ const DanhSachNhanVien = () => {
     setDisplayDialog(true);
   };
 
-  const openPhanCongForm = (data) => {
-    console.log('data', data);
-
+  const openPhanCongForm = () => {
     setAssignData({
-      id_ben: data.ben_xe_id ?? data.ben_xe_nguoi_dung_id, // Lấy giá trị đầu tiên không phải null/undefined
-      id_nguoi_dung: data.id,
-      ho_ten: data.ho_ten,
-      vai_tro: data.vai_tro,
-      bang_lai: data.vai_tro === 'tai_xe' || data.vai_tro === 'tai_xe_phu' ? data.bang_lai : null
+      id_ben: '',
+      id_xe: ''
     });
-
     setIsNew(true);
     setDisplayAssignDialog(true);
   };
@@ -156,18 +144,12 @@ const DanhSachNhanVien = () => {
 
   const savePhanCong = async () => {
     const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = assignData;
-
     try {
-      console.log('assignData', assignData);
-
-      if (assignData?.vai_tro === 'tai_xe' || assignData?.vai_tro === 'tai_xe_phu') {
-        // Nếu là tài xế hoặc tài xế phụ → gọi API phân công tài xế
-        await phanCongTaiXeService.createDriverAssignment(filteredData);
+      if (isNew) {
+        await phanCongNguoiDungService.createUserAssignment(assignData);
       } else {
-        // Nếu không phải → gọi API phân công người dùng
-        await phanCongNguoiDungService.createUserAssignment(filteredData);
+        await phanCongNguoiDungService.updateUserAssignment(filteredData.id, filteredData);
       }
-
       fetchNhanVien();
       setDisplayAssignDialog(false);
       showSuccess(isNew ? 'Thêm phân công thành công' : 'Cập nhật phân công thành công');
@@ -211,7 +193,6 @@ const DanhSachNhanVien = () => {
     return () => clearTimeout(timer); // Xóa timer khi searchTerm thay đổi hoặc component unmount
   }, [searchTerm, nhanVien]);
 
-  console.log('nhan', nhanVien);
   return (
     <div className="p-grid">
       <Toast ref={toast} />
@@ -221,7 +202,7 @@ const DanhSachNhanVien = () => {
           <h1>Danh Sách Nhân Viên</h1>
           <div style={{ marginBottom: '10px' }}>
             <Button label="Thêm mới" icon="pi pi-plus" className="p-button-success" onClick={openNew} style={{ marginRight: '10px' }} />
-            {/* <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm} /> */}
+            <Button label="Phân công địa điểm" icon="pi pi-file" className="p-button-info" onClick={openPhanCongForm} />
             <InputText placeholder="Tìm kiếm tên nhân viên" value={searchTerm} onChange={onSearchChange} style={{ marginLeft: '8px', width: '30%' }} />
           </div>
 
@@ -273,8 +254,7 @@ const DanhSachNhanVien = () => {
               body={(rowData) => (
                 <>
                   <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editNhanVien(rowData)} />
-                  <Button icon="pi pi-trash" className="p-button-rounded p-button-warning" style={{ marginLeft: '4px', marginRight: '4px' }} onClick={() => confirmDelete(rowData.id)} />
-                  <Button icon="pi pi-user-edit" className="p-button-rounded p-button-info p-button-sm" onClick={() => openPhanCongForm(rowData)} />
+                  <Button icon="pi pi-trash" className="p-button-rounded p-button-warning" style={{ marginLeft: '8px' }} onClick={() => confirmDelete(rowData.id)} />
                 </>
               )}
             />
