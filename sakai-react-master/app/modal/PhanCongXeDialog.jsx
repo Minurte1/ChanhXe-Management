@@ -136,7 +136,7 @@ const PhanCongXeDialog = ({ visible, onHide, isNew, formData, onInputChange, onS
 
           {/* Chọn xe */}
           <div className="p-col-12" style={{ marginBottom: '2rem' }}>
-            <label className="p-d-block p-mb-2">Chọn xe</label>
+            <label className="p-d-block p-mb-2">Biển số xe</label>
             <div className="p-inputtext-sm p-d-flex p-ai-center" style={{ width: '100%', padding: '0.5rem', border: '1px solid #ced4da', borderRadius: '4px', background: '#f8f9fa' }}>
               {formData.bien_so || 'Không có dữ liệu'}
             </div>
