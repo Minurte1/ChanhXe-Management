@@ -203,7 +203,7 @@ const createOrder = async (req, res) => {
       gia_tri_hang,
       cuoc_phi,
       phi_bao_hiem,
-      phu_phi,
+      phu_phi = 0,
       trang_thai,
       ten_nguoi_nhan,
       so_dien_thoai_nhan,
@@ -223,7 +223,6 @@ const createOrder = async (req, res) => {
       !gia_tri_hang ||
       !cuoc_phi ||
       !phi_bao_hiem ||
-      !phu_phi ||
       !trang_thai ||
       !ten_nguoi_nhan ||
       !so_dien_thoai_nhan ||
@@ -232,6 +231,11 @@ const createOrder = async (req, res) => {
       return res
         .status(400)
         .json({ EM: "Thiếu thông tin cần thiết", EC: -1, DT: {} });
+    }
+
+    let phuPhi = 0;
+    if (phu_phi) {
+      phuPhi = phuPhi;
     }
 
     const id_nguoi_cap_nhat = req.user?.id;
@@ -260,7 +264,7 @@ const createOrder = async (req, res) => {
         gia_tri_hang,
         cuoc_phi,
         phi_bao_hiem,
-        phu_phi,
+        phuPhi,
         trang_thai,
         ten_nguoi_nhan,
         so_dien_thoai_nhan,
@@ -419,7 +423,7 @@ const createOrderAndCustomer = async (req, res) => {
       gia_tri_hang,
       cuoc_phi,
       phi_bao_hiem,
-      phu_phi,
+      phu_phi = 0,
       trang_thai,
       ten_nguoi_nhan,
       so_dien_thoai_nhan,
@@ -443,7 +447,6 @@ const createOrderAndCustomer = async (req, res) => {
       !gia_tri_hang ||
       !cuoc_phi ||
       !phi_bao_hiem ||
-      !phu_phi ||
       !trang_thai ||
       !ten_nguoi_nhan ||
       !so_dien_thoai_nhan ||
@@ -485,6 +488,11 @@ const createOrderAndCustomer = async (req, res) => {
 
     await connection.beginTransaction();
 
+    let phuPhi = 0;
+    if (phu_phi) {
+      phuPhi = phuPhi;
+    }
+
     // Insert into khach_hang table
     const [khachHangResult] = await connection.query(
       `INSERT INTO khach_hang (ho_ten, so_dien_thoai, dia_chi, mat_khau, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat) 
@@ -514,7 +522,7 @@ const createOrderAndCustomer = async (req, res) => {
         gia_tri_hang,
         cuoc_phi,
         phi_bao_hiem,
-        phu_phi,
+        phuPhi,
         trang_thai,
         ten_nguoi_nhan,
         so_dien_thoai_nhan,

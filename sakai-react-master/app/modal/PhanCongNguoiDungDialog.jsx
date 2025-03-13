@@ -122,7 +122,7 @@ const PhanCongNguoiDungDialog = ({ visible, onHide, selectedChuyenXe, isNew, for
           )}
 
           <div className="p-col-12" style={{ marginBottom: '2rem' }}>
-            <label className="p-d-block p-mb-2">Chọn xe</label>
+            <label className="p-d-block p-mb-2">Chọn người dùng</label>
             <div className="p-inputtext-sm p-d-flex p-ai-center" style={{ width: '100%', padding: '0.5rem', border: '1px solid #ced4da', borderRadius: '4px', background: '#f8f9fa' }}>
               {formData.ho_ten || 'Không có dữ liệu'}
             </div>
