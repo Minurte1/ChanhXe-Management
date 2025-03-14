@@ -57,7 +57,7 @@ const ThongKeHoatDong = () => {
   }, []);
 
   useEffect(() => {
-    updateChartDataDonHang();
+    updateChartDataChung();
   }, [selectedDataset, selectedStartDate, selectedEndDate, donHang]);
 
   useEffect(() => {
@@ -104,7 +104,7 @@ const ThongKeHoatDong = () => {
     });
   };
 
-  const updateChartDataDonHang = () => {
+  const updateChartDataChung = () => {
     setLineOptions(spServices.chartTheme('', ''));
     setMessageThongKeChung(null);
     const dateMap = new Map();

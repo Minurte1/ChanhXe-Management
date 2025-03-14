@@ -202,7 +202,7 @@ const createOrder = async (req, res) => {
       so_kien,
       gia_tri_hang,
       cuoc_phi,
-      phi_bao_hiem,
+      phi_bao_hiem = 0,
       phu_phi = 0,
       trang_thai,
       ten_nguoi_nhan,
@@ -222,7 +222,6 @@ const createOrder = async (req, res) => {
       !so_kien ||
       !gia_tri_hang ||
       !cuoc_phi ||
-      !phi_bao_hiem ||
       !trang_thai ||
       !ten_nguoi_nhan ||
       !so_dien_thoai_nhan ||
@@ -236,6 +235,11 @@ const createOrder = async (req, res) => {
     let phuPhi = 0;
     if (phu_phi) {
       phuPhi = phuPhi;
+    }
+
+    let phiBaoHiem = 0;
+    if (phiBaoHiem) {
+      phiBaoHiem = phi_bao_hiem;
     }
 
     const id_nguoi_cap_nhat = req.user?.id;
@@ -263,7 +267,7 @@ const createOrder = async (req, res) => {
         so_kien,
         gia_tri_hang,
         cuoc_phi,
-        phi_bao_hiem,
+        phiBaoHiem,
         phuPhi,
         trang_thai,
         ten_nguoi_nhan,
@@ -446,7 +450,6 @@ const createOrderAndCustomer = async (req, res) => {
       !so_kien ||
       !gia_tri_hang ||
       !cuoc_phi ||
-      !phi_bao_hiem ||
       !trang_thai ||
       !ten_nguoi_nhan ||
       !so_dien_thoai_nhan ||
@@ -493,6 +496,11 @@ const createOrderAndCustomer = async (req, res) => {
       phuPhi = phuPhi;
     }
 
+    let phiBaoHiem = 0;
+    if (phiBaoHiem) {
+      phiBaoHiem = phi_bao_hiem;
+    }
+
     // Insert into khach_hang table
     const [khachHangResult] = await connection.query(
       `INSERT INTO khach_hang (ho_ten, so_dien_thoai, dia_chi, mat_khau, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat) 
@@ -521,7 +529,7 @@ const createOrderAndCustomer = async (req, res) => {
         so_kien,
         gia_tri_hang,
         cuoc_phi,
-        phi_bao_hiem,
+        phiBaoHiem,
         phuPhi,
         trang_thai,
         ten_nguoi_nhan,

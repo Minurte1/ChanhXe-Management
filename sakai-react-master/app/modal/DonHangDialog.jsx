@@ -133,7 +133,6 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
         'mat_khau',
         'gia_tri_hang',
         'cuoc_phi',
-        'phi_bao_hiem',
         'ten_nguoi_nhan',
         'so_dien_thoai_nhan',
         'email_nhan'
@@ -160,7 +159,7 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
         console.log('validationErrors', validationErrors);
       }
     } else {
-      const requiredFields = ['id_ben_xe_gui', 'id_ben_xe_nhan', 'loai_hang_hoa', 'trong_luong', 'nguoi_gui_id', 'gia_tri_hang', 'cuoc_phi', 'phi_bao_hiem', 'ten_nguoi_nhan', 'so_dien_thoai_nhan', 'email_nhan'];
+      const requiredFields = ['id_ben_xe_gui', 'id_ben_xe_nhan', 'loai_hang_hoa', 'trong_luong', 'nguoi_gui_id', 'gia_tri_hang', 'cuoc_phi', 'ten_nguoi_nhan', 'so_dien_thoai_nhan', 'email_nhan'];
       const validationErrors = validateForm(formData, requiredFields);
       if (Object.keys(validationErrors).length === 0) {
         onSave();
@@ -354,7 +353,6 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="phi_bao_hiem">Phí Bảo Hiểm</label>
         <InputNumber id="phi_bao_hiem" value={formData.phi_bao_hiem || 0} min={0} onValueChange={(e) => onInputChange(e, 'phi_bao_hiem')} className="mt-2 h-10" placeholder="Ví dụ: 20000 VND" required />
-        {errors.phi_bao_hiem && <small className="p-error">{errors.phi_bao_hiem}</small>}
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="phu_phi">Phụ Phí</label>

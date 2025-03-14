@@ -16,7 +16,7 @@ const TripScheduleTracker = () => {
   const axiosInstance = useAxios();
   const TaiXeService = taiXeService(axiosInstance); // Service để lấy dữ liệu chuyến xe
   const toast = useRef(null);
-  const currentDate = new Date('2025-03-07'); // Ngày hiện tại theo yêu cầu
+  const currentDate = new Date(); // Ngày hiện tại theo yêu cầu
   const { userInfo } = ReduxExportServices();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -31,7 +31,7 @@ const TripScheduleTracker = () => {
   const fetchTrips = async () => {
     setLoading(true);
     try {
-      const input = userInfo.vai_tro === 'admin' ? {} : (input.id = userInfo.id);
+      const input = userInfo.vai_tro === 'admin' || userInfo.vai_tro === 'tai_xe' || userInfo.vai_tro === 'tai_xe_phu' ? {} : (input.id = userInfo.id);
       const response = await TaiXeService.getDriverByLichTrinh({ input });
       const updatedTrips = spServices.formatData(response?.DT); // Format dữ liệu nếu cần
       // Lọc các chuyến xe liên quan đến ngày hôm nay
