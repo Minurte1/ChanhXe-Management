@@ -23,7 +23,15 @@ const NhanVienDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
   }, [visible]);
 
   const handleSave = async () => {
-    const requiredFields = ['ho_ten', 'so_dien_thoai', 'email', 'mat_khau', 'vai_tro'];
+    let requiredFields;
+
+    //Nếu vai trò là 'tai_xe', 'tai_xe_phu' => kiểm tra bằng lái
+    if(formData.vai_tro === 'tai_xe' || formData.vai_tro === 'tai_xe_phu'){
+      requiredFields = ['ho_ten', 'so_dien_thoai', 'email', 'mat_khau', 'bang_lai'];
+    } else {
+      requiredFields = ['ho_ten', 'so_dien_thoai', 'email', 'mat_khau', 'vai_tro'];
+    }
+
     const validationErrors = validateForm(formData, requiredFields);
 
     if (formData.so_dien_thoai.length < 10 || formData.so_dien_thoai.length > 11) {
@@ -111,6 +119,7 @@ const NhanVienDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
         <div className="p-field mt-2">
           <label htmlFor="bang_lai">Bằng lái</label>
           <InputText id="bang_lai" style={{ marginTop: '3px' }} value={formData.bang_lai} onChange={(e) => onInputChange(e, 'bang_lai')} />
+          {errors.bang_lai && <small className="p-error">{errors.bang_lai}</small>}
         </div>
       )}
       {!isNew && (

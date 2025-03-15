@@ -240,7 +240,7 @@ const createUser = async (req, res) => {
         .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
     }
 
-    const { ho_ten, so_dien_thoai, email, mat_khau, vai_tro, trang_thai } =
+    const { ho_ten, so_dien_thoai, email, mat_khau, vai_tro, trang_thai, bang_lai } =
       req.body;
 
     if (!ho_ten || !so_dien_thoai || !email || !mat_khau || !vai_tro) {
@@ -295,6 +295,17 @@ const createUser = async (req, res) => {
         id_nguoi_cap_nhat,
       ]
     );
+
+    //Nếu vai trò là tài xế, tài xế phụ, tiếp tục thêm vào bảng tai_xe 
+    if ( vai_tro === 'tai_xe' || vai_tro === 'tai_xe_phu' ){
+      const nguoiDungId = result.insertId;
+
+      const [taiXeResult] = await pool.query(
+        `INSERT INTO tai_xe (nguoi_dung_id, bang_lai, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat, trang_thai) 
+         VALUES (?, ?, ?, NOW(), NOW(), ?)`,
+        [nguoiDungId, bang_lai, id_nguoi_cap_nhat, trang_thai]
+      );
+    }
 
     return res.status(201).json({
       EM: "Tạo người dùng thành công",
@@ -692,9 +703,8 @@ const sendAccountEmail = async (email, hoTen, password, vaiTro, trangThai) => {
           <p><strong>Email:</strong> ${email}</p>
           <p><strong>Mật khẩu tạm thời:</strong> <span style="color: red;">${password}</span></p>
           <p><strong>Vai trò:</strong> ${vaiTro}</p>
-          <p><strong>Trạng thái:</strong> ${
-            trangThai === "hoat_dong" ? "Hoạt động" : "Bị khóa"
-          }</p>
+          <p><strong>Trạng thái:</strong> ${trangThai === "hoat_dong" ? "Hoạt động" : "Bị khóa"
+      }</p>
         </div>
         <p>Vui lòng đăng nhập và đổi mật khẩu để đảm bảo an toàn.</p>
         <p style="text-align: center; color: #888; font-size: 12px;">&copy; 2024 Quản Lý Chành Xe. All rights reserved.</p>

@@ -14,6 +14,7 @@ import PhanCongTaiXeService from '../../../services/phanCongTaiXeServices';
 
 import spServices from '../../../share/share-services/sp-services';
 import UserService from '@/app/services/userAccountService';
+import TaiXeService from '@/app/services/taiXeServices';
 import { useAxios } from '@/app/authentication/useAxiosClient';
 
 const DanhSachNhanVien = () => {
@@ -39,6 +40,7 @@ const DanhSachNhanVien = () => {
   const toast = useRef(null);
   const axiosInstance = useAxios();
   const userService = UserService(axiosInstance);
+  const taiXeServices = TaiXeService(axiosInstance);
   const phanCongNguoiDungService = PhanCongNguoiDungService(axiosInstance);
   const phanCongTaiXeService = PhanCongTaiXeService(axiosInstance);
   useEffect(() => {
@@ -110,24 +112,29 @@ const DanhSachNhanVien = () => {
 
   const editNhanVien = (nhanVien) => {
     setFormData({ ...nhanVien });
+    console.log('', nhanVien);
     setIsNew(false);
     setDisplayDialog(true);
   };
 
-  const confirmDelete = (id) => {
+  const confirmDelete = (nhanVien) => {
+    console.log("asd", nhanVien);
     confirmDialog({
       message: 'Bạn có chắc chắn muốn xóa nhân viên này?',
       header: 'Xác nhận',
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Xóa',
       rejectLabel: 'Hủy',
-      accept: () => deleteNhanVien(id)
+      accept: () => deleteNhanVien(nhanVien)
     });
   };
 
-  const deleteNhanVien = async (id) => {
+  const deleteNhanVien = async (nhanVien) => {
     try {
-      await userService.deleteUser(id);
+      await userService.deleteUser(nhanVien.id);
+      if (nhanVien.vai_tro === 'tai_xe' || nhanVien.vai_tro === 'tai_xe_phu') {
+        await taiXeServices.deleteDriver(nhanVien.tai_xe_id);
+      };
       fetchNhanVien();
       showSuccess('Xóa nhân viên thành công');
     } catch (error) {
@@ -138,12 +145,18 @@ const DanhSachNhanVien = () => {
   const saveNhanVien = async () => {
     try {
       const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = formData;
-
+      console.log("abc", filteredData);
       if (isNew) {
         filteredData.trang_thai = 'hoat_dong';
         await userService.createUser(filteredData);
       } else {
         await userService.updateUser(filteredData.id, filteredData);
+        if (filteredData.vai_tro === 'tai_xe' || filteredData.vai_tro === 'tai_xe_phu') {
+          const taiXeData = transformFormData(filteredData);
+          // console.log("id", taiXeData.id);
+          // console.log("nguoi_dung_id", taiXeData.nguoi_dung_id);
+          await taiXeServices.updateDriver(taiXeData.id, taiXeData);
+        };
       }
 
       fetchNhanVien();
@@ -152,6 +165,15 @@ const DanhSachNhanVien = () => {
     } catch (error) {
       showError(isNew ? 'Lỗi khi thêm nhân viên' : 'Lỗi khi cập nhật nhân viên');
     }
+  };
+
+  const transformFormData = (data) => {
+    // Example transformation
+    return {
+      ...data,
+      id: data.tai_xe_id,
+      nguoi_dung_id: data.id,
+    };
   };
 
   const savePhanCong = async () => {
@@ -273,7 +295,7 @@ const DanhSachNhanVien = () => {
               body={(rowData) => (
                 <>
                   <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editNhanVien(rowData)} />
-                  <Button icon="pi pi-trash" className="p-button-rounded p-button-warning" style={{ marginLeft: '4px', marginRight: '4px' }} onClick={() => confirmDelete(rowData.id)} />
+                  <Button icon="pi pi-trash" className="p-button-rounded p-button-warning" style={{ marginLeft: '4px', marginRight: '4px' }} onClick={() => confirmDelete(rowData)} />
                   <Button icon="pi pi-user-edit" className="p-button-rounded p-button-info p-button-sm" onClick={() => openPhanCongForm(rowData)} />
                 </>
               )}

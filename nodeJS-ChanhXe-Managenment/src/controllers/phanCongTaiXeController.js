@@ -135,7 +135,7 @@ const createDriverAssignment = async (req, res) => {
         .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
     }
 
-    if (!id_ben || !id_nguoi_dung || !bang_lai) {
+    if (!id_ben || !id_nguoi_dung) {
       return res
         .status(400)
         .json({ EM: "Thiếu thông tin bắt buộc", EC: -1, DT: {} });
@@ -148,25 +148,26 @@ const createDriverAssignment = async (req, res) => {
     );
 
     let tai_xe_id;
-    if (taiXeCheck.length === 0) {
-      // Chưa có → Thêm mới vào bảng tai_xe
-      const [taiXeInsert] = await pool.query(
-        "INSERT INTO tai_xe (nguoi_dung_id, bang_lai, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat, trang_thai) VALUES (?, ?, ?, NOW(), NOW(), 1)",
-        [id_nguoi_dung, bang_lai, id_nguoi_cap_nhat]
-      );
-      tai_xe_id = taiXeInsert.insertId;
-    } else {
-      // Đã có → Lấy id tài xế
-      tai_xe_id = taiXeCheck[0].id;
+    tai_xe_id = taiXeCheck[0].id;
+    // if (taiXeCheck.length === 0) {
+    //   // Chưa có → Thêm mới vào bảng tai_xe
+    //   const [taiXeInsert] = await pool.query(
+    //     "INSERT INTO tai_xe (nguoi_dung_id, bang_lai, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat, trang_thai) VALUES (?, ?, ?, NOW(), NOW(), 1)",
+    //     [id_nguoi_dung, bang_lai, id_nguoi_cap_nhat]
+    //   );
+    //   tai_xe_id = taiXeInsert.insertId;
+    // } else {
+    //   // Đã có → Lấy id tài xế
+    //   tai_xe_id = taiXeCheck[0].id;
 
-      // Kiểm tra nếu bằng lái mới khác với dữ liệu cũ thì cập nhật
-      if (taiXeCheck[0].bang_lai !== bang_lai) {
-        await pool.query(
-          "UPDATE tai_xe SET bang_lai = ?, id_nguoi_cap_nhat = ?, ngay_cap_nhat = NOW() WHERE id = ?",
-          [bang_lai, id_nguoi_cap_nhat, tai_xe_id]
-        );
-      }
-    }
+    //   // Kiểm tra nếu bằng lái mới khác với dữ liệu cũ thì cập nhật
+    //   if (taiXeCheck[0].bang_lai !== bang_lai) {
+    //     await pool.query(
+    //       "UPDATE tai_xe SET bang_lai = ?, id_nguoi_cap_nhat = ?, ngay_cap_nhat = NOW() WHERE id = ?",
+    //       [bang_lai, id_nguoi_cap_nhat, tai_xe_id]
+    //     );
+    //   }
+    // }
 
     // Kiểm tra xem tài xế này đã có phân công chưa
     const [phanCongCheck] = await pool.query(

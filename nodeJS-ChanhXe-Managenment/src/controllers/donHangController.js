@@ -489,8 +489,6 @@ const createOrderAndCustomer = async (req, res) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(mat_khau, saltRounds);
 
-    await connection.beginTransaction();
-
     let phuPhi = 0;
     if (phu_phi) {
       phuPhi = phuPhi;
@@ -500,6 +498,8 @@ const createOrderAndCustomer = async (req, res) => {
     if (phiBaoHiem) {
       phiBaoHiem = phi_bao_hiem;
     }
+
+    await connection.beginTransaction();
 
     // Insert into khach_hang table
     const [khachHangResult] = await connection.query(
