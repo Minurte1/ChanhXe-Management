@@ -211,7 +211,7 @@ const DanhSachTaiXe = () => {
             <Column field="ten_ben_xe" header="Địa điểm công tác" sortable body={(rowData) => rowData.ten_ben_xe || '(Chưa được phân công)'} />
 
             <Column field="so_dien_thoai" header="Số Điện Thoại" />
-            <Column field="email" header="Email" />
+            <Column field="email" header="Tên đăng nhập" />
             <Column field="labelVaiTro" header="Vai Trò" sortable />
             <Column
               field="labelTrangThai"

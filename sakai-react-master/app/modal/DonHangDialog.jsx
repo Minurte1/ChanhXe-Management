@@ -122,21 +122,7 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
 
   const handleSave = async () => {
     if (!isNewCustomer) {
-      const requiredFields = [
-        'id_ben_xe_gui',
-        'id_ben_xe_nhan',
-        'loai_hang_hoa',
-        'trong_luong',
-        'ho_ten',
-        'so_dien_thoai',
-        'dia_chi',
-        'mat_khau',
-        'gia_tri_hang',
-        'cuoc_phi',
-        'ten_nguoi_nhan',
-        'so_dien_thoai_nhan',
-        'email_nhan'
-      ];
+      const requiredFields = ['id_ben_xe_gui', 'id_ben_xe_nhan', 'loai_hang_hoa', 'trong_luong', 'ho_ten', 'so_dien_thoai', 'dia_chi', 'mat_khau', 'gia_tri_hang', 'cuoc_phi', 'ten_nguoi_nhan', 'so_dien_thoai_nhan', 'email_nhan'];
 
       const validationErrors = validateForm(formData, requiredFields);
 

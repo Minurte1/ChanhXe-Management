@@ -26,7 +26,7 @@ const NhanVienDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
     let requiredFields;
 
     //Nếu vai trò là 'tai_xe', 'tai_xe_phu' => kiểm tra bằng lái
-    if(formData.vai_tro === 'tai_xe' || formData.vai_tro === 'tai_xe_phu'){
+    if (formData.vai_tro === 'tai_xe' || formData.vai_tro === 'tai_xe_phu') {
       requiredFields = ['ho_ten', 'so_dien_thoai', 'email', 'mat_khau', 'bang_lai'];
     } else {
       requiredFields = ['ho_ten', 'so_dien_thoai', 'email', 'mat_khau', 'vai_tro'];
@@ -48,7 +48,7 @@ const NhanVienDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
 
     const timEmail = await userService.getAllUsers({ email: formData.email });
     if (timEmail.DT.length === 1) {
-      validationErrors.email = 'Email đã tồn tại';
+      validationErrors.email = 'Tên đăng nhập đã tồn tại';
       setErrors(validationErrors);
       console.log('validationErrors', validationErrors);
     }
@@ -99,7 +99,7 @@ const NhanVienDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
         {errors.so_dien_thoai && <small className="p-error">{errors.so_dien_thoai}</small>}
       </div>
       <div className="p-field mt-2">
-        <label htmlFor="email">Email</label>
+        <label htmlFor="email">Tên đăng nhập</label>
         <InputText id="email" style={{ marginTop: '3px' }} value={formData.email} onChange={(e) => onInputChange(e, 'email')} />
         {errors.email && <small className="p-error">{errors.email}</small>}
       </div>
@@ -115,7 +115,7 @@ const NhanVienDialog = ({ visible, onHide, isNew, formData, onInputChange, onSav
         <Dropdown id="vai_tro" style={{ marginTop: '3px' }} value={formData.vai_tro} options={vaiTroOptions} onChange={(e) => onInputChange(e, 'vai_tro')} placeholder="Chọn vai trò" />
         {errors.vai_tro && <small className="p-error">{errors.vai_tro}</small>}
       </div>
-      {(formData?.vai_tro === "tai_xe" || formData?.vai_tro === "tai_xe_phu") && (
+      {(formData?.vai_tro === 'tai_xe' || formData?.vai_tro === 'tai_xe_phu') && (
         <div className="p-field mt-2">
           <label htmlFor="bang_lai">Bằng lái</label>
           <InputText id="bang_lai" style={{ marginTop: '3px' }} value={formData.bang_lai} onChange={(e) => onInputChange(e, 'bang_lai')} />

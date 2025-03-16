@@ -122,7 +122,7 @@ const LoginPage = () => {
               <label htmlFor="email1" className="block text-900 text-xl font-medium mb-2">
                 Tên đăng nhập
               </label>
-              <InputText id="email1" type="text" placeholder="Địa chỉ email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full md:w-30rem mb-5" style={{ padding: '1rem' }} />
+              <InputText id="email1" type="text" placeholder="Tên đăng nhập" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full md:w-30rem mb-5" style={{ padding: '1rem' }} />
 
               <label htmlFor="password1" className="block text-900 font-medium text-xl mb-2">
                 Mật khẩu

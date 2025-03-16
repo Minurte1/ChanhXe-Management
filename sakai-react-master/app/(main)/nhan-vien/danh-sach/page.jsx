@@ -118,7 +118,7 @@ const DanhSachNhanVien = () => {
   };
 
   const confirmDelete = (nhanVien) => {
-    console.log("asd", nhanVien);
+    console.log('asd', nhanVien);
     confirmDialog({
       message: 'Bạn có chắc chắn muốn xóa nhân viên này?',
       header: 'Xác nhận',
@@ -134,7 +134,7 @@ const DanhSachNhanVien = () => {
       await userService.deleteUser(nhanVien.id);
       if (nhanVien.vai_tro === 'tai_xe' || nhanVien.vai_tro === 'tai_xe_phu') {
         await taiXeServices.deleteDriver(nhanVien.tai_xe_id);
-      };
+      }
       fetchNhanVien();
       showSuccess('Xóa nhân viên thành công');
     } catch (error) {
@@ -145,7 +145,7 @@ const DanhSachNhanVien = () => {
   const saveNhanVien = async () => {
     try {
       const { ngay_tao, ngay_cap_nhat, id_nguoi_cap_nhat, ...filteredData } = formData;
-      console.log("abc", filteredData);
+      console.log('abc', filteredData);
       if (isNew) {
         filteredData.trang_thai = 'hoat_dong';
         await userService.createUser(filteredData);
@@ -156,7 +156,7 @@ const DanhSachNhanVien = () => {
           // console.log("id", taiXeData.id);
           // console.log("nguoi_dung_id", taiXeData.nguoi_dung_id);
           await taiXeServices.updateDriver(taiXeData.id, taiXeData);
-        };
+        }
       }
 
       fetchNhanVien();
@@ -172,7 +172,7 @@ const DanhSachNhanVien = () => {
     return {
       ...data,
       id: data.tai_xe_id,
-      nguoi_dung_id: data.id,
+      nguoi_dung_id: data.id
     };
   };
 
@@ -267,7 +267,7 @@ const DanhSachNhanVien = () => {
             />
 
             <Column field="so_dien_thoai" header="Số Điện Thoại"></Column>
-            <Column field="email" header="Email"></Column>
+            <Column field="email" header="Tên đăng nhập"></Column>
             <Column field="labelVaiTro" sortable header="Vai Trò"></Column>
             <Column
               field="labelTrangThai"
