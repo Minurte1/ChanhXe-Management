@@ -179,9 +179,9 @@ const DanhSachChuyenXe = () => {
                 <>
                   {rowData.trang_thai === 'cho_xuat_ben' && (
                     <>
-                    <Button style={{ height: '30px', width: '30px' }} icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editTrip(rowData)} />
-                    <Button icon="pi pi-trash" style={{ marginLeft: '5px', height: '30px', width: '30px' }} className="p-button-rounded p-button-warning" onClick={() => deleteTrip(rowData.chuyen_xe_id)} />
-                    <Button icon="pi pi-plus" style={{ height: '30px', width: '30px', marginLeft: '5px' }} className="p-button-rounded p-button-info" onClick={() => openDonHangDialog(rowData)} tooltip="Thêm đơn hàng" />
+                      <Button style={{ height: '30px', width: '30px' }} icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editTrip(rowData)} />
+                      <Button icon="pi pi-trash" style={{ marginLeft: '5px', height: '30px', width: '30px' }} className="p-button-rounded p-button-warning" onClick={() => deleteTrip(rowData.chuyen_xe_id)} />
+                      <Button icon="pi pi-plus" style={{ height: '30px', width: '30px', marginLeft: '5px' }} className="p-button-rounded p-button-info" onClick={() => openDonHangDialog(rowData)} tooltip="Thêm đơn hàng" />
                     </>
                   )}
                 </>
@@ -190,6 +190,8 @@ const DanhSachChuyenXe = () => {
           </DataTable>
         </div>
       </div>
+
+      {/* // Thêm đơn hàng vào chuyến xe */}
       <DonHangChuyenXeDialog
         visible={displayDonHangDialog}
         onHide={() => {

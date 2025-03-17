@@ -14,60 +14,42 @@ import { useAxios } from '../authentication/useAxiosClient';
 
 const DonHangChuyenXeDialog = ({ visible, onHide, selectedChuyenXe }) => {
   const [donHangList, setDonHangList] = useState([]);
-  const [listBenXe, setListBenXe] = useState([]);
+
   const [selectedDonHang, setSelectedDonHang] = useState([]);
-  const [filters, setFilters] = useState({
-    id_ben_xe_nhan: null,
-    id_ben_xe_gui: null
-  });
+
   const toast = useRef(null);
   const axiosInstance = useAxios();
-  const benXeService = BenXeService(axiosInstance);
+
   const donHangService = DonHangService(axiosInstance);
   const donHangChuyenXeService = DonHangChuyenXeService(axiosInstance);
-  // Chuyển đổi dữ liệu bến xe thành định dạng Dropdown
-  const benXeOptions = [
-    { label: 'Tất cả', value: null },
-    ...listBenXe.map((benXe) => ({
-      label: benXe.ten_ben_xe,
-      value: benXe.id
-    }))
-  ];
 
   useEffect(() => {
     if (visible) {
-      fetchDonHang();
-      fetchBenXe();
+      fetchDonHangChuyenXe();
     }
-  }, [visible, filters]);
+  }, [visible]);
 
   // Lấy danh sách đơn hàng từ API với bộ lọc
-  const fetchDonHang = async () => {
+  const fetchDonHangChuyenXe = async () => {
     try {
       const params = {
         trang_thai: 'cho_xu_ly', // Chỉ lấy đơn hàng có trạng thái "Chờ xử lý"
         id_ben_xe_nhan: selectedChuyenXe.id_ben_xe_nhan,
         id_ben_xe_gui: selectedChuyenXe.id_ben_xe_gui
       };
-      const response = await donHangService.getAllOrders(params);
-      setDonHangList(Array.isArray(response.DT) ? response.DT : []);
+      const response = await donHangService.getDonHangChuyenXe(params);
+      const data = Array.isArray(response.DT) ? response.DT : [];
+
+      // Pre-select các đơn hàng có isAddDHChuyenXe = 1
+      const selected = data.filter((item) => item.isAddDHChuyenXe === 1);
+
+      setDonHangList(data);
+      setSelectedDonHang(selected);
     } catch (error) {
       showError('Lỗi khi tải danh sách đơn hàng');
     }
   };
-
-  // Lấy danh sách bến xe từ API
-  const fetchBenXe = async () => {
-    try {
-      const response = await benXeService.getAllBenXe();
-      console.log('response ben xe', response);
-      setListBenXe(Array.isArray(response.DT) ? response.DT : []);
-    } catch (error) {
-      console.error('Lỗi khi tải danh sách bến xe', error);
-      showError('Lỗi khi tải danh sách bến xe');
-    }
-  };
-
+  console.log('donHangList', donHangList);
   const showError = (message) => {
     toast.current.show({
       severity: 'error',
@@ -85,14 +67,8 @@ const DonHangChuyenXeDialog = ({ visible, onHide, selectedChuyenXe }) => {
       life: 3000
     });
   };
-
   // Xử lý khi người dùng nhấn nút Lưu
   const saveDonHangChuyenXe = async () => {
-    if (selectedDonHang.length === 0) {
-      showError('Vui lòng chọn ít nhất một đơn hàng');
-      return;
-    }
-
     const don_hang_ids = selectedDonHang.map((donHang) => donHang.id);
     try {
       await donHangChuyenXeService.createDonHangChuyenXe({
@@ -106,13 +82,18 @@ const DonHangChuyenXeDialog = ({ visible, onHide, selectedChuyenXe }) => {
       showError('Lỗi khi thêm đơn hàng vào chuyến xe');
     }
   };
+  // Xử lý khi người dùng nhấn Bắt đầu vận chuyển
+  const startChuyenXeD = async () => {
+    try {
+      await donHangChuyenXeService.startChuyenXe({
+        don_hang_chuyen_xe_id: selectedChuyenXe?.chuyen_xe_id
+      });
 
-  // Xử lý thay đổi bộ lọc
-  const onFilterChange = (e, field) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [field]: e.value
-    }));
+      showSuccess('Thêm đơn hàng vào chuyến xe thành công');
+      onHide();
+    } catch (error) {
+      showError('Lỗi khi thêm đơn hàng vào chuyến xe');
+    }
   };
 
   // Footer của modal
@@ -120,6 +101,7 @@ const DonHangChuyenXeDialog = ({ visible, onHide, selectedChuyenXe }) => {
     <div>
       <Button label="Hủy" icon="pi pi-times" className="p-button-text" onClick={onHide} />
       <Button label="Lưu" icon="pi pi-check" className="p-button-text" onClick={saveDonHangChuyenXe} />
+      <Button label="Bắt đầu vận chuyển" icon="pi pi-check" className="p-button-text" onClick={startChuyenXeD} />
     </div>
   );
 
@@ -133,36 +115,6 @@ const DonHangChuyenXeDialog = ({ visible, onHide, selectedChuyenXe }) => {
       className="p-dialog-custom" // Thêm class để tùy chỉnh CSS nếu cần
     >
       <Toast ref={toast} />
-
-      {/* Bộ lọc */}
-      {/* <div className="p-mb-4">
-        <div className="p-grid p-align-center">
-          <div className="p-col-6 p-md-4 p-mb-3">
-            {' '}
-            <label htmlFor="id_ben_xe_nhan" className="p-d-block p-mb-2 ">
-              Bến xe nhận
-            </label>
-            <Dropdown
-              id="id_ben_xe_nhan"
-              value={filters.id_ben_xe_nhan}
-              options={benXeOptions}
-              onChange={(e) => onFilterChange(e, 'id_ben_xe_nhan')}
-              placeholder="Chọn bến xe nhận"
-              className="p-inputtext-sm"
-              style={{ width: '100%', marginTop: '5px' }}
-            />
-          </div>
-
-          <div className="p-col-6 p-md-4 p-mb-3 " style={{ marginTop: '10px' }}>
-            {' '}
-            <label htmlFor="id_ben_xe_gui" className="p-d-block p-mb-2">
-              Bến xe gửi
-            </label>
-            <Dropdown id="id_ben_xe_gui" value={filters.id_ben_xe_gui} options={benXeOptions} onChange={(e) => onFilterChange(e, 'id_ben_xe_gui')} placeholder="Chọn bến xe gửi" className="p-inputtext-sm" style={{ width: '100%', marginTop: '5px' }} />
-          </div>
-        </div>
-      </div> */}
-
       {/* DataTable hiển thị đơn hàng */}
       <DataTable
         value={donHangList}
@@ -189,8 +141,8 @@ const DonHangChuyenXeDialog = ({ visible, onHide, selectedChuyenXe }) => {
         <Column field="ma_van_don" header="Mã Vận Đơn" sortable bodyStyle={{ padding: '10px' }} />
         <Column field="ten_nguoi_nhan" header="Tên Người Nhận" sortable bodyStyle={{ padding: '10px' }} />
         <Column field="so_dien_thoai_nhan" header="Số Điện Thoại" sortable bodyStyle={{ padding: '10px' }} />
-        <Column field="ben_xe_gui_ten" header="Bến Xe Gửi" sortable bodyStyle={{ padding: '10px' }} />
-        <Column field="ben_xe_nhan_ten" header="Bến Xe Nhận" sortable bodyStyle={{ padding: '10px' }} />
+        <Column field="ten_ben_xe_gui" header="Bến Xe Gửi" sortable bodyStyle={{ padding: '10px' }} />
+        <Column field="ten_ben_xe_nhan" header="Bến Xe Nhận" sortable bodyStyle={{ padding: '10px' }} />
         <Column field="trang_thai" header="Trạng Thái" sortable bodyStyle={{ padding: '10px' }} />
         <Column field="ngay_tao" header="Ngày Tạo" sortable body={(rowData) => new Date(rowData.ngay_tao).toLocaleString('vi-VN')} bodyStyle={{ padding: '10px' }} />
       </DataTable>

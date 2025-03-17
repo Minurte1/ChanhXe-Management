@@ -24,7 +24,6 @@ const DonHangChuyenXeService = (axiosInstance) => ({
   // Thêm nhiều đơn hàng vào một chuyến xe
   createDonHangChuyenXe: async (data) => {
     try {
-      console.log('data', data);
       const response = await axiosInstance.post(API_URL, data);
       return response.data;
     } catch (error) {
@@ -32,7 +31,16 @@ const DonHangChuyenXeService = (axiosInstance) => ({
       throw error;
     }
   },
-
+  // Thêm nhiều đơn hàng vào một chuyến xe
+  startChuyenXe: async (data) => {
+    try {
+      const response = await axiosInstance.post(`${API_URL}/start-chuyen-xe`, data);
+      return response.data;
+    } catch (error) {
+      console.log('error', error);
+      throw error;
+    }
+  },
   // Cập nhật bản ghi don_hang_chuyen_xe
   updateDonHangChuyenXe: async (id, data) => {
     try {

@@ -556,6 +556,48 @@ const createOrderAndCustomer = async (req, res) => {
     connection.release();
   }
 };
+const gethDonHangAddChuyenXe = async (req, res) => {
+  const { trang_thai, id_ben_xe_nhan, id_ben_xe_gui } = req.query;
+
+  try {
+    const [rows] = await pool.execute(
+      `SELECT 
+          dh.*, 
+          CASE 
+              WHEN dhcx.don_hang_id IS NULL THEN FALSE
+              ELSE TRUE
+          END AS isAddDHChuyenXe,
+          bx_gui.ten_ben_xe AS ten_ben_xe_gui,
+          bx_gui.dia_chi AS dia_chi_gui,
+          bx_gui.tinh AS tinh_gui,
+          bx_gui.huyen AS huyen_gui,
+          bx_gui.xa AS xa_gui,
+          bx_nhan.ten_ben_xe AS ten_ben_xe_nhan,
+          bx_nhan.dia_chi AS dia_chi_nhan,
+          bx_nhan.tinh AS tinh_nhan,
+          bx_nhan.huyen AS huyen_nhan,
+          bx_nhan.xa AS xa_nhan
+      FROM 
+          don_hang dh
+      LEFT JOIN 
+          don_hang_chuyen_xe dhcx ON dh.id = dhcx.don_hang_id
+      LEFT JOIN 
+          ben_xe bx_gui ON dh.id_ben_xe_gui = bx_gui.id
+      LEFT JOIN 
+          ben_xe bx_nhan ON dh.id_ben_xe_nhan = bx_nhan.id
+      WHERE 
+          dh.trang_thai = ? 
+          AND dh.id_ben_xe_nhan = ? 
+          AND dh.id_ben_xe_gui = ?`,
+      [trang_thai, id_ben_xe_nhan, id_ben_xe_gui]
+    );
+
+    res.json({ EC: 1, DT: rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ EC: -1, EM: "Lỗi server" });
+  }
+};
 
 module.exports = {
   getAllOrders,
@@ -564,4 +606,5 @@ module.exports = {
   updateOrder,
   deleteOrder,
   createOrderAndCustomer,
+  gethDonHangAddChuyenXe,
 };

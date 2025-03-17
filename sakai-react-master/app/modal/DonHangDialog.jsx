@@ -313,7 +313,7 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="trong_luong">Trọng Lượng</label>
-        <InputText id="trong_luong" value={formData.trong_luong || ''} onChange={(e) => onInputChange(e, 'trong_luong')} className="mt-2 h-10" placeholder="Ví dụ: 10 kg" />
+        <InputText type="number" id="trong_luong" value={formData.trong_luong || ''} onChange={(e) => onInputChange(e, 'trong_luong')} className="mt-2 h-10" placeholder="Ví dụ: 10 kg" />
         {errors.trong_luong && <small className="p-error">{errors.trong_luong}</small>}
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
@@ -323,7 +323,7 @@ const OrderDialog = ({ visible, onHide, isNew, formData, onInputChange, onSave, 
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>
         <label htmlFor="so_kien">Số Kiện</label>
-        <InputText id="so_kien" value={formData.so_kien || ''} onChange={(e) => onInputChange(e, 'so_kien')} className="mt-2 h-10" placeholder="Ví dụ: 2" />
+        <InputText type="number" id="so_kien" value={formData.so_kien || ''} onChange={(e) => onInputChange(e, 'so_kien')} className="mt-2 h-10" placeholder="Ví dụ: 2" />
         {errors.so_kien && <small className="p-error">{errors.so_kien}</small>}
       </div>
       <div className="p-field" style={{ margin: '8px 0', minHeight: '70px' }}>

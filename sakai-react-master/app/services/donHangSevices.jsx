@@ -10,6 +10,15 @@ const OrderService = (axiosInstance) => ({
       throw error;
     }
   },
+  getDonHangChuyenXe: async (params = {}) => {
+    try {
+      const response = await axiosInstance.get(`${API_URL}/orders-chuyen-xe`, { params });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      throw error;
+    }
+  },
   getOrderById: async (id) => {
     try {
       const response = await axiosInstance.get(`${API_URL}/orders/${id}`);
@@ -58,7 +67,7 @@ const OrderService = (axiosInstance) => ({
       console.error('Error creating order and customer:', error);
       throw error;
     }
-  },
+  }
 });
 
 export default OrderService;

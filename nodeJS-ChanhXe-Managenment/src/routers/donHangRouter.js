@@ -8,8 +8,10 @@ const {
   updateOrder,
   deleteOrder,
   createOrderAndCustomer,
+  gethDonHangAddChuyenXe,
 } = require("../controllers/donHangController");
 const { checkUserJWT } = require("../middleware/JWTaction");
+router.get("/orders-chuyen-xe", checkUserJWT, gethDonHangAddChuyenXe);
 router.get("/orders", checkUserJWT, getAllOrders);
 router.get("/orders/:id", checkUserJWT, getOrderById);
 router.post("/orders", checkUserJWT, createOrder);
