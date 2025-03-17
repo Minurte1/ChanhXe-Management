@@ -165,13 +165,13 @@ const createTrip = async (req, res) => {
       return res
         .status(403)
         .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
-    };
+    }
 
     if (!xe_id || !tai_xe_id || !thoi_gian_xuat_ben || !trang_thai) {
       return res
         .status(400)
         .json({ EM: "Thiếu thông tin cần thiết", EC: -1, DT: {} });
-    };
+    }
 
     // Định dạng thời gian xuất bến
     const thoiGianXuatBen = moment(thoi_gian_xuat_ben).format(
@@ -325,24 +325,44 @@ const updateTrip = async (req, res) => {
 // Xóa chuyến xe
 const deleteTrip = async (req, res) => {
   // #swagger.tags = ['Chuyến xe']
+  const connection = await pool.getConnection();
   try {
     const { id } = req.params;
-    const [result] = await pool.query("DELETE FROM chuyen_xe WHERE id = ?", [
-      id,
-    ]);
-    if (result.affectedRows === 0) {
+    await connection.beginTransaction();
+
+    // Xóa các đơn hàng liên quan trong don_hang_chuyen_xe
+    const [orderResult] = await connection.query(
+      "DELETE FROM don_hang_chuyen_xe WHERE don_hang_chuyen_xe_id = ?",
+      [id]
+    );
+
+    // Xóa chuyến xe
+    const [tripResult] = await connection.query(
+      "DELETE FROM chuyen_xe WHERE id = ?",
+      [id]
+    );
+
+    if (tripResult.affectedRows === 0) {
+      await connection.rollback();
       return res
         .status(404)
         .json({ EM: "Không tìm thấy chuyến xe để xóa", EC: -1, DT: {} });
     }
-    return res
-      .status(200)
-      .json({ EM: "Xóa chuyến xe thành công", EC: 1, DT: {} });
+
+    await connection.commit();
+    return res.status(200).json({
+      EM: "Xóa chuyến xe và các đơn hàng liên quan thành công",
+      EC: 1,
+      DT: {},
+    });
   } catch (error) {
+    await connection.rollback();
     console.error("Error in deleteTrip:", error);
     return res
       .status(500)
       .json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
+  } finally {
+    connection.release();
   }
 };
 

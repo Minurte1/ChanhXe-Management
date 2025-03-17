@@ -131,9 +131,16 @@ const DanhSachNhanVien = () => {
 
   const deleteNhanVien = async (nhanVien) => {
     try {
-      await userService.deleteUser(nhanVien.id);
+      console.log('nhanVien', nhanVien);
       if (nhanVien.vai_tro === 'tai_xe' || nhanVien.vai_tro === 'tai_xe_phu') {
-        await taiXeServices.deleteDriver(nhanVien.tai_xe_id);
+        console.log('nhanVien.tai_xe_id', nhanVien.tai_xe_id);
+        if (nhanVien.tai_xe_id) {
+          await taiXeServices.deleteDriver(nhanVien.tai_xe_id);
+        } else {
+          await userService.deleteUser(nhanVien.id);
+        }
+      } else {
+        await userService.deleteUser(nhanVien.id);
       }
       fetchNhanVien();
       showSuccess('Xóa nhân viên thành công');
@@ -153,9 +160,10 @@ const DanhSachNhanVien = () => {
         await userService.updateUser(filteredData.id, filteredData);
         if (filteredData.vai_tro === 'tai_xe' || filteredData.vai_tro === 'tai_xe_phu') {
           const taiXeData = transformFormData(filteredData);
+
           // console.log("id", taiXeData.id);
           // console.log("nguoi_dung_id", taiXeData.nguoi_dung_id);
-          await taiXeServices.updateDriver(taiXeData.id, taiXeData);
+          await taiXeServices.updateDriver(filteredData.id, taiXeData);
         }
       }
 
@@ -233,7 +241,6 @@ const DanhSachNhanVien = () => {
     return () => clearTimeout(timer); // Xóa timer khi searchTerm thay đổi hoặc component unmount
   }, [searchTerm, nhanVien]);
 
-  console.log('nhan', nhanVien);
   return (
     <div className="p-grid">
       <Toast ref={toast} />

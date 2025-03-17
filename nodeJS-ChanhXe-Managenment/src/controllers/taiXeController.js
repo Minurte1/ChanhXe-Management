@@ -269,7 +269,6 @@ const createDriver = async (req, res) => {
   }
 };
 
-// Cập nhật tài xế
 const updateDriver = async (req, res) => {
   // #swagger.tags = ['Tài xế']
   try {
@@ -277,24 +276,19 @@ const updateDriver = async (req, res) => {
     const updates = req.body;
     const id_nguoi_cap_nhat = req.user?.id;
 
-    // Kiểm tra quyền thực hiện
     if (!id_nguoi_cap_nhat) {
       return res
         .status(403)
         .json({ EM: "Không có quyền thực hiện", EC: -1, DT: {} });
     }
 
-    // Kiểm tra dữ liệu cập nhật
     if (Object.keys(updates).length === 0) {
       return res
         .status(400)
         .json({ EM: "Không có dữ liệu cập nhật", EC: -1, DT: {} });
     }
 
-    // Danh sách các trường hợp lệ trong bảng tai_xe
-    const validFields = ["nguoi_dung_id", "bang_lai", "trang_thai"];
-
-    // Lọc các trường hợp lệ từ dữ liệu được truyền vào
+    const validFields = ["bang_lai", "trang_thai"];
     const filteredUpdates = {};
     for (const key of validFields) {
       if (updates.hasOwnProperty(key)) {
@@ -302,38 +296,55 @@ const updateDriver = async (req, res) => {
       }
     }
 
-    // Kiểm tra nếu không có trường hợp lệ nào
     if (Object.keys(filteredUpdates).length === 0) {
       return res
         .status(400)
         .json({ EM: "Không có trường hợp lệ để cập nhật", EC: -1, DT: {} });
     }
 
-    // Tạo câu lệnh SQL động
+    // 1. Thử update theo id tài_xe
     const fields = Object.keys(filteredUpdates)
       .map((key) => `${key} = ?`)
       .join(", ");
     const values = Object.values(filteredUpdates);
 
-    // Thêm id_nguoi_cap_nhat và id vào cuối mảng values
-    values.push(id_nguoi_cap_nhat, id);
+    values.push(id_nguoi_cap_nhat);
 
-    const updateQuery = `UPDATE tai_xe SET ${fields}, ngay_cap_nhat = NOW(), id_nguoi_cap_nhat = ? WHERE id = ?`;
+    const updateByIdQuery = `UPDATE tai_xe SET ${fields}, ngay_cap_nhat = NOW(), id_nguoi_cap_nhat = ? WHERE id = ?`;
+    const [resultById] = await pool.query(updateByIdQuery, [...values, id]);
 
-    // Thực thi truy vấn
-    const [result] = await pool.query(updateQuery, values);
-
-    // Kiểm tra xem có bản ghi nào được cập nhật không
-    if (result.affectedRows === 0) {
+    if (resultById.affectedRows > 0) {
       return res
-        .status(404)
-        .json({ EM: "Không tìm thấy tài xế để cập nhật", EC: -1, DT: {} });
+        .status(200)
+        .json({ EM: "Cập nhật tài xế thành công", EC: 1, DT: {} });
     }
 
-    // Trả về kết quả thành công
+    // 2. Nếu không tìm thấy tài_xe, kiểm tra xem id này có tồn tại trong bảng nguoi_dung không
+    const [nguoiDungRows] = await pool.query(
+      `SELECT * FROM nguoi_dung WHERE id = ?`,
+      [id]
+    );
+
+    if (nguoiDungRows.length === 0) {
+      return res.status(404).json({
+        EM: "Không tìm thấy người dùng để thêm tài xế",
+        EC: -1,
+        DT: {},
+      });
+    }
+
+    // 3. Tiến hành thêm mới vào bảng tai_xe
+    const insertQuery = `INSERT INTO tai_xe (nguoi_dung_id, bang_lai, trang_thai, id_nguoi_cap_nhat, ngay_tao, ngay_cap_nhat) VALUES (?, ?, ?, ?, NOW(), NOW())`;
+    await pool.query(insertQuery, [
+      id, // chính là nguoi_dung_id
+      updates.bang_lai || null,
+      updates.trang_thai || 1,
+      id_nguoi_cap_nhat,
+    ]);
+
     return res
-      .status(200)
-      .json({ EM: "Cập nhật tài xế thành công", EC: 1, DT: {} });
+      .status(201)
+      .json({ EM: "Thêm mới tài xế thành công", EC: 1, DT: {} });
   } catch (error) {
     console.error("Error in updateDriver:", error);
     return res
@@ -341,18 +352,33 @@ const updateDriver = async (req, res) => {
       .json({ EM: `Lỗi: ${error.message}`, EC: -1, DT: {} });
   }
 };
+
 // Xóa tài xế
 const deleteDriver = async (req, res) => {
-  // #swagger.tags = ['Tài xế']
+  const connection = await pool.getConnection();
+  await connection.beginTransaction();
+
   try {
     const { id } = req.params;
 
-    // Bắt đầu một transaction để đảm bảo tính toàn vẹn dữ liệu
-    const connection = await pool.getConnection();
-    await connection.beginTransaction();
+    // Lấy nguoi_dung_id từ tài xế trước khi xóa
+    const [selectNhanVien] = await connection.query(
+      "SELECT nguoi_dung_id FROM tai_xe WHERE id = ?",
+      [id]
+    );
+
+    if (selectNhanVien.length === 0) {
+      await connection.rollback();
+      connection.release();
+      return res
+        .status(404)
+        .json({ EM: "Không tìm thấy tài xế", EC: -1, DT: {} });
+    }
+
+    const nguoi_dung_id = selectNhanVien[0].nguoi_dung_id;
 
     try {
-      // Thử xóa tài xế
+      // Xóa tài xế
       const [deleteResult] = await connection.query(
         "DELETE FROM tai_xe WHERE id = ?",
         [id]
@@ -366,16 +392,57 @@ const deleteDriver = async (req, res) => {
           .json({ EM: "Không tìm thấy tài xế để xóa", EC: -1, DT: {} });
       }
 
-      // Nếu xóa thành công, commit transaction
-      await connection.commit();
-      connection.release();
-      return res
-        .status(200)
-        .json({ EM: "Xóa tài xế thành công", EC: 1, DT: {} });
+      // Sau khi xóa tài xế -> Xử lý người dùng
+      try {
+        const [deleteUserResult] = await connection.query(
+          "DELETE FROM nguoi_dung WHERE id = ?",
+          [nguoi_dung_id]
+        );
+
+        if (deleteUserResult.affectedRows === 0) {
+          await connection.rollback();
+          connection.release();
+          return res
+            .status(404)
+            .json({ EM: "Không tìm thấy người dùng để xóa", EC: -1, DT: {} });
+        }
+
+        await connection.commit();
+        connection.release();
+        return res
+          .status(200)
+          .json({ EM: "Xóa tài xế và người dùng thành công", EC: 1, DT: {} });
+      } catch (userDeleteError) {
+        if (userDeleteError.errno === 1451) {
+          const [updateUserResult] = await connection.query(
+            "UPDATE nguoi_dung SET trang_thai = 'da_xoa' WHERE id = ?",
+            [nguoi_dung_id]
+          );
+
+          if (updateUserResult.affectedRows === 0) {
+            await connection.rollback();
+            connection.release();
+            return res.status(404).json({
+              EM: "Không tìm thấy người dùng để cập nhật",
+              EC: -1,
+              DT: {},
+            });
+          }
+
+          await connection.commit();
+          connection.release();
+          return res.status(200).json({
+            EM: "Tài xế đã xóa, người dùng đang được sử dụng nên đã cập nhật trạng thái thành 'da_xoa'",
+            EC: 1,
+            DT: {},
+          });
+        }
+
+        throw userDeleteError;
+      }
     } catch (deleteError) {
-      // Nếu lỗi do ràng buộc khóa ngoại (error code 1451 trong MySQL)
+      // Trường hợp không xóa được tài xế vì khóa ngoại
       if (deleteError.errno === 1451) {
-        // Cập nhật trạng thái thành ngung_hoat_dong
         const [updateResult] = await connection.query(
           "UPDATE tai_xe SET trang_thai = 'da_xoa' WHERE id = ?",
           [id]
@@ -389,21 +456,62 @@ const deleteDriver = async (req, res) => {
             .json({ EM: "Không tìm thấy tài xế để cập nhật", EC: -1, DT: {} });
         }
 
-        await connection.commit();
-        connection.release();
-        return res.status(200).json({
-          EM: "Tài xế đang được sử dụng, đã cập nhật trạng thái thành ngừng hoạt động",
-          EC: 1,
-          DT: {},
-        });
+        // Sau khi update tài xế -> xử lý người dùng
+        try {
+          const [deleteUserResult] = await connection.query(
+            "DELETE FROM nguoi_dung WHERE id = ?",
+            [nguoi_dung_id]
+          );
+
+          if (deleteUserResult.affectedRows === 0) {
+            await connection.rollback();
+            connection.release();
+            return res
+              .status(404)
+              .json({ EM: "Không tìm thấy người dùng để xóa", EC: -1, DT: {} });
+          }
+
+          await connection.commit();
+          connection.release();
+          return res.status(200).json({
+            EM: "Tài xế đã ngừng hoạt động, và người dùng đã được xóa thành công",
+            EC: 1,
+            DT: {},
+          });
+        } catch (userDeleteError) {
+          if (userDeleteError.errno === 1451) {
+            const [updateUserResult] = await connection.query(
+              "UPDATE nguoi_dung SET trang_thai = 'da_xoa' WHERE id = ?",
+              [nguoi_dung_id]
+            );
+
+            if (updateUserResult.affectedRows === 0) {
+              await connection.rollback();
+              connection.release();
+              return res.status(404).json({
+                EM: "Không tìm thấy người dùng để cập nhật",
+                EC: -1,
+                DT: {},
+              });
+            }
+
+            await connection.commit();
+            connection.release();
+            return res.status(200).json({
+              EM: "Tài xế đã ngừng hoạt động và người dùng cũng đã cập nhật thành 'da_xoa'",
+              EC: 1,
+              DT: {},
+            });
+          }
+
+          throw userDeleteError;
+        }
       }
 
-      // Nếu là lỗi khác, throw lại để xử lý ở catch ngoài
       throw deleteError;
     }
   } catch (error) {
     console.error("Error in deleteDriver:", error);
-    // Đảm bảo connection được release nếu còn trong pool
     if (connection) {
       await connection.rollback();
       connection.release();

@@ -10,6 +10,8 @@ import DonHangChuyenXeDialog from '../../../modal/DonHangChuyenXeDialog';
 import spServices from '@/app/share/share-services/sp-services';
 import { useAxios } from '@/app/authentication/useAxiosClient';
 import { ReduxExportServices } from '@/app/redux/redux-services/services-redux-export';
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+
 const DanhSachChuyenXe = () => {
   const [tripList, setTripList] = useState([]);
   const [displayDialog, setDisplayDialog] = useState(false);
@@ -100,6 +102,16 @@ const DanhSachChuyenXe = () => {
       showError('Lỗi khi xóa chuyến xe');
     }
   };
+  const confirmDeleteTrip = (id) => {
+    confirmDialog({
+      message: 'Bạn có chắc chắn muốn xóa chuyến xe này?',
+      header: 'Xác nhận',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Đồng ý',
+      rejectLabel: 'Hủy',
+      accept: () => deleteTrip(id)
+    });
+  };
 
   const saveTrip = async () => {
     console.log('formData', formData);
@@ -180,7 +192,9 @@ const DanhSachChuyenXe = () => {
                   {rowData.trang_thai === 'cho_xuat_ben' && (
                     <>
                       <Button style={{ height: '30px', width: '30px' }} icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editTrip(rowData)} />
-                      <Button icon="pi pi-trash" style={{ marginLeft: '5px', height: '30px', width: '30px' }} className="p-button-rounded p-button-warning" onClick={() => deleteTrip(rowData.chuyen_xe_id)} />
+
+                      <Button icon="pi pi-trash" style={{ marginLeft: '5px', height: '30px', width: '30px' }} className="p-button-rounded p-button-warning" onClick={() => confirmDeleteTrip(rowData.chuyen_xe_id)} />
+
                       <Button icon="pi pi-plus" style={{ height: '30px', width: '30px', marginLeft: '5px' }} className="p-button-rounded p-button-info" onClick={() => openDonHangDialog(rowData)} tooltip="Thêm đơn hàng" />
                     </>
                   )}
@@ -211,6 +225,8 @@ const DanhSachChuyenXe = () => {
         onInputChange={onInputChange}
         onSave={saveTrip}
       />
+      <Toast ref={toast} />
+      <ConfirmDialog />
     </div>
   );
 };
