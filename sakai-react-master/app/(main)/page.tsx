@@ -23,7 +23,8 @@ const Dashboard = () => {
     labels: [],
     datasets: []
   });
-
+  const [percentChange, setPercentChange] = useState(0);
+  const [newCustomersThis_week, setNewCustomersThisWeek] = useState(0);
   const menu1 = useRef<Menu>(null);
   const menu2 = useRef<Menu>(null);
   const [lineOptions, setLineOptions] = useState<ChartOptions>({});
@@ -61,15 +62,49 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setTotalOrders(await dashboardService.getTotalOrders());
-        setRevenue(await dashboardService.getRevenue());
-        setTotalCustomers(await dashboardService.getTotalCustomers());
-        setTripStats(await dashboardService.getActiveTrips());
-        setRecentOrders(await dashboardService.getRecentOrders());
-        setPopularTypes(await dashboardService.getPopularTypes());
-        setNewOrdersToday(await dashboardService.getNewOrdersToday());
-        setTripsToday(await dashboardService.getTripsToday());
-        setRevenueByMonth(await dashboardService.getRevenueByMonth());
+        const [totalOrdersRes, revenueRes, totalCustomersRes, tripStatsRes, recentOrdersRes, popularTypesRes, newOrdersTodayRes, tripsTodayRes, revenueByMonthRes] = await Promise.all([
+          dashboardService.getTotalOrders(),
+          dashboardService.getRevenue(),
+          dashboardService.getTotalCustomers(),
+          dashboardService.getActiveTrips(),
+          dashboardService.getRecentOrders(),
+          dashboardService.getPopularTypes(),
+          dashboardService.getNewOrdersToday(),
+          dashboardService.getTripsToday(),
+          dashboardService.getRevenueByMonth()
+        ]);
+
+        // Xử lý dữ liệu ở đây
+        setTotalOrders(totalOrdersRes.total_orders || 0);
+        setRevenue(revenueRes.total_revenue || 0);
+
+        setPercentChange(revenueRes.percent_change);
+        setTotalCustomers(totalCustomersRes.total_customers || 0);
+
+        setNewCustomersThisWeek(totalCustomersRes.new_customers_this_week || 0);
+
+        setTripStats({
+          active_trips: tripStatsRes.active_trips || 0,
+          arrived_trips: tripStatsRes.arrived_trips || 0
+        });
+        setRecentOrders(recentOrdersRes || []);
+        setPopularTypes(popularTypesRes || []);
+        setNewOrdersToday(newOrdersTodayRes || []);
+        setTripsToday(tripsTodayRes || []);
+        // Chart xử lý riêng
+        setRevenueByMonth({
+          labels: (revenueByMonthRes || []).map((item: any) => `Tháng ${item.month}`),
+          datasets: [
+            {
+              label: 'Doanh thu',
+              data: (revenueByMonthRes || []).map((item: any) => item.revenue || 0),
+              fill: false,
+              backgroundColor: '#2f4860',
+              borderColor: '#2f4860',
+              tension: 0.4
+            }
+          ]
+        });
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
       }
@@ -112,8 +147,9 @@ const Dashboard = () => {
               <i className="pi pi-map-marker text-orange-500 text-xl" />
             </div>
           </div>
-          <span className="text-green-500 font-medium">+52% </span>
-          <span className="text-500">so với tuần trước</span>
+          <span className={`${percentChange >= 0 ? 'text-green-500' : 'text-red-500'} font-medium`}>{percentChange >= 0 ? `+${percentChange}%` : `${percentChange}%`}</span>
+
+          <span className="text-500"> so với tuần trước</span>
         </div>
       </div>
       <div className="col-12 lg:col-6 xl:col-3">
@@ -127,7 +163,7 @@ const Dashboard = () => {
               <i className="pi pi-inbox text-cyan-500 text-xl" />
             </div>
           </div>
-          <span className="text-green-500 font-medium">520 </span>
+          <span className="text-green-500 font-medium">{newCustomersThis_week} </span>
           <span className="text-500">mới đăng ký</span>
         </div>
       </div>
@@ -154,8 +190,9 @@ const Dashboard = () => {
           <DataTable value={recentOrders} rows={5} paginator responsiveLayout="scroll">
             <Column field="ma_van_don" header="Mã vận đơn" sortable style={{ width: '35%' }} />
             <Column field="ten_nguoi_nhan" header="Người nhận" sortable style={{ width: '35%' }} />
+            <Column field="ten_nguoi_gui" header="Người gửi" sortable style={{ width: '35%' }} />
             <Column field="cuoc_phi" header="Cước phí" sortable style={{ width: '20%' }} body={(data) => formatCurrency(data?.cuoc_phi || 0)} />
-            <Column header="Xem" style={{ width: '10%' }} body={() => <Button icon="pi pi-search" text />} />
+            {/* <Column header="Xem" style={{ width: '10%' }} body={() => <Button icon="pi pi-search" text />} /> */}
           </DataTable>
         </div>
         <div className="card">

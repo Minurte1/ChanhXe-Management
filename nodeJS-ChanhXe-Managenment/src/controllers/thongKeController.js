@@ -14,26 +14,62 @@ const getTotalOrders = async (req, res) => {
 
 const getRevenue = async (req, res) => {
   try {
-    const [rows] = await pool.execute(
-      "SELECT SUM(cuoc_phi) as total_revenue FROM don_hang"
-    );
-    res.json(rows[0]);
+    // Doanh thu tuần này
+    const [currentWeekRows] = await pool.execute(`
+      SELECT SUM(cuoc_phi) AS total_revenue
+      FROM don_hang
+      WHERE YEARWEEK(ngay_tao, 1) = YEARWEEK(CURDATE(), 1)
+    `);
+
+    // Doanh thu tuần trước
+    const [lastWeekRows] = await pool.execute(`
+      SELECT SUM(cuoc_phi) AS total_revenue
+      FROM don_hang
+      WHERE YEARWEEK(ngay_tao, 1) = YEARWEEK(CURDATE() - INTERVAL 1 WEEK, 1)
+    `);
+
+    const currentRevenue = currentWeekRows[0].total_revenue || 0;
+    const lastRevenue = lastWeekRows[0].total_revenue || 0;
+
+    // Tính phần trăm tăng/giảm
+    let percentChange = 0;
+    if (lastRevenue > 0) {
+      percentChange = ((currentRevenue - lastRevenue) / lastRevenue) * 100;
+    }
+
+    res.json({
+      total_revenue: currentRevenue,
+      percent_change: Math.round(percentChange),
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-//Thống kê khách hàng
+// Thống kê khách hàng
 const getTotalCustomers = async (req, res) => {
   try {
-    const [rows] = await pool.execute(
+    // Tổng số khách hàng
+    const [totalRows] = await pool.execute(
       "SELECT COUNT(*) as total_customers FROM khach_hang"
     );
-    res.json(rows[0]);
+
+    // Số lượng khách hàng mới trong tuần này
+    const [newThisWeekRows] = await pool.execute(`
+      SELECT COUNT(*) AS new_customers_this_week
+      FROM khach_hang
+      WHERE YEARWEEK(ngay_tao, 1) = YEARWEEK(CURDATE(), 1)
+    `);
+
+    res.json({
+      total_customers: totalRows[0].total_customers || 0,
+      new_customers_this_week: newThisWeekRows[0].new_customers_this_week || 0,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
 // Thống kê các chuyến xe đang vận chuyển
 const getActiveTrips = async (req, res) => {
   try {
@@ -84,13 +120,25 @@ const getOrdersByMonth = async (req, res) => {
 const getRecentOrders = async (req, res) => {
   try {
     const [rows] = await pool.execute(`
-      SELECT ma_van_don, ten_nguoi_nhan, cuoc_phi, trang_thai 
-      FROM don_hang 
-      ORDER BY ngay_tao DESC 
+      SELECT 
+        dh.ma_van_don, 
+        dh.ten_nguoi_nhan, 
+        dh.cuoc_phi, 
+        dh.trang_thai,
+        kh.id AS nguoi_gui_id,
+        kh.ho_ten AS ten_nguoi_gui,
+        kh.so_dien_thoai AS khach_hang_so_dien_thoai,
+        kh.dia_chi AS khach_hang_dia_chi,
+        kh.ngay_tao AS khach_hang_ngay_tao,
+        kh.ngay_cap_nhat AS khach_hang_ngay_cap_nhat
+      FROM don_hang dh
+      JOIN khach_hang kh ON dh.nguoi_gui_id = kh.id
+      ORDER BY dh.ngay_tao DESC 
       LIMIT 5
     `);
     res.json(rows);
   } catch (error) {
+    console.log("error", error);
     res.status(500).json({ error: error.message });
   }
 };
