@@ -167,7 +167,7 @@ const getMenuItems = (role, selectedRole = null) => {
           { label: "Trang chủ", url: "/", icon: "pi pi-home" },
           {
             label: "Các giao dịch của bạn",
-            url: "/",
+            url: "/khach-hang/thong-tin-giao-dich",
             icon: "pi pi-money-bill",
           },
         ],

@@ -7,7 +7,8 @@ const spServices = {
       tai_xe: 'Tài Xế',
       nhan_vien_dieu_phoi: 'Nhân Viên Điều Phối',
       nhan_vien_giao_dich: 'Nhân Viên Giao Dịch',
-      admin: 'Người Quản Trị'
+      admin: 'Người Quản Trị',
+      khach_hang: 'Khách Hàng',
       // Bạn tự thêm các vai trò khác vào đây
     };
     return vaiTroMap[vaiTro] || vaiTro;

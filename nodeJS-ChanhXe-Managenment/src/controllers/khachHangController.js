@@ -309,6 +309,7 @@ const loginCustomer = async (req, res) => {
         id_nguoi_cap_nhat: user.id_nguoi_cap_nhat,
         ngay_cap_nhat: user.ngay_cap_nhat,
         ngay_tao: user.ngay_tao,
+        vai_tro: "khach_hang"
       },
       process.env.JWT_SECRET,
       { expiresIn: "5h" }
@@ -322,6 +323,7 @@ const loginCustomer = async (req, res) => {
         id_nguoi_cap_nhat: user.id_nguoi_cap_nhat,
         ngay_cap_nhat: user.ngay_cap_nhat,
         ngay_tao: user.ngay_tao,
+        vai_tro: "khach_hang"
       },
       process.env.JWT_REFRESH_SECRET,
       { expiresIn: "7d" }
@@ -347,6 +349,7 @@ const loginCustomer = async (req, res) => {
           id_nguoi_cap_nhat: user.id_nguoi_cap_nhat,
           ngay_cap_nhat: user.ngay_cap_nhat,
           ngay_tao: user.ngay_tao,
+          vai_tro: "khach_hang"
         },
       },
     });
