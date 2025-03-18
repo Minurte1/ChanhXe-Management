@@ -23,7 +23,13 @@ interface Order {
 
 interface Trip {
   xe_id: string;
-  thoi_gian_xuat_ben: string; // hoặc Date nếu backend trả ISO string
+  bien_so: string;
+  tai_xe_nguoi_dung_id: number;
+  ten_tai_xe: string;
+  sdt_tai_xe: string;
+  thoi_gian_xuat_ben: string;
+  ten_ben_xe_nhan: string;
+  ten_ben_xe_gui: string;
 }
 
 const Dashboard = () => {
@@ -136,6 +142,17 @@ const Dashboard = () => {
     else applyDarkTheme();
   }, [layoutConfig.colorScheme]);
 
+  const translateLoaiHang = (loai: string) => {
+    const map: { [key: string]: string } = {
+      hang_de_vo: 'Hàng Dễ Vỡ',
+      hang_thong_thuong: 'Hàng Thông Thường',
+      hang_nguy_hiem: 'Hàng Nguy Hiểm',
+      hang_dong_lanh: 'Hàng Đông Lạnh',
+      hang_kho: 'Hàng Khô'
+    };
+    return map[loai] || loai;
+  };
+
   return (
     <div className="grid">
       {/* Tổng quan */}
@@ -232,7 +249,7 @@ const Dashboard = () => {
             {popularTypes.map((item, index) => (
               <li key={index} className="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4">
                 <div>
-                  <span className="text-900 font-medium mr-2 mb-1 md:mb-0">{item.loai_hang_hoa}</span>
+                  <span className="text-900 font-medium mr-2 mb-1 md:mb-0">{translateLoaiHang(item.loai_hang_hoa)}</span>
                   <div className="mt-1 text-600">{item.order_count} đơn</div>
                 </div>
                 <div className="mt-2 md:mt-0 flex align-items-center">
@@ -291,7 +308,8 @@ const Dashboard = () => {
                   <i className="pi pi-truck text-xl text-orange-500" />
                 </div>
                 <span className="text-700 line-height-3">
-                  Chuyến xe <span className="text-blue-500 font-medium">{trip.xe_id}</span> đã xuất bến lúc {new Date(trip.thoi_gian_xuat_ben).toLocaleTimeString()}.
+                  Chuyến xe <span className="text-blue-500 font-medium">{trip.bien_so}</span> đã xuất bến lúc {new Date(trip.thoi_gian_xuat_ben).toLocaleTimeString()} từ bến <span className="text-blue-500 font-medium">{trip.ten_ben_xe_gui}</span> đến{' '}
+                  <span className="text-blue-500 font-medium">{trip.ten_ben_xe_nhan}</span> do tài xế <span className="text-green-500 font-medium">{trip.ten_tai_xe}</span>.
                 </span>
               </li>
             ))}

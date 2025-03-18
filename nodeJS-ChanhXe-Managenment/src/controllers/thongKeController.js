@@ -185,12 +185,28 @@ const getNewOrdersToday = async (req, res) => {
 const getTripsToday = async (req, res) => {
   try {
     const [rows] = await pool.execute(`
-      SELECT xe_id, thoi_gian_xuat_ben 
-      FROM chuyen_xe 
-      WHERE DATE(thoi_gian_xuat_ben) = CURDATE()
+      SELECT 
+        chuyen_xe.xe_id, 
+        xe.bien_so, 
+        tx.nguoi_dung_id AS tai_xe_nguoi_dung_id,
+        nd.ho_ten AS ten_tai_xe,
+        nd.so_dien_thoai AS sdt_tai_xe,
+        chuyen_xe.thoi_gian_xuat_ben,
+        
+        bx_nhan.ten_ben_xe AS ten_ben_xe_nhan,
+        bx_gui.ten_ben_xe AS ten_ben_xe_gui
+
+      FROM chuyen_xe
+      JOIN xe ON chuyen_xe.xe_id = xe.id
+      JOIN tai_xe AS tx ON chuyen_xe.tai_xe_id = tx.id
+      JOIN nguoi_dung AS nd ON tx.nguoi_dung_id = nd.id
+      JOIN ben_xe AS bx_nhan ON chuyen_xe.id_ben_xe_nhan = bx_nhan.id
+      JOIN ben_xe AS bx_gui ON chuyen_xe.id_ben_xe_gui = bx_gui.id
+      WHERE DATE(chuyen_xe.thoi_gian_xuat_ben) = CURDATE()
     `);
     res.json(rows);
   } catch (error) {
+    console.log("error", error);
     res.status(500).json({ error: error.message });
   }
 };
