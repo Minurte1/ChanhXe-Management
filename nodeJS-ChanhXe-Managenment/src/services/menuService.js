@@ -1,30 +1,31 @@
 const getMenuItems = (role, selectedRole = null) => {
   const menus = {
     admin: [
-      { label: "Trang chủ", url: "/", icon: "pi pi-home" },
+      // { label: "Trang chủ", url: "/", icon: "pi pi-home" },
       {
         label: "Thống kê cơ bản",
         icon: "pi pi-chart-bar",
         items: [
+          { label: "Trang chủ", url: "/", icon: "pi pi-home" },
           { label: "Thống kê hoạt động", url: "/thong-ke/thong-ke-hoat-dong" },
         ],
       },
-      {
-        label: "Báo cáo doanh thu",
-        icon: "pi pi-money-bill",
-        items: [
-          {
-            label: "Báo cáo doanh thu",
-            url: "/bao-cao/doanh-thu",
-            icon: "pi pi-chart-bar",
-          },
-          {
-            label: "Báo cáo hàng ngày",
-            url: "/bao-cao/hang-ngay",
-            icon: "pi pi-calendar",
-          },
-        ],
-      },
+      // {
+      //   label: "Báo cáo doanh thu",
+      //   icon: "pi pi-money-bill",
+      //   items: [
+      //     {
+      //       label: "Báo cáo doanh thu",
+      //       url: "/bao-cao/doanh-thu",
+      //       icon: "pi pi-chart-bar",
+      //     },
+      //     {
+      //       label: "Báo cáo hàng ngày",
+      //       url: "/bao-cao/hang-ngay",
+      //       icon: "pi pi-calendar",
+      //     },
+      //   ],
+      // },
       {
         label: "Quản lý hệ thống",
         icon: "pi pi-sliders-h",
@@ -87,7 +88,7 @@ const getMenuItems = (role, selectedRole = null) => {
         label: "Quản lý đơn hàng",
         icon: "pi pi-box",
         items: [
-          { label: "Trang chủ", url: "/", icon: "pi pi-home" },
+          // { label: "Trang chủ", url: "/", icon: "pi pi-home" },
           { label: "Đơn hàng cập bến", url: "/kho-hang", icon: "pi pi-inbox" },
           {
             label: "Tra cứu đơn hàng",
@@ -103,7 +104,7 @@ const getMenuItems = (role, selectedRole = null) => {
         label: "Quản lý điều phối",
         icon: "pi pi-map",
         items: [
-          { label: "Trang chủ", url: "/", icon: "pi pi-home" },
+          // { label: "Trang chủ", url: "/", icon: "pi pi-home" },
           {
             label: "Phân công chuyến xe",
             url: "/dieu-phoi/chuyen-xe",
@@ -145,7 +146,7 @@ const getMenuItems = (role, selectedRole = null) => {
         label: "Giao dịch đơn hàng",
         icon: "pi pi-credit-card",
         items: [
-          { label: "Trang chủ", url: "/", icon: "pi pi-home" },
+          // { label: "Trang chủ", url: "/", icon: "pi pi-home" },
           {
             label: "Giao dịch",
             url: "/don-hang/giao-dich",
