@@ -159,6 +159,20 @@ const getMenuItems = (role, selectedRole = null) => {
         ],
       },
     ],
+    khach_hang: [
+      {
+        label: "Thông tin giao dịch",
+        icon: "pi pi-credit-card",
+        items: [
+          { label: "Trang chủ", url: "/", icon: "pi pi-home" },
+          {
+            label: "Các giao dịch của bạn",
+            url: "/",
+            icon: "pi pi-money-bill",
+          },
+        ],
+      }
+    ],
   };
 
   // Nếu admin chọn 1 role con thì thêm menu của role đó

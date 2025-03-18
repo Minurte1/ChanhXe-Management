@@ -261,10 +261,117 @@ const deleteCustomer = async (req, res) => {
   }
 };
 
+const loginCustomer = async (req, res) => {
+  // #swagger.tags = ['Khách hàng']
+  const { so_dien_thoai, password } = req.body;
+
+  if (!so_dien_thoai || !password) {
+    return res.status(400).json({
+      EM: "Số điện thoại và mật khẩu không được để trống",
+      EC: 0,
+      DT: [],
+    });
+  }
+
+  try {
+    // Kiểm tra xem người dùng có tồn tại trong cơ sở dữ liệu không
+    const [rows] = await pool.query(
+      "SELECT * FROM khach_hang WHERE so_dien_thoai = ?",
+      [so_dien_thoai]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        EM: "Người dùng không tồn tại",
+        EC: 0,
+        DT: [],
+      });
+    }
+
+    const user = rows[0];
+
+    // Kiểm tra mật khẩu
+    const isPasswordValid = await bcrypt.compare(password, user.mat_khau);
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        EM: "Mật khẩu không đúng",
+        EC: 0,
+        DT: [],
+      });
+    }
+    
+    // Tạo JWT token
+    const accessToken = jwt.sign(
+      {
+        id: user.id,
+        ho_ten: user.ho_ten,
+        so_dien_thoai: user.so_dien_thoai,
+        id_nguoi_cap_nhat: user.id_nguoi_cap_nhat,
+        ngay_cap_nhat: user.ngay_cap_nhat,
+        ngay_tao: user.ngay_tao,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "5h" }
+    );
+
+    const refreshToken = jwt.sign(
+      {
+        id: user.id,
+        ho_ten: user.ho_ten,
+        so_dien_thoai: user.so_dien_thoai,
+        id_nguoi_cap_nhat: user.id_nguoi_cap_nhat,
+        ngay_cap_nhat: user.ngay_cap_nhat,
+        ngay_tao: user.ngay_tao,
+      },
+      process.env.JWT_REFRESH_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    // refresh token là HTTP-only cookie
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // Set to true in production
+      sameSite: "strict",
+    });
+
+    // Trả về token và thông tin người dùng
+    return res.status(200).json({
+      EM: "Đăng nhập thành công",
+      EC: 1,
+      DT: {
+        accessToken: accessToken,
+        userInfo: {
+          id: user.id,
+          ho_ten: user.ho_ten,
+          so_dien_thoai: user.so_dien_thoai,
+          id_nguoi_cap_nhat: user.id_nguoi_cap_nhat,
+          ngay_cap_nhat: user.ngay_cap_nhat,
+          ngay_tao: user.ngay_tao,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Error in login customer:", error);
+    return res.status(500).json({
+      EM: `Lỗi: ${error.message}`,
+      EC: -1,
+      DT: [],
+    });
+  }
+};
+
+const logoutCustomer = (req, res) => {
+  // #swagger.tags = ['Khách hàng']
+  res.clearCookie("refreshToken");
+  return res.status(200).json({ message: "Đăng xuất thành công" });
+};
+
 module.exports = {
   getAllCustomers,
   getCustomerById,
   createCustomer,
   updateCustomer,
   deleteCustomer,
+  loginCustomer,
+  logoutCustomer
 };

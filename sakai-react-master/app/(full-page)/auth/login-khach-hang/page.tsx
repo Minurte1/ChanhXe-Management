@@ -9,15 +9,14 @@ import { InputText } from 'primereact/inputtext';
 import { LayoutContext } from '../../../../layout/context/layoutcontext';
 import { classNames } from 'primereact/utils';
 import Cookies from 'js-cookie';
-import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
 import { useDispatch } from 'react-redux';
 import { login } from '../../../redux/authSlice'; // Điều chỉnh đường dẫn nếu cần
-import { fetchGoogleUserInfo, loginWithGoogle, servicesLoginUser } from '../../../services/googleAuthService'; // Điều chỉnh đường dẫn nếu cần
+import { fetchGoogleUserInfo, loginWithGoogle, servicesLoginUser, servicesLoginCustomer } from '../../../services/googleAuthService'; // Điều chỉnh đường dẫn nếu cần
 import { enqueueSnackbar } from 'notistack';
-import LoginKhachHangPage from '../login-khach-hang/page';
 
-const LoginPage = () => {
+const LoginKhachHangPage = () => {
   const [email, setEmail] = useState('');
+  const [soDienThoai, setSoDienThoai] = useState('');
   const [password, setPassword] = useState('');
   const [checked, setChecked] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -29,60 +28,16 @@ const LoginPage = () => {
 
   const containerClassName = classNames('surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden', { 'p-input-filled': layoutConfig.inputStyle === 'filled' });
 
-  // Xử lý đăng nhập Google
-  const loginGoogle = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      try {
-        const userInfo = await fetchGoogleUserInfo(tokenResponse.access_token);
-        setUser(userInfo);
-      } catch (error) {
-        console.error('Lỗi lấy thông tin Google:', error);
-        enqueueSnackbar('Lỗi đăng nhập Google!', { variant: 'error' });
-      }
-    },
-    onError: (error) => {
-      console.error('Login Failed:', error);
-      enqueueSnackbar('Đăng nhập Google thất bại!', { variant: 'error' });
-    }
-  });
-
-  // Xử lý khi có thông tin user từ Google
-  useEffect(() => {
-    if (user) {
-      const handleGoogleLogin = async () => {
-        try {
-          const loginData = await loginWithGoogle(user);
-          if (loginData) {
-            Cookies.set('accessToken', loginData.accessToken, { expires: 7 }); // Lưu token vào cookie
-            dispatch(
-              login({
-                accessToken: loginData.accessToken,
-                userInfo: loginData.userInfo
-              })
-            );
-            router.push('/admin');
-            enqueueSnackbar('Đăng nhập Google thành công!', { variant: 'success' });
-          }
-        } catch (error) {
-          console.error('Lỗi khi đăng nhập Google:', error);
-          enqueueSnackbar('Có lỗi xảy ra khi đăng nhập Google!', { variant: 'error' });
-        }
-      };
-      handleGoogleLogin();
-    }
-  }, [user, router, dispatch]);
-
-  // Xử lý đăng nhập bằng email/mật khẩu
-  const handleLogin = async () => {
+  const handleLoginCustomer = async () => {
     setLoading(true);
-    if (!email || !password) {
+    if (!soDienThoai || !password) {
       enqueueSnackbar('Vui lòng nhập đầy đủ thông tin!', { variant: 'info' });
       setLoading(false);
       return;
     }
 
     try {
-      const data = await servicesLoginUser({ email, password });
+      const data = await servicesLoginCustomer({ soDienThoai, password });
       if (data.EC === 1) {
         Cookies.set('accessToken', data.DT.accessToken, { expires: 7 }); // Lưu token vào cookie
         dispatch(
@@ -104,7 +59,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className={containerClassName} style={{ display: 'flex', flexDirection: 'column' }}>
+    <div className={containerClassName}>
       <div className="flex flex-column align-items-center justify-content-center">
         <div
           style={{
@@ -115,15 +70,15 @@ const LoginPage = () => {
         >
           <div className="w-full surface-card py-8 px-5 sm:px-8" style={{ borderRadius: '53px' }}>
             <div className="text-center mb-5">
-              <div className="text-900 text-3xl font-medium mb-3">Chào mừng, Hệ Thống Quản Lý Chành Xe</div>
+              <div className="text-900 text-3xl font-medium mb-3">Chào mừng quý khách</div>
               <span className="text-600 font-medium">Đăng nhập để tiếp tục</span>
             </div>
 
             <div>
-              <label htmlFor="email1" className="block text-900 text-xl font-medium mb-2">
-                Tên đăng nhập
+              <label htmlFor="so_dien_thoai" className="block text-900 text-xl font-medium mb-2">
+                Số điện thoại
               </label>
-              <InputText id="email1" type="text" placeholder="Tên đăng nhập" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full md:w-30rem mb-5" style={{ padding: '1rem' }} />
+              <InputText id="so_dien_thoai" type="number" placeholder="Nhập số điện thoại của bạn" value={soDienThoai} onChange={(e) => setSoDienThoai(e.target.value)} className="w-full md:w-30rem mb-5" style={{ padding: '1rem' }} />
 
               <label htmlFor="password1" className="block text-900 font-medium text-xl mb-2">
                 Mật khẩu
@@ -140,7 +95,7 @@ const LoginPage = () => {
                 </a>
               </div>
 
-              <Button label="Đăng nhập" className="w-full p-3 text-xl mb-3" onClick={handleLogin} disabled={loading} icon={loading ? 'pi pi-spin pi-spinner' : undefined} />
+              <Button label="Đăng nhập" className="w-full p-3 text-xl mb-3" onClick={handleLoginCustomer} disabled={loading} icon={loading ? 'pi pi-spin pi-spinner' : undefined} />
 
               {/* Đăng nhập bằng Google */}
               {/* <Button label="Đăng nhập với Google" className="w-full p-3 text-xl" onClick={() => loginGoogle()} disabled={loading} /> */}
@@ -148,11 +103,8 @@ const LoginPage = () => {
           </div>
         </div>
       </div>
-      <div>
-        <LoginKhachHangPage />
-      </div>
     </div>
   );
 };
 
-export default LoginPage;
+export default LoginKhachHangPage;

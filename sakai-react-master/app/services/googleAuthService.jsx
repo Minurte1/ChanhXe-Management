@@ -84,3 +84,15 @@ export const servicesLoginUser = async (formData) => {
         enqueueSnackbar(error.response.data.EM, { variant: 'info' });
     }
 };
+export const servicesLoginCustomer = async (formData) => {
+    try {
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_URL_SERVER}/login-customer`, {
+            so_dien_thoai: formData.soDienThoai,
+            password: formData.password
+        });
+        return response.data; // Trả về dữ liệu từ API
+    } catch (error) {
+        console.error('Lỗi đăng nhập:', error);
+        enqueueSnackbar(error.response.data.EM, { variant: 'info' });
+    }
+};

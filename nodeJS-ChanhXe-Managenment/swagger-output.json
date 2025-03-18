@@ -37,6 +37,50 @@
         }
       }
     },
+    "/orders-chuyen-xe": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "trang_thai",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id_ben_xe_nhan",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id_ben_xe_gui",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/orders": {
       "get": {
         "tags": [
@@ -1826,6 +1870,62 @@
         }
       }
     },
+    "/login-customer": {
+      "post": {
+        "tags": [
+          "Khách hàng"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "so_dien_thoai": {
+                  "example": "any"
+                },
+                "password": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/logout-customer": {
+      "post": {
+        "tags": [
+          "Khách hàng"
+        ],
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/tai-xe": {
       "get": {
         "tags": [
@@ -2059,6 +2159,12 @@
               "properties": {
                 "keykey": {
                   "example": "any"
+                },
+                "bang_lai": {
+                  "example": "any"
+                },
+                "trang_thai": {
+                  "example": "any"
                 }
               }
             }
@@ -2067,6 +2173,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "201": {
+            "description": "Created"
           },
           "400": {
             "description": "Bad Request"
@@ -2086,9 +2195,6 @@
         }
       },
       "delete": {
-        "tags": [
-          "Tài xế"
-        ],
         "description": "",
         "parameters": [
           {
@@ -2449,9 +2555,6 @@
         }
       },
       "post": {
-        "tags": [
-          "Đơn hàng chuyến xe"
-        ],
         "description": "",
         "parameters": [
           {
@@ -2476,8 +2579,8 @@
           }
         ],
         "responses": {
-          "201": {
-            "description": "Created"
+          "200": {
+            "description": "OK"
           },
           "400": {
             "description": "Bad Request"
@@ -2610,6 +2713,47 @@
           },
           "404": {
             "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/don-hang-chuyen-xe/start-chuyen-xe": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-pathname",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "don_hang_chuyen_xe_id": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
