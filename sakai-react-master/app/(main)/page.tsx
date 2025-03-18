@@ -10,15 +10,33 @@ import { LayoutContext } from '../../layout/context/layoutcontext';
 import { ChartData, ChartOptions } from 'chart.js';
 import DashboardService from '../services/thongKeServices';
 import { useAxios } from '../authentication/useAxiosClient';
+interface PopularType {
+  loai_hang_hoa: string;
+  order_count: number;
+  percentage: number;
+}
+interface Order {
+  ten_nguoi_nhan: string;
+  ma_van_don: string;
+  cuoc_phi: number;
+}
+
+interface Trip {
+  xe_id: string;
+  thoi_gian_xuat_ben: string; // hoặc Date nếu backend trả ISO string
+}
+
 const Dashboard = () => {
   const [totalOrders, setTotalOrders] = useState(0);
   const [revenue, setRevenue] = useState(0);
   const [totalCustomers, setTotalCustomers] = useState(0);
   const [tripStats, setTripStats] = useState({ active_trips: 0, arrived_trips: 0 });
   const [recentOrders, setRecentOrders] = useState([]);
-  const [popularTypes, setPopularTypes] = useState([]);
-  const [newOrdersToday, setNewOrdersToday] = useState([]);
-  const [tripsToday, setTripsToday] = useState([]);
+  const [popularTypes, setPopularTypes] = useState<PopularType[]>([]);
+
+  const [newOrdersToday, setNewOrdersToday] = useState<Order[]>([]);
+  const [tripsToday, setTripsToday] = useState<Trip[]>([]);
+
   const [revenueByMonth, setRevenueByMonth] = useState<ChartData>({
     labels: [],
     datasets: []
@@ -144,7 +162,7 @@ const Dashboard = () => {
               <div className="text-900 font-medium text-xl">{formatCurrency(revenue)}</div>
             </div>
             <div className="flex align-items-center justify-content-center bg-orange-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
-              <i className="pi pi-map-marker text-orange-500 text-xl" />
+              <i className="pi pi-dollar text-orange-500 text-xl" />
             </div>
           </div>
           <span className={`${percentChange >= 0 ? 'text-green-500' : 'text-red-500'} font-medium`}>{percentChange >= 0 ? `+${percentChange}%` : `${percentChange}%`}</span>
@@ -160,7 +178,7 @@ const Dashboard = () => {
               <div className="text-900 font-medium text-xl">{totalCustomers}</div>
             </div>
             <div className="flex align-items-center justify-content-center bg-cyan-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
-              <i className="pi pi-inbox text-cyan-500 text-xl" />
+              <i className="pi pi-users text-cyan-500 text-xl" />
             </div>
           </div>
           <span className="text-green-500 font-medium">{newCustomersThis_week} </span>
