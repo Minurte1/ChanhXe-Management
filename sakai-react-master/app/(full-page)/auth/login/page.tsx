@@ -23,6 +23,7 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<any>(null); // Thông tin user từ Google
   const { layoutConfig } = useContext(LayoutContext);
+  const [loginMode, setLoginMode] = useState('nhan_vien');
 
   const router = useRouter();
   const dispatch = useDispatch();
@@ -103,53 +104,74 @@ const LoginPage = () => {
     }
   };
 
+  const handleLoginMode = () => {
+    if (loginMode === 'khach_hang') {
+      setLoginMode('nhan_vien');
+    } else {
+      setLoginMode('khach_hang');
+    }
+  };
+
   return (
     <div className={containerClassName} style={{ display: 'flex', flexDirection: 'column' }}>
-      <div className="flex flex-column align-items-center justify-content-center">
-        <div
-          style={{
-            borderRadius: '56px',
-            padding: '0.3rem',
-            background: 'linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)'
-          }}
-        >
-          <div className="w-full surface-card py-8 px-5 sm:px-8" style={{ borderRadius: '53px' }}>
-            <div className="text-center mb-5">
-              <div className="text-900 text-3xl font-medium mb-3">Chào mừng, Hệ Thống Quản Lý Chành Xe</div>
-              <span className="text-600 font-medium">Đăng nhập để tiếp tục</span>
-            </div>
 
-            <div>
-              <label htmlFor="email1" className="block text-900 text-xl font-medium mb-2">
-                Tên đăng nhập
-              </label>
-              <InputText id="email1" type="text" placeholder="Tên đăng nhập" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full md:w-30rem mb-5" style={{ padding: '1rem' }} />
-
-              <label htmlFor="password1" className="block text-900 font-medium text-xl mb-2">
-                Mật khẩu
-              </label>
-              <Password inputId="password1" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Mật khẩu" toggleMask className="w-full mb-5" inputClassName="w-full p-3 md:w-30rem" />
-
-              <div className="flex align-items-center justify-content-between mb-5 gap-5">
-                <div className="flex align-items-center">
-                  <Checkbox inputId="rememberme1" checked={checked} onChange={(e) => setChecked(e.checked ?? false)} className="mr-2" />
-                  <label htmlFor="rememberme1">Ghi nhớ đăng nhập</label>
-                </div>
-                <a className="font-medium no-underline ml-2 text-right cursor-pointer" style={{ color: 'var(--primary-color)' }}>
-                  Quên mật khẩu?
-                </a>
+      {loginMode === 'nhan_vien' ? (<>
+        <div className="flex flex-column align-items-center justify-content-center">
+          <div
+            style={{
+              borderRadius: '56px',
+              padding: '0.3rem',
+              background: 'linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)'
+            }}
+          >
+            <div className="w-full surface-card py-8 px-5 sm:px-8" style={{ borderRadius: '53px' }}>
+              <div className="text-center mb-5">
+                <div className="text-900 text-3xl font-medium mb-3">Chào mừng, Hệ Thống Quản Lý Chành Xe</div>
+                <span className="text-600 font-medium">Đăng nhập để tiếp tục</span>
               </div>
 
-              <Button label="Đăng nhập" className="w-full p-3 text-xl mb-3" onClick={handleLogin} disabled={loading} icon={loading ? 'pi pi-spin pi-spinner' : undefined} />
+              <div>
+                <label htmlFor="email1" className="block text-900 text-xl font-medium mb-2">
+                  Tên đăng nhập
+                </label>
+                <InputText id="email1" type="text" placeholder="Tên đăng nhập" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full md:w-30rem mb-5" style={{ padding: '1rem' }} />
 
-              {/* Đăng nhập bằng Google */}
-              {/* <Button label="Đăng nhập với Google" className="w-full p-3 text-xl" onClick={() => loginGoogle()} disabled={loading} /> */}
+                <label htmlFor="password1" className="block text-900 font-medium text-xl mb-2">
+                  Mật khẩu
+                </label>
+                <Password inputId="password1" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Mật khẩu" toggleMask className="w-full mb-5" inputClassName="w-full p-3 md:w-30rem" />
+
+                <div className="flex align-items-center justify-content-between mb-5 gap-5">
+                  <div className="flex align-items-center">
+                    <Checkbox inputId="rememberme1" checked={checked} onChange={(e) => setChecked(e.checked ?? false)} className="mr-2" />
+                    <label htmlFor="rememberme1">Ghi nhớ đăng nhập</label>
+                  </div>
+                  <a className="font-medium no-underline ml-2 text-right cursor-pointer" style={{ color: 'var(--primary-color)' }}>
+                    Quên mật khẩu?
+                  </a>
+                </div>
+
+                <Button label="Đăng nhập" className="w-full p-3 text-xl mb-3" onClick={handleLogin} disabled={loading} icon={loading ? 'pi pi-spin pi-spinner' : undefined} />
+
+                {/* Đăng nhập bằng Google */}
+                {/* <Button label="Đăng nhập với Google" className="w-full p-3 text-xl" onClick={() => loginGoogle()} disabled={loading} /> */}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </>) : (<>
+        <div>
+          <LoginKhachHangPage />
+        </div>
+      </>)}
+
       <div>
-        <LoginKhachHangPage />
+        <Button
+          label={loginMode === 'khach_hang' ? 'Đăng Nhập Nhân Viên' : 'Đăng Nhập Khách Hàng'}
+          className="w-full p-3 text-xl mb-3"
+          onClick={handleLoginMode}
+          disabled={loading}
+          icon={loading ? 'pi pi-spin pi-spinner' : undefined} />
       </div>
     </div>
   );

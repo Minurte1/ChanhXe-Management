@@ -7,16 +7,16 @@ import { AutoComplete } from 'primereact/autocomplete';
 import { classNames } from 'primereact/utils';
 import moment from 'moment';
 
-const TraCuuOrderDialog = ({ confirmOrder, visible, onHide, formData, onInputChange, onSave, isNew, saveWithCustomer, suggestions, completeMethod }) => {
+const TraCuuOrderDialog = ({ confirmOrder, visible, onHide, formData, onInputChange, onSave, isNew, saveWithCustomer, suggestions, completeMethod, isKhachHang }) => {
   const [confirmDialogVisible, setConfirmDialogVisible] = useState(false); // State để điều khiển modal xác nhận
 
-  const footer = (
+  const footer = !isKhachHang ? (
     <div>
       <Button label="Hủy" icon="pi pi-times" onClick={onHide} className="p-button-text" />
       {formData?.trang_thai === 'da_cap_ben' ? <Button label="Đơn hàng đã nhận" icon="pi pi-check" onClick={() => handleUpdateStatusGiaoHangSuccess()} className="p-button-success" /> : false}
       {isNew && <Button label="Lưu cùng khách hàng" icon="pi pi-user-plus" onClick={saveWithCustomer} className="p-button-info" />}
     </div>
-  );
+  ) : null ;
 
   const confirmFooter = (
     <div>
@@ -57,6 +57,7 @@ const TraCuuOrderDialog = ({ confirmOrder, visible, onHide, formData, onInputCha
       phu_phi: 'Phụ phí',
       trang_thai: 'Trạng thái',
       ten_nguoi_nhan: 'Tên người nhận',
+      kich_thuoc: 'Kích thước',
       so_dien_thoai_nhan: 'Số điện thoại người nhận',
       email_nhan: 'Email người nhận',
       ma_van_don: 'Mã vận đơn',
