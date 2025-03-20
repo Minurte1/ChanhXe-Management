@@ -14,6 +14,7 @@ const provincesRoute = require("./provincesRoute.js");
 const phanCongXeRoute = require("./phanCongXeRouter.js");
 const phanCongTaiXeRoute = require("./phanCongTaiXeRouter.js");
 const phanCongNguoiDungRoute = require("./phanCongNguoiDungRouter.js");
+const thongKeRoute = require("./thongKe.js");
 
 // Register routes
 router.use("/", authRoutes);
@@ -29,4 +30,5 @@ router.use("/", provincesRoute);
 router.use("/", phanCongXeRoute);
 router.use("/", phanCongTaiXeRoute);
 router.use("/", phanCongNguoiDungRoute);
+router.use("/", thongKeRoute);
 module.exports = router;
