@@ -81,7 +81,7 @@ const ProfileCustomer = () => {
     }
 
     try {
-      const response = await khachHangService.updateCustomer(userInfo.id, formData);
+      const response = await khachHangService.updateProfileCustomer(userInfo.id, formData);
       if (response.EC === 1) {
         toast.current.show({
           severity: 'success',

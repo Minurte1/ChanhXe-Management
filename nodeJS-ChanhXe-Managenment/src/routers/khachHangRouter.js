@@ -9,6 +9,7 @@ const {
   deleteCustomer,
   loginCustomer,
   logoutCustomer,
+  updateProfileCustomer,
 } = require("../controllers/khachHangController");
 const { checkUserJWT } = require("../middleware/JWTaction");
 router.get("/customers", checkUserJWT, getAllCustomers);
@@ -18,5 +19,7 @@ router.put("/customers/:id", checkUserJWT, updateCustomer);
 router.delete("/customers/:id", checkUserJWT, deleteCustomer);
 router.post("/login-customer", loginCustomer);
 router.post("/logout-customer", logoutCustomer);
+router.put("/customer-profile/:id", updateProfileCustomer);
+
 
 module.exports = router;

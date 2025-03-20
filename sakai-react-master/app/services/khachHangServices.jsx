@@ -1,3 +1,5 @@
+import { enqueueSnackbar } from 'notistack';
+
 const API_URL = process.env.NEXT_PUBLIC_URL_SERVER;
 
 const khachHangService = (axiosInstance) => ({
@@ -58,6 +60,18 @@ const khachHangService = (axiosInstance) => ({
       return response.data;
     } catch (error) {
       console.error('Error deleting customer:', error);
+      throw error;
+    }
+  },
+
+  updateProfileCustomer: async (id, formData) =>{
+    try {
+      const response = await axiosInstance.put(`${API_URL}/customer-profile/${id}`, formData);
+      enqueueSnackbar(response.data.EM || 'Cập nhật khách hàng thành công', { variant: 'success' });
+      
+      return response.data;
+    } catch {
+      console.error('Error updating customer profile:', error);
       throw error;
     }
   }

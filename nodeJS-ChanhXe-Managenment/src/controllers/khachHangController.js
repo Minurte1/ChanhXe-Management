@@ -375,12 +375,10 @@ const updateProfileCustomer = async (req, res) => {
     const { ho_ten, so_dien_thoai, mat_khau_cu, mat_khau_moi } =
       req.body;
 
-    // Kiểm tra ID người dùng
     if (!id) {
-      return res.status(400).json({ EM: "Thiếu ID người dùng", EC: -1 });
+      return res.status(400).json({ EM: "Thiếu ID khách hàng", EC: -1 });
     }
 
-    // Lấy thông tin người dùng hiện tại từ DB
     const [users] = await pool.query("SELECT * FROM khach_hang WHERE id = ?", [
       id,
     ]);
@@ -426,5 +424,6 @@ module.exports = {
   updateCustomer,
   deleteCustomer,
   loginCustomer,
-  logoutCustomer
+  logoutCustomer,
+  updateProfileCustomer,
 };
