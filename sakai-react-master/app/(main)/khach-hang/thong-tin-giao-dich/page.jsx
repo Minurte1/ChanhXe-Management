@@ -200,13 +200,13 @@ const ThongTinGiaoDich = () => {
           >
             <Column field="ma_van_don" header="Mã Vận Đơn" />
             <Column
-              field="ma_qr_code"
+              field="ma_qr"
               header="Mã QR"
               body={(rowData) => (
                 <QRCodeCanvas
-                  value={rowData.ma_qr_code || 'N/A'} // Use the QR code value from the row data
-                  size={50} // Size of the QR code
-                  level="H" // Error correction level
+                  value={`Mã vận đơn: ${rowData.ma_van_don || 'N/A'}\nNgười gửi: ${rowData.khach_hang_ho_ten || 'N/A'}\nNgười nhận: ${rowData.ten_nguoi_nhan || 'N/A'} `}
+                  size={75}
+                  level="M"
                 />
               )}
             />

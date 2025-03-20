@@ -11,6 +11,8 @@ import spServices from '@/app/share/share-services/sp-services';
 import { useAxios } from '@/app/authentication/useAxiosClient';
 import { ReduxExportServices } from '@/app/redux/redux-services/services-redux-export';
 import TraCuuOrderDialog from '../../../modal/TraCuuFullDonHang';
+import { QRCodeCanvas } from 'qrcode.react';
+
 const DanhSachDonHang = () => {
   const [orders, setOrders] = useState([]);
   const [displayDialog, setDisplayDialog] = useState(false);
@@ -213,6 +215,17 @@ const DanhSachDonHang = () => {
             currentPageReportTemplate="Hiển thị {first} đến {last} của {totalRecords} đơn hàng"
           >
             <Column field="ma_van_don" header="Mã Vận Đơn" />
+            <Column
+              field="ma_qr"
+              header="Mã QR"
+              body={(rowData) => (
+                <QRCodeCanvas
+                  value={`Mã vận đơn: ${rowData.ma_van_don || 'N/A'}\nNgười gửi: ${rowData.khach_hang_ho_ten || 'N/A'}\nNgười nhận: ${rowData.ten_nguoi_nhan || 'N/A'} `}
+                  size={75}
+                  level="M"
+                />
+              )}
+            />
             <Column field="khach_hang_ho_ten" header="Khách hàng gửi" />
             <Column field="ten_nguoi_nhan" header="Tên Người Nhận" />
             <Column field="so_dien_thoai_nhan" header="Số Điện Thoại Nhận" />

@@ -94,7 +94,7 @@ const TraCuuOrderDialog = ({ confirmOrder, visible, onHide, formData, onInputCha
   const fieldOrder = [
     'khach_hang_ho_ten',
     'ma_van_don',
-    'ma_qr_code',
+    //'ma_qr_code',
     'khach_hang_so_dien_thoai',
     'khach_hang_dia_chi',
     'ben_xe_gui_ten',
