@@ -160,9 +160,7 @@ const LoginPage = () => {
           </div>
         </div>
       </>) : (<>
-        <div>
           <LoginKhachHangPage />
-        </div>
       </>)}
 
       <div>

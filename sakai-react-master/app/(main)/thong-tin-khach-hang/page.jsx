@@ -12,9 +12,10 @@ import { Checkbox } from 'primereact/checkbox';
 import { useAxios } from '../../authentication/useAxiosClient';
 import { ReduxExportServices } from '../../redux/redux-services/services-redux-export';
 import UserService from '../../services/userAccountService';
+import KhachHangService from '../../services/khachHangServices';
 import { useRouter } from 'next/navigation';
 
-const ProfileUser = () => {
+const ProfileCustomer = () => {
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
     ho_ten: '',
@@ -28,17 +29,17 @@ const ProfileUser = () => {
   const { userInfo } = ReduxExportServices();
   const axiosInstance = useAxios();
   const userService = UserService(axiosInstance);
+  const khachHangService = KhachHangService(axiosInstance);
   const router = useRouter();
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const id = userInfo?.id;
-        const data = await userService.getUserById(id);
+        const data = await khachHangService.getCustomerById(id);
         setUser(data.DT);
         setFormData({
           ho_ten: data.DT.ho_ten,
           so_dien_thoai: data.DT.so_dien_thoai,
-          email: data.DT.email,
           mat_khau_cu: '',
           mat_khau_moi: '',
           xac_nhan_mat_khau: ''
@@ -80,7 +81,7 @@ const ProfileUser = () => {
     }
 
     try {
-      const response = await userService.updateUserProfile(userInfo.id, formData);
+      const response = await khachHangService.updateCustomer(userInfo.id, formData);
       if (response.EC === 1) {
         toast.current.show({
           severity: 'success',
@@ -144,13 +145,6 @@ const ProfileUser = () => {
               <InputText id="so_dien_thoai" name="so_dien_thoai" value={formData.so_dien_thoai} onChange={handleChange} className="w-full" style={{ padding: '0.75rem', borderRadius: '8px' }} />
             </div>
 
-            <div className="field">
-              <label htmlFor="email" className="block font-medium text-900 mb-1">
-                Email
-              </label>
-              <InputText disabled id="email" name="email" value={formData.email} onChange={handleChange} className="w-full" style={{ padding: '0.75rem', borderRadius: '8px' }} />
-            </div>
-
             {/* Password Toggle */}
             <div className="field flex align-items-center gap-2">
               <Checkbox inputId="changePassword" checked={showPasswordFields} onChange={(e) => setShowPasswordFields(e.checked)} />
@@ -193,4 +187,4 @@ const ProfileUser = () => {
   );
 };
 
-export default ProfileUser;
+export default ProfileCustomer;

@@ -369,6 +369,56 @@ const logoutCustomer = (req, res) => {
   return res.status(200).json({ message: "Đăng xuất thành công" });
 };
 
+const updateProfileCustomer = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { ho_ten, so_dien_thoai, mat_khau_cu, mat_khau_moi } =
+      req.body;
+
+    // Kiểm tra ID người dùng
+    if (!id) {
+      return res.status(400).json({ EM: "Thiếu ID người dùng", EC: -1 });
+    }
+
+    // Lấy thông tin người dùng hiện tại từ DB
+    const [users] = await pool.query("SELECT * FROM khach_hang WHERE id = ?", [
+      id,
+    ]);
+    if (users.length === 0) {
+      return res.status(404).json({ EM: "Khách hàng không tồn tại", EC: -1 });
+    }
+    const user = users[0];
+
+    // Nếu có mật khẩu cũ => kiểm tra mật khẩu
+    if (mat_khau_cu && mat_khau_moi) {
+      const isMatch = await bcrypt.compare(mat_khau_cu, user.mat_khau);
+      if (!isMatch) {
+        return res.status(400).json({ EM: "Mật khẩu cũ không đúng", EC: -1 });
+      }
+      // Hash mật khẩu mới
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(mat_khau_moi, salt);
+      await pool.query("UPDATE khach_hang SET mat_khau = ? WHERE id = ?", [
+        hashedPassword,
+        id,
+      ]);
+    }
+
+    // Cập nhật thông tin cá nhân
+    await pool.query(
+      "UPDATE khach_hang SET ho_ten = ?, so_dien_thoai = ?, ngay_cap_nhat = NOW() WHERE id = ?",
+      [ho_ten, so_dien_thoai, id]
+    );
+
+    return res
+      .status(200)
+      .json({ EM: "Cập nhật khách hàng thành công", EC: 1 });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ EM: "Lỗi server", EC: -1 });
+  }
+};
+
 module.exports = {
   getAllCustomers,
   getCustomerById,

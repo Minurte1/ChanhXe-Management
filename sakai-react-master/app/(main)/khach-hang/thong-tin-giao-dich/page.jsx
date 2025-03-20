@@ -13,6 +13,7 @@ import { ReduxExportServices } from '@/app/redux/redux-services/services-redux-e
 import TraCuuOrderDialog from '../../../modal/TraCuuFullDonHang';
 import { InputText } from 'primereact/inputtext';
 import moment from 'moment';
+import { QRCodeCanvas } from 'qrcode.react';
 
 const ThongTinGiaoDich = () => {
   const [orders, setOrders] = useState([]);
@@ -180,6 +181,13 @@ const ThongTinGiaoDich = () => {
           <h1>Danh Sách Đơn Hàng {userInfo?.ten_ben_xe ? `Tại ${userInfo.ten_ben_xe}` : ''} </h1>
           <div style={{ display: 'flex', justifyContent: 'left', alignItems: 'center', marginBottom: '10px' }}>
           </div>
+          {/* <div>
+            <QRCodeCanvas
+              value={'https://viblo.asia/u/tranchien'} // Use the QR code value from the row data
+              size={50} // Size of the QR code
+              level="H" // Error correction level
+            />
+          </div> */}
 
           <DataTable
             value={orders}
@@ -191,16 +199,23 @@ const ThongTinGiaoDich = () => {
             header={header}
           >
             <Column field="ma_van_don" header="Mã Vận Đơn" />
+            <Column
+              field="ma_qr_code"
+              header="Mã QR"
+            // body={(rowData) => (
+
+            // )} 
+            />
             <Column field="khach_hang_ho_ten" header="Người gửi" />
             <Column field="ten_nguoi_nhan" header="Người Nhận" />
             <Column field="so_dien_thoai_nhan" header="Số Điện Thoại Người Nhận" />
-            <Column field="ngay_tao" header="Ngày tạo" sortable body={(rowData) => formatDate(rowData.ngay_tao)}/>
+            <Column field="ngay_tao" header="Ngày tạo" sortable body={(rowData) => formatDate(rowData.ngay_tao)} />
             <Column field="labelLoaiHangHoa" header="Loại Hàng Hóa" sortable body={(rowData) => <StatusLabel status={rowData.labelLoaiHangHoa} />} />
             <Column field="labelTrangThaiDonHang" header="Trạng Thái" sortable body={(rowData) => <StatusLabel status={rowData.labelTrangThaiDonHang} />} />
             <Column body={(rowData) => <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => xemOrder(rowData)} />} />
           </DataTable>
 
-          <TraCuuOrderDialog confirmOrder={true} visible={xemOrderDialog} onHide={() => setXemOrderDialog(false)} formData={formData} isKhachHang={true}/>
+          <TraCuuOrderDialog confirmOrder={true} visible={xemOrderDialog} onHide={() => setXemOrderDialog(false)} formData={formData} isKhachHang={true} />
         </div>
       </div>
     </div>

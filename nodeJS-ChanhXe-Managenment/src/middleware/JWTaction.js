@@ -102,7 +102,7 @@ const checkUserJWT = async (req, res, next) => {
         return res.status(403).json({
           EC: -1,
           DT: "",
-          EM: "Bạn không có quyền truy cập vào trang này.",
+          EM: "Bạn không có quyền truy cập vào trang này",
         });
       }
 

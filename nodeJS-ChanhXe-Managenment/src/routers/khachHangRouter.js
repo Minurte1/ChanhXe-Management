@@ -12,7 +12,7 @@ const {
 } = require("../controllers/khachHangController");
 const { checkUserJWT } = require("../middleware/JWTaction");
 router.get("/customers", checkUserJWT, getAllCustomers);
-router.get("/customers/:id", checkUserJWT, getCustomerById);
+router.get("/customers/:id", getCustomerById);
 router.post("/customers", checkUserJWT, createCustomer);
 router.put("/customers/:id", checkUserJWT, updateCustomer);
 router.delete("/customers/:id", checkUserJWT, deleteCustomer);

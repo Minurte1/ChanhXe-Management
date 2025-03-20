@@ -25,7 +25,6 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
 
   useEffect(() => {
     setUser(userInfo);
-    console.log('abcxyz', userInfo);
   }, [userInfo]);
 
   useImperativeHandle(ref, () => ({
@@ -50,7 +49,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     if (userInfo.vai_tro !== 'khach_hang'){
       router.push('/thong-tin-nguoi-dung');
     } else {
-      console.log('abcxyz', userInfo);
+      router.push('/thong-tin-khach-hang');
     };
   };
 
